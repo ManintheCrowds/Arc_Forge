@@ -1,0 +1,12 @@
+{
+  "text_hash": "bf94c097394581b96d899d73f814c919",
+  "summary": "\nHere is a concise summary of the document for a Game Master:\n\nKey Rules and Mechanics:\n\n* RAG integration is key to unifying ingestion, extraction, and generation.\n* Use a ship-morale clock tied to psychic resonance for full-text retrieval.\n* Prefer seed + campaign sources when scoring patterns.\n\nImportant NPCs, Factions, and Locations:\n\n* Location: Draugr\u2019s Hearth System - A glacial hive world locked in an arctic age, with mag-train lines and geothermal vents.\n\t+ Threats: Cryo-plague cultists, ork raiders, White Hunger entity.\n\t+ Secrets: Beneath the ice lie dormant xenos structures and ritual nodes.\n* Location: Harbinger of Woe - A repurposed space hulk with a stoic, haunted machine spirit and a tense human/ork crew dynamic.\n\t+ Tactical features: Moving cars, shifting terrain, narrow choke points.\n\t+ Threats: Sabotage, internal duels, rogue machine spirit events.\n\t+ Secrets: Old hulk memory echoes may map to hidden warp nodes in the system.\n\nNotable Items, Equipment, or Artifacts:\n\n* No relevant information is provided in this document.\n\nCampaign-Relevant Information:\n\n* The Draugr\u2019s Hearth System is home base and the command center for system operations.\n* The Harbinger of Woe serves as a mobile HQ and political pressure cooker for competing factions.\n\nOverall, this document provides information on the locations, threats, and secrets of the Draugr\u2019s Hearth System and the Harbinger of Woe, as well as the RAG integration mechanics and content generation processes. This information can be used by a Game Master to create engaging and immersive campaigns in the Warhammer 40k universe.",
+  "metadata": {
+    "provider": "ollama",
+    "model": "llama2",
+    "tokens_used": 1595,
+    "cost": 0.0,
+    "chunks": 1
+  },
+  "created_at": "2026-01-23T21:14:03.746588"
+}

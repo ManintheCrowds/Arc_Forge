@@ -1,0 +1,39 @@
+{
+  "arc_id": "first_arc",
+  "encounters": [
+    {
+      "id": "highway_chase",
+      "feedback": [
+        {
+          "type": "expand",
+          "target": "obstacles",
+          "instruction": "Add three distinct vehicle obstacles with DNs."
+        },
+        {
+          "type": "change",
+          "target": "Pilot DN",
+          "from": 3,
+          "to": 4
+        },
+        {
+          "type": "add_mechanic",
+          "detail": "Spend 1 Wrath to reroll Pilot test."
+        }
+      ]
+    },
+    {
+      "id": "boardings",
+      "feedback": [
+        {
+          "type": "link_npc",
+          "npc_id": "Klawjam Skitz",
+          "instruction": "Reference Klawjam Skitz from 03_npcs as potential boarding opposition."
+        },
+        {
+          "type": "add_mechanic",
+          "detail": "Boarding (Agi) DN 4; on 2+ shifts allow free melee follow-up."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "doc_key": "[PDF] Godwin_of_House__.txt",
+  "text_hash": "97b927a729fd",
+  "entities": {
+    "NPCs": [
+      "And Ancient"
+    ],
+    "Factions": [
+      "Aligned Cold Cult",
+      "And Must Honour Both The Beliefs And Traditions Of Your Chapter",
+      "Astartes Of The Absolvers Chapter",
+      "Board During Motion To Avoid Cult",
+      "Derelict Pilgrim Vessel Carrying Cult",
+      "He Follows His Chapter",
+      "He Seeks Only To Bring Defence Resilience Wounds Honour To His Chapter",
+      "Obey An Order",
+      "Or Any Honour The Chapter",
+      "Other Chapter",
+      "Plague And Psychic Cold Vectors Tied To Cult",
+      "Psyker Cargo Is The Vector Key For The Cult",
+      "Spirit Warning Reveals The Next Cult",
+      "Triggering Cult",
+      "You Are Subject To The Orders Of Your Chapter",
+      "You Gain Whenever An Ally With The Imperium"
+    ],
+    "Locations": [
+      "Constantina Relishes The Opportunity Of Handling The Many Problems The System",
+      "Death World",
+      "Extracting Hive World",
+      "Glacial Hive World",
+      "Hearth System",
+      "Heist Infiltration At The Geothermal Station",
+      "It Is Home Base And The Command Center For System",
+      "Old Hulk Memory Echoes May Map To Hidden Warp Nodes In The System",
+      "Rich But Spiritually Cursed System",
+      "Rich System",
+      "Star System",
+      "Strange World",
+      "The System",
+      "Triggering Cult Escalation And System"
+    ],
+    "Items": [
+      "Add The Armour",
+      "Aquilla Mark VII Armour",
+      "Brute Shield",
+      "Bullgryn Provided The GM Agrees You Can Manoeuvre The Shield",
+      "If An Attack Is Made Subdermal Armour",
+      "Ogryn Armour",
+      "Piece Of Armour",
+      "Rarity Of Any Armour",
+      "Rating To Their Armour",
+      "Subdermal Armour",
+      "That Ally Can Add Your Shield"
+    ]
+  },
+  "timestamp": 1769231383.359804
+}

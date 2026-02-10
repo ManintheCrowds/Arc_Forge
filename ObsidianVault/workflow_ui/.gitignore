@@ -1,0 +1,5 @@
+# Raw AI audit output (T4→T5 handoff); keep local only
+docs/_audit_raw_output.md
+
+# Pytest temp dir (project-local)
+.pytest-tmp/

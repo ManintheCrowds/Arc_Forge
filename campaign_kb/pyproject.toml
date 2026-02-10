@@ -1,0 +1,12 @@
+# PURPOSE: Project and tool config for campaign_kb (pytest, future metadata).
+# MODIFICATION NOTES: Single-file config; deps remain in requirements.txt.
+
+[project]
+name = "campaign-kb"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --basetemp=.pytest-tmp"

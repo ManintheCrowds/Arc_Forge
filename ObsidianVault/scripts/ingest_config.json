@@ -1,0 +1,181 @@
+{
+  "_purpose": "Configure PDF ingestion for Obsidian source and atomic notes.",
+  "_dependencies": "PDF++ cache (optional), local filesystem paths.",
+  "_modification_notes": "Initial ingestion configuration for Wrath & Glory vault.",
+  "vault_root": "D:\\arc_forge\\ObsidianVault",
+  "pdf_root": "D:\\arc_forge\\ObsidianVault\\pdf",
+  "source_notes_dir": "Sources",
+  "rules_dir": "Rules",
+  "npcs_dir": "NPCs",
+  "factions_dir": "Factions",
+  "locations_dir": "Locations",
+  "items_dir": "Items",
+  "concepts_dir": "Concepts",
+  "campaigns_dir": "Campaigns",
+  "templates": {
+    "source_note": "Templates/source_note.md",
+    "entity_note": "Templates/entity_note.md"
+  },
+  "extracted_text_dir": "Sources/_extracted_text",
+  "pdf_text_cache_dirs": [
+    ".obsidian/plugins/pdf-plus",
+    ".obsidian/plugins/obsidian-pdf-plus",
+    ".obsidian/pdf-plus"
+  ],
+  "pdf_text_cache_extensions": [
+    ".txt",
+    ".md"
+  ],
+  "max_excerpt_chars": 2000,
+  "max_pdf_size_mb": 100,
+  "diagnostic": {
+    "log_path": "scripts/ingest_diagnostic.log",
+    "enabled": false
+  },
+  "index_builder": {
+    "output_path": "Sources/Source_Index.md",
+    "exclude_dirs": ["_extracted_text", "PDFs"],
+    "excerpt_max_chars": 300
+  },
+  "features": {
+    "ocr_enabled": true,
+    "ai_summarization_enabled": true,
+    "table_extraction_enabled": false,
+    "annotation_extraction_enabled": false,
+    "web_api_enabled": false,
+    "ner_entity_extraction_enabled": true,
+    "metadata_extraction_enabled": true
+  },
+  "ocr": {
+    "enabled": true,
+    "tesseract_path": null,
+    "language": "eng",
+    "dpi": 300,
+    "preprocessing": {
+      "deskew": true,
+      "denoise": true,
+      "contrast_enhancement": true
+    },
+    "quality_threshold": 60,
+    "output_dir": "Sources/_ocr"
+  },
+  "watcher": {
+    "enabled": true,
+    "debounce_seconds": 2,
+    "recursive": true,
+    "watch_patterns": ["*.pdf"],
+    "ignore_patterns": [".*", "~$*"]
+  },
+  "ai_summarization": {
+    "enabled": true,
+    "provider": "ollama",
+    "model": "llama2",
+    "api_key": null,
+    "max_tokens": 500,
+    "temperature": 0.7,
+    "cache_enabled": true,
+    "cache_dir": "Sources/_summaries",
+    "ollama_endpoint": null
+  },
+  "table_extraction": {
+    "enabled": false,
+    "method": "pdfplumber",
+    "fallback_method": "camelot",
+    "output_format": "markdown",
+    "output_dir": "Sources/_tables"
+  },
+  "annotation_extraction": {
+    "enabled": false,
+    "pdfplus_cache_dirs": [
+      ".obsidian/plugins/pdf-plus",
+      ".obsidian/plugins/obsidian-pdf-plus"
+    ],
+    "preserve_metadata": true
+  },
+  "web_api": {
+    "enabled": false,
+    "host": "127.0.0.1",
+    "port": 8000,
+    "auth_enabled": false,
+    "api_key": null,
+    "cors_enabled": true,
+    "cors_origins": ["http://localhost:3000"]
+  },
+  "entity_extraction": {
+    "use_llm": false,
+    "llm_provider": "ollama",
+    "llm_model": "llama2",
+    "llm_api_key": null
+  },
+  "rag_pipeline": {
+    "enabled": true,
+    "campaign_kb_root": "D:\\arc_forge\\campaign_kb",
+    "campaign_docs": [
+      "campaign/00_overview.md",
+      "campaign/01_factions.md",
+      "campaign/02_locations.md",
+      "campaign/03_npcs.md",
+      "campaign/04_missions.md",
+      "campaign/05_rag_integration.md"
+    ],
+    "output_dir": "Campaigns/_rag_outputs",
+    "pattern_analysis_enabled": true,
+    "content_generation_enabled": true,
+    "use_kb_search": true,
+    "search": {
+      "limit": 8,
+      "source_name": null,
+      "doc_type": null
+    },
+    "summarization": {
+      "provider": "ollama",
+      "model": "llama2",
+      "api_key": null,
+      "max_tokens": 500,
+      "temperature": 0.7,
+      "cache_dir": "Sources/_summaries",
+      "ollama_endpoint": null
+    },
+    "generation": {
+      "provider": "ollama",
+      "model": "llama2",
+      "api_key": null,
+      "max_tokens": 800,
+      "temperature": 0.8,
+      "ollama_endpoint": null
+    },
+    "theme_keywords": [
+      "faith",
+      "entropy",
+      "cold",
+      "heat",
+      "decay",
+      "survival",
+      "heresy",
+      "machine spirit",
+      "warp",
+      "void",
+      "promethium"
+    ],
+    "pdf_extraction_dir": "Sources/_extracted_text",
+    "include_pdfs": true,
+    "pdf_file_pattern": "*.txt",
+    "pdf_ingestion": {
+      "max_chunk_size": 50000,
+      "max_chunks_per_pdf": 10,
+      "max_total_text_chars": 2000000
+    },
+    "cache": {
+      "enabled": true,
+      "cache_dir": "Campaigns/_rag_cache",
+      "index_cache": "document_index.json",
+      "entity_cache_dir": "entities",
+      "invalidate_on_mtime_change": true
+    },
+    "query_mode": {
+      "skip_full_analysis": true,
+      "max_retrieved_docs": 8,
+      "lazy_entity_extraction": true
+    }
+  }
+}

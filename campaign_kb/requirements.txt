@@ -1,0 +1,15 @@
+# PURPOSE: Python dependencies for the campaign knowledge base MVP.
+# DEPENDENCIES: None
+# MODIFICATION NOTES: Initial dependency list for ingest/search API.
+
+fastapi
+uvicorn
+sqlalchemy
+psycopg[binary]
+alembic
+pydantic
+pydantic-settings
+httpx
+beautifulsoup4
+pdfplumber
+prometheus_client

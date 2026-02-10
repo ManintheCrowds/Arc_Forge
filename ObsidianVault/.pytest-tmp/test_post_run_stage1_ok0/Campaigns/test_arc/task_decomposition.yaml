@@ -1,0 +1,12 @@
+arc_id: test_arc
+storyboard_ref: Campaigns\_rag_outputs\first_arc_storyboard.md
+encounters:
+- id: combat_chase
+  name: Combat (Chase)
+  type: combat
+  sequence: 1
+  storyboard_section: III. Combat (Chase)
+  after: null
+  before: null
+opportunities: []
+sequence_constraints: []

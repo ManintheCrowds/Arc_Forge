@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Storyboard Workflow</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <header class="top">
+      <h1>Storyboard → Encounter Workflow</h1>
+      <a href="/tools/kb-daggr" target="_blank" rel="noopener noreferrer" class="header-link">KB Workflows</a>
+      <a href="/tools/gradio" target="_blank" rel="noopener noreferrer" class="header-link">Gradio demo</a>
+      <label>Arc:</label>
+      <select id="arc-select" class="arc-select"></select>
+      <div class="pipeline-strip" id="pipeline-strip">
+        <div id="pipeline-badges"></div>
+        <div id="pipeline-strip-mermaid" class="pipeline-strip-mermaid"></div>
+      </div>
+    </header>
+    <div class="main">
+      <aside class="side">
+        <h3>Arc file-tree</h3>
+        <div class="tree" id="arc-tree"></div>
+        <h3>Encounters (with provenance)</h3>
+        <div id="encounters-list"></div>
+      </aside>
+      <div class="content">
+        <div class="onboarding" id="onboarding">
+          <h3>Getting started</h3>
+          <p>Start with S1 after a storyboard exists under <code>Campaigns/_rag_outputs/</code>. Then proceed S2 → S3 → S4 → S5.</p>
+          <ul class="checklist">
+            <li><span id="status-campaigns" class="status">…</span> <code>Campaigns/</code> directory</li>
+            <li><span id="status-config" class="status">…</span> <code>scripts/ingest_config.json</code></li>
+            <li><span id="status-kb" class="status">…</span> <code>campaign_kb</code> reachable</li>
+          </ul>
+        </div>
+        <div class="tabs">
+          <button data-tab="kb">Campaign KB</button>
+          <button data-tab="s1">S1 Task Decomp</button>
+          <button data-tab="s2">S2 Drafts</button>
+          <button data-tab="s3">S3 Feedback</button>
+          <button data-tab="s4">S4 Refine</button>
+          <button data-tab="s5">S5 Export</button>
+          <button data-tab="session-memory">Session memory</button>
+          <button data-tab="form1">Edit Task Decomp</button>
+          <button data-tab="form3">Edit Feedback</button>
+        </div>
+        <div id="panel-kb" class="stage-panel">
+          <h3>Campaign KB (search, ingest, merge)</h3>
+          <p>Requires campaign_kb running (e.g. <code>uvicorn app.main:app --host 127.0.0.1 --port 8000</code>).</p>
+          <div class="form-group">
+            <label>KB status</label>
+            <span id="kb-status">—</span>
+            <button type="button" id="kb-check-status">Check</button>
+          </div>
+          <div class="form-group">
+            <label>Search</label>
+            <input type="text" id="kb-search-query" placeholder="e.g. tier 2 requisition" />
+            <button type="button" id="kb-search-btn">Search</button>
+          </div>
+          <div id="kb-search-results" class="out"></div>
+          <div class="form-group" style="margin-top: 1em;">
+            <label>Ingest PDFs (optional pdf_root path)</label>
+            <input type="text" id="kb-pdf-root" placeholder="leave empty for default" />
+            <button type="button" id="kb-ingest-pdfs">Ingest PDFs</button>
+          </div>
+          <div class="form-group">
+            <button type="button" id="kb-merge">Merge seed doc</button>
+          </div>
+          <div id="kb-merge-out" class="out"></div>
+        </div>
+        <div id="panel-s1" class="stage-panel">
+          <p>Run Stage 1: Storyboard → task_decomposition. Uses storyboard_path, arc_id, output_dir.</p>
+          <button class="run" id="run-s1">Run Stage 1</button>
+          <div class="out" id="out-s1"></div>
+        </div>
+        <div id="panel-s2" class="stage-panel">
+          <p>Run Stage 2: Task decomposition + storyboard → encounter drafts (RAG + campaign_kb).</p>
+          <button class="run" id="run-s2">Run Stage 2</button>
+          <div class="out" id="out-s2"></div>
+        </div>
+        <div id="panel-s3" class="stage-panel">
+          <p>S3 is human-only: edit feedback in &quot;Edit Feedback&quot;, then run S4 per encounter.</p>
+          <div class="out" id="out-s3"></div>
+        </div>
+        <div id="panel-s4" class="stage-panel">
+          <p>Refine one encounter from feedback. Choose draft and feedback path (defaults from arc).</p>
+          <div class="form-group">
+            <label>Draft (encounter .md)</label>
+            <select id="s4-draft"></select>
+          </div>
+          <button class="run" id="run-s4">Refine this encounter</button>
+          <div class="out" id="out-s4"></div>
+        </div>
+        <div id="panel-s5" class="stage-panel">
+          <p>Export final specs: hierarchical MD, expanded storyboard, JSON, campaign_kb.</p>
+          <button class="run" id="run-s5">Export final specs</button>
+          <div class="out" id="out-s5"></div>
+        </div>
+        <div id="panel-session-memory" class="stage-panel">
+          <h3>Session memory (Archivist / Foreshadow)</h3>
+          <p>Run Archivist on a session note (with Session Summary block) or Foreshadow on Archivist output. Outputs go to <code>Campaigns/_session_memory/</code> (e.g. <code>YYYY-MM-DD_archivist.md</code>, <code>threads.md</code>).</p>
+          <div class="form-group">
+            <label>Session note path (for Archivist)</label>
+            <input type="text" id="session-archivist-path" placeholder="e.g. Campaigns/_session_memory/session.md or absolute path" />
+          </div>
+          <button class="run" id="run-archivist">Run Archivist</button>
+          <div class="form-group" style="margin-top: 1em;">
+            <label>Context file path (for Foreshadow; Archivist output or session summary)</label>
+            <select id="session-foreshadow-dropdown"><option value="">(pick from _session_memory or type below)</option></select>
+            <input type="text" id="session-foreshadow-path" placeholder="e.g. Campaigns/_session_memory/2025-01-30_archivist.md" style="margin-top: 0.25em;" />
+          </div>
+          <button class="run" id="run-foreshadow">Run Foreshadow</button>
+          <div class="out" id="out-session-memory"></div>
+        </div>
+        <div id="panel-form1" class="stage-panel">
+          <h3>Task decomposition</h3>
+          <div class="form-group">
+            <label>arc_id</label>
+            <input type="text" id="td-arc-id" />
+          </div>
+          <div class="form-group">
+            <label>storyboard_ref</label>
+            <input type="text" id="td-storyboard-ref" />
+          </div>
+          <h4>Encounters</h4>
+          <div id="td-encounters"></div>
+          <div class="list-actions"><button id="td-add-enc">+ Encounter</button></div>
+          <h4>Opportunities</h4>
+          <div id="td-opportunities"></div>
+          <div class="list-actions"><button id="td-add-opp">+ Opportunity</button></div>
+          <h4>Sequence constraints</h4>
+          <div id="td-constraints"></div>
+          <div class="list-actions"><button id="td-add-constraint">+ Constraint</button></div>
+          <button class="run" id="save-td">Save task_decomposition.yaml</button>
+        </div>
+        <div id="panel-form3" class="stage-panel">
+          <h3>Feedback</h3>
+          <div class="form-group">
+            <label>Encounter</label>
+            <select id="fb-encounter"></select>
+          </div>
+          <div id="fb-items"></div>
+          <div class="list-actions"><button id="fb-add">+ Feedback item</button></div>
+          <button class="run" id="save-fb">Save feedback.yaml</button>
+        </div>
+        <div id="pipeline-mermaid"></div>
+      </div>
+    </div>
+  </div>
+  <div id="file-modal" class="modal">
+    <div id="file-modal-backdrop" class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="file-modal-title">File</h3>
+        <button type="button" id="file-modal-close">Close</button>
+      </div>
+      <pre id="file-modal-content" class="modal-content"></pre>
+      <div id="file-modal-note" class="modal-note"></div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

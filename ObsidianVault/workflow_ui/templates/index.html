@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Storyboard Workflow</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <header class="top">
+      <h1>Storyboard → Encounter Workflow</h1>
+      <a href="/tools/kb-daggr" target="_blank" rel="noopener noreferrer" class="header-link">KB Workflows</a>
+      <a href="/tools/gradio" target="_blank" rel="noopener noreferrer" class="header-link">Gradio demo</a>
+      <label>Arc:</label>
+      <select id="arc-select" class="arc-select"></select>
+      <div class="pipeline-strip" id="pipeline-strip">
+        <div id="pipeline-badges"></div>
+        <div id="pipeline-strip-mermaid" class="pipeline-strip-mermaid"></div>
+      </div>
+    </header>
+    <div class="main">
+      <div class="workspace">
+        <div class="workspace-tabs">
+          <button data-workspace="workbench" class="active">Workbench</button>
+          <button data-workspace="legacy">Legacy workflow</button>
+        </div>
+        <div id="workspace-workbench" class="workspace-view visible">
+          <div class="workbench">
+            <aside class="workbench-left">
+              <h3>Module selector</h3>
+              <div class="form-group">
+                <label>Campaign</label>
+                <select id="module-campaign"></select>
+              </div>
+              <div class="form-group">
+                <label>Module</label>
+                <select id="module-select"></select>
+              </div>
+              <div class="form-group">
+                <label>Filters</label>
+                <select id="filter-type">
+                  <option value="">Type (any)</option>
+                  <option value="scene">scene</option>
+                  <option value="npc">npc</option>
+                  <option value="location">location</option>
+                  <option value="faction">faction</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <select id="filter-status">
+                  <option value="">Status (any)</option>
+                  <option value="draft">draft</option>
+                  <option value="final">final</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <input type="text" id="filter-tags" placeholder="Tags (comma separated)" />
+              </div>
+              <h3>Module tree</h3>
+              <div class="tree" id="module-tree"></div>
+              <h3>Create module</h3>
+              <div class="form-group">
+                <label>Campaign name</label>
+                <input type="text" id="create-campaign" placeholder="e.g. ForsakenSystem" />
+              </div>
+              <div class="form-group">
+                <label>Module name</label>
+                <input type="text" id="create-module" placeholder="e.g. TheSilentForge" />
+              </div>
+              <div class="form-group">
+                <label>Starting scenes</label>
+                <input type="number" id="create-scenes" value="1" min="0" />
+              </div>
+              <div class="form-group">
+                <label>Starting NPCs</label>
+                <input type="number" id="create-npcs" value="1" min="0" />
+              </div>
+              <button type="button" class="run" id="create-module-btn">Create module</button>
+              <div class="out" id="create-module-out"></div>
+            </aside>
+            <section class="workbench-center">
+              <div class="note-tabs" id="note-tabs"></div>
+              <div class="editor-toolbar">
+                <button type="button" id="toggle-preview">Toggle preview</button>
+                <button type="button" id="save-note">Save</button>
+                <button type="button" id="save-card">Save as card</button>
+              </div>
+              <div class="editor-panels">
+                <textarea id="note-editor" placeholder="Select a note to edit..."></textarea>
+                <div id="note-preview" class="note-preview"></div>
+              </div>
+              <div class="citations">
+                <h4>Inline citations</h4>
+                <div id="citations-block" class="placeholder">No citations yet.</div>
+              </div>
+            </section>
+            <aside class="workbench-right">
+              <div class="right-tabs">
+                <button data-right="chat" class="active">Chat</button>
+                <button data-right="rag">RAG search</button>
+                <button data-right="workflow">Workflow</button>
+              </div>
+              <div id="right-chat" class="right-panel visible">
+                <p class="muted">Chat panel (per note or folder). Placeholder.</p>
+                <div class="out" id="chat-history"></div>
+                <div class="form-group">
+                  <input type="text" id="chat-input" placeholder="Ask or draft..." />
+                </div>
+                <button type="button" id="chat-send">Send</button>
+              </div>
+              <div id="right-rag" class="right-panel">
+                <div class="form-group">
+                  <label>RAG query</label>
+                  <input type="text" id="rag-query" placeholder="Search campaign KB..." />
+                </div>
+                <button type="button" id="rag-search">Search</button>
+                <div class="out" id="rag-results"></div>
+              </div>
+              <div id="right-workflow" class="right-panel">
+                <p class="muted">Workflow graph placeholder. Drag nodes to reorder.</p>
+                <div id="workflow-graph" class="placeholder">Brainstorm → Outline → SceneDraft → NPCs → Review → Export</div>
+                <button type="button" id="run-workflow-node">Run selected node</button>
+              </div>
+            </aside>
+          </div>
+          <div class="workbench-bottom">
+            <div class="bottom-tabs">
+              <button data-bottom="timeline" class="active">Timeline</button>
+              <button data-bottom="idea-web">Idea web</button>
+              <button data-bottom="dependencies">Dependencies</button>
+            </div>
+            <div id="bottom-timeline" class="bottom-panel visible">Timeline placeholder (frontmatter date).</div>
+            <div id="bottom-idea-web" class="bottom-panel">Idea web placeholder (tags + links).</div>
+            <div id="bottom-dependencies" class="bottom-panel">Dependency graph placeholder (depends_on).</div>
+          </div>
+        </div>
+        <div id="workspace-legacy" class="workspace-view">
+          <div class="legacy-layout">
+            <aside class="side">
+              <h3>Arc file-tree</h3>
+              <div class="tree" id="arc-tree"></div>
+              <h3>Encounters (with provenance)</h3>
+              <div id="encounters-list"></div>
+            </aside>
+            <div class="content">
+              <div class="onboarding" id="onboarding">
+                <h3>Getting started</h3>
+                <p>Start with S1 after a storyboard exists under <code>Campaigns/_rag_outputs/</code>. Then proceed S2 → S3 → S4 → S5.</p>
+                <ul class="checklist">
+                  <li><span id="status-campaigns" class="status">…</span> <code>Campaigns/</code> directory</li>
+                  <li><span id="status-config" class="status">…</span> <code>scripts/ingest_config.json</code></li>
+                  <li><span id="status-kb" class="status">…</span> <code>campaign_kb</code> reachable</li>
+                </ul>
+          <div class="checklist-actions">
+            <label class="check-item"><input type="checkbox" id="auto-refresh-toggle" /> Auto refresh artifacts</label>
+            <span class="progress" id="progress-auto-refresh">Refreshing…</span>
+          </div>
+          <div class="checklist-actions">
+            <label class="check-item"><input type="checkbox" id="wizard-toggle" /> Enable guided wizard</label>
+          </div>
+              </div>
+        <div class="wizard" id="wizard-panel">
+          <div class="wizard-header">
+            <h3 id="wizard-title">Wizard</h3>
+            <div class="wizard-actions">
+              <button type="button" id="wizard-prev">Prev</button>
+              <button type="button" id="wizard-next">Next</button>
+              <button type="button" id="wizard-go">Go to step</button>
+            </div>
+          </div>
+          <p id="wizard-hint" class="muted"></p>
+        </div>
+              <div class="tabs">
+                <div class="tab-group">
+                  <div class="tab-label">Pipeline</div>
+                  <button data-tab="s1">S1 Task Decomp</button>
+                  <button data-tab="s2">S2 Drafts</button>
+                  <button data-tab="s3">S3 Feedback</button>
+                  <button data-tab="s4">S4 Refine</button>
+                  <button data-tab="s5">S5 Export</button>
+                </div>
+                <div class="tab-group">
+                  <div class="tab-label">Forms</div>
+                  <button data-tab="form1">Edit Task Decomp</button>
+                  <button data-tab="form3">Edit Feedback</button>
+                </div>
+                <div class="tab-group">
+                  <div class="tab-label">Tools</div>
+                  <button data-tab="kb">Campaign KB</button>
+                  <button data-tab="session-memory">Session memory</button>
+                </div>
+              </div>
+              <div id="panel-kb" class="stage-panel">
+                <h3>Campaign KB (search, ingest, merge)</h3>
+                <p>Requires campaign_kb running (e.g. <code>uvicorn app.main:app --host 127.0.0.1 --port 8000</code>).</p>
+                <div class="form-group">
+                  <label>KB status</label>
+                  <span id="kb-status">—</span>
+                  <button type="button" id="kb-check-status">Check</button>
+                </div>
+                <div class="form-group">
+                  <label>Search</label>
+                  <input type="text" id="kb-search-query" placeholder="e.g. tier 2 requisition" />
+                  <button type="button" id="kb-search-btn">Search</button>
+                </div>
+                <div id="kb-search-results" class="out"></div>
+                <div class="form-group" style="margin-top: 1em;">
+                  <label>Ingest PDFs (optional pdf_root path)</label>
+                  <input type="text" id="kb-pdf-root" placeholder="leave empty for default" />
+                  <button type="button" id="kb-ingest-pdfs">Ingest PDFs</button>
+                </div>
+                <div class="form-group">
+                  <button type="button" id="kb-merge">Merge seed doc</button>
+                </div>
+                <div id="kb-merge-out" class="out"></div>
+              </div>
+              <div id="panel-s1" class="stage-panel">
+                <p>Run Stage 1: Storyboard → task_decomposition. Uses storyboard_path, arc_id, output_dir.</p>
+                <button class="run" id="run-s1">Run Stage 1</button>
+                <div class="out" id="out-s1"></div>
+              </div>
+              <div id="panel-s2" class="stage-panel">
+                <p>Run Stage 2: Task decomposition + storyboard → encounter drafts (RAG + campaign_kb).</p>
+                <div class="progress" id="progress-s2">Running Stage 2…</div>
+                <button class="run" id="run-s2">Run Stage 2</button>
+                <div class="out" id="out-s2"></div>
+              </div>
+              <div id="panel-s3" class="stage-panel">
+                <p>S3 is human-only: edit feedback in &quot;Edit Feedback&quot;, then run S4 per encounter.</p>
+                <div class="out" id="out-s3"></div>
+              </div>
+              <div id="panel-s4" class="stage-panel">
+                <p>Refine one encounter from feedback. Choose draft and feedback path (defaults from arc).</p>
+                <div class="form-group">
+                  <label>Draft (encounter .md)</label>
+                  <select id="s4-draft"></select>
+                </div>
+                <div class="progress" id="progress-s4">Refining encounter…</div>
+                <button class="run" id="run-s4">Refine this encounter</button>
+                <div class="out" id="out-s4"></div>
+              </div>
+              <div id="panel-s5" class="stage-panel">
+                <p>Export final specs: hierarchical MD, expanded storyboard, JSON, campaign_kb.</p>
+                <button class="run" id="run-s5">Export final specs</button>
+                <div class="out" id="out-s5"></div>
+              </div>
+              <div id="panel-session-memory" class="stage-panel">
+                <h3>Session memory (Archivist / Foreshadow)</h3>
+                <p>Run Archivist on a session note (with Session Summary block) or Foreshadow on Archivist output. Outputs go to <code>Campaigns/_session_memory/</code> (e.g. <code>YYYY-MM-DD_archivist.md</code>, <code>threads.md</code>).</p>
+                <div class="progress" id="progress-session">Running session task…</div>
+                <div class="form-group">
+                  <label>Session note path (for Archivist)</label>
+                  <input type="text" id="session-archivist-path" placeholder="e.g. Campaigns/_session_memory/session.md or absolute path" />
+                </div>
+                <button class="run" id="run-archivist">Run Archivist</button>
+                <div class="form-group" style="margin-top: 1em;">
+                  <label>Context file path (for Foreshadow; Archivist output or session summary)</label>
+                  <select id="session-foreshadow-dropdown"><option value="">(pick from _session_memory or type below)</option></select>
+                  <input type="text" id="session-foreshadow-path" placeholder="e.g. Campaigns/_session_memory/2025-01-30_archivist.md" style="margin-top: 0.25em;" />
+                </div>
+                <button class="run" id="run-foreshadow">Run Foreshadow</button>
+                <div class="out" id="out-session-memory"></div>
+              </div>
+              <div id="panel-form1" class="stage-panel">
+                <h3>Task decomposition</h3>
+                <div class="validation" id="td-errors"></div>
+                <div class="form-group">
+                  <label>arc_id</label>
+                  <input type="text" id="td-arc-id" />
+                </div>
+                <div class="form-group">
+                  <label>storyboard_ref</label>
+                  <input type="text" id="td-storyboard-ref" />
+                </div>
+                <h4>Encounters</h4>
+                <div id="td-encounters"></div>
+                <div class="list-actions"><button id="td-add-enc">+ Encounter</button></div>
+                <h4>Opportunities</h4>
+                <div id="td-opportunities"></div>
+                <div class="list-actions"><button id="td-add-opp">+ Opportunity</button></div>
+                <h4>Sequence constraints</h4>
+                <div id="td-constraints"></div>
+                <div class="list-actions"><button id="td-add-constraint">+ Constraint</button></div>
+                <button class="run" id="save-td">Save task_decomposition.yaml</button>
+              </div>
+              <div id="panel-form3" class="stage-panel">
+                <h3>Feedback</h3>
+                <div class="validation" id="fb-errors"></div>
+                <div class="form-group">
+                  <label>Encounter</label>
+                  <select id="fb-encounter"></select>
+                </div>
+                <div id="fb-items"></div>
+                <div class="list-actions"><button id="fb-add">+ Feedback item</button></div>
+                <button class="run" id="save-fb">Save feedback.yaml</button>
+              </div>
+              <div id="pipeline-mermaid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="file-modal" class="modal">
+    <div id="file-modal-backdrop" class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="file-modal-title">File</h3>
+        <button type="button" id="file-modal-close">Close</button>
+      </div>
+      <pre id="file-modal-content" class="modal-content"></pre>
+      <div id="file-modal-note" class="modal-note"></div>
+    </div>
+  </div>
+  <script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

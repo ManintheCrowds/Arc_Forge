@@ -1,0 +1,86 @@
+# PURPOSE: Machine-parseable GUI audit workflow (T1–T6). Used by run_audit_tasks.py and tests.
+# PATHS: Repo-relative from arc_forge root.
+
+workflow: gui_audit
+
+tasks:
+  T1:
+    name: Write or refresh audit brief
+    depends_on: []
+    inputs:
+      - Persona and success-criterion notes
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+    outputs:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+    suggested_files:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_USER_INTEGRATION.md
+    instruction: |
+      Write or refresh the audit brief (Section 1) in GUI_AUDIT_PROMPT.md. Define auditor persona (senior UX auditor, TTRPG GM focus) and the success criterion for "user integrated"—first meaningful workflow completed and intent to return. Update the Audit brief section in place; keep paths and structure consistent with this spec.
+
+  T2:
+    name: Build or refresh input pack
+    depends_on: []
+    inputs:
+      - Current UI state (code or screenshots)
+      - ObsidianVault/workflow_ui/templates/index.html
+      - ObsidianVault/workflow_ui/static/app.js
+      - ObsidianVault/workflow_ui/static/style.css
+    outputs:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+    suggested_files:
+      - ObsidianVault/workflow_ui/templates/index.html
+      - ObsidianVault/workflow_ui/static/app.js
+      - ObsidianVault/workflow_ui/static/style.css
+      - ObsidianVault/Campaigns/docs/gui_spec.md
+    instruction: |
+      Build or refresh the input pack (Section 2) in GUI_AUDIT_PROMPT.md. Update (a) UI walkthrough text, (b) user and primary task, (c) optional user flows. Use the current UI implementation and gui_spec if available. Write into the Input pack section; do not change section numbering.
+
+  T3:
+    name: Compose or reuse audit prompt
+    depends_on: [T1]
+    inputs:
+      - Six categories and SME lens (Section 1)
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+    outputs:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+    suggested_files:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+    instruction: |
+      Compose or reuse the audit prompt (Section 3) in GUI_AUDIT_PROMPT.md. Ensure the composed prompt block includes the six categories, SME/user-integration lens, and the requested output format (Summary, Findings, Recommendations, Assumptions, Checklist). Update Section 3 in place; depend on T1 (audit brief) for persona and success criteria.
+
+  T4:
+    name: Run audit (AI)
+    depends_on: [T2, T3]
+    inputs:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_PROMPT.md
+    outputs:
+      - ObsidianVault/workflow_ui/docs/_audit_raw_output.md
+    suggested_files: []
+    instruction: |
+      Run the AI audit using Section 3 (Composed prompt) and Section 2 (Input pack) from GUI_AUDIT_PROMPT.md. Paste or attach the input pack (or screenshots) into the model. Save the raw model response (Summary, Findings, Recommendations, Assumptions, Checklist) to docs/_audit_raw_output.md. Do not format into the final report yet; T5 reads this file and produces GUI_AUDIT_USER_INTEGRATION.md.
+
+  T5:
+    name: Write audit report
+    depends_on: [T4]
+    inputs:
+      - ObsidianVault/workflow_ui/docs/_audit_raw_output.md
+    outputs:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_USER_INTEGRATION.md
+    suggested_files:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_USER_INTEGRATION.md
+    instruction: |
+      Read the raw audit output from docs/_audit_raw_output.md. Format it into the final report: create or update workflow_ui/docs/GUI_AUDIT_USER_INTEGRATION.md with Summary, Findings by category, Recommendations (prioritized), Assumptions, and Checklist (scores and Top 3 changes). Preserve structure and headings expected by the dev plan and downstream tasks.
+
+  T6:
+    name: Update dev plan
+    depends_on: [T5]
+    inputs:
+      - ObsidianVault/workflow_ui/docs/GUI_AUDIT_USER_INTEGRATION.md
+      - ObsidianVault/workflow_ui/docs/DEVELOPMENT_PLAN_REMAINING.md
+    outputs:
+      - ObsidianVault/workflow_ui/docs/DEVELOPMENT_PLAN_REMAINING.md
+    suggested_files:
+      - ObsidianVault/workflow_ui/docs/DEVELOPMENT_PLAN_REMAINING.md
+    instruction: |
+      Update DEVELOPMENT_PLAN_REMAINING.md with one line under the Source of truth (or equivalent) section: reference the new audit report and its top 3 recommendations from GUI_AUDIT_USER_INTEGRATION.md. Do not remove existing content; add the audit link and top 3 summary.

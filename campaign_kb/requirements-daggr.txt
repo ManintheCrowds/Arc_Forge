@@ -1,0 +1,7 @@
+# PURPOSE: Extra deps for campaign_kb Daggr workflows.
+# DEPENDENCIES: Install after requirements.txt
+# MODIFICATION NOTES: daggr + gradio for visual pipelines.
+
+-r requirements.txt
+daggr
+gradio>=4.0.0

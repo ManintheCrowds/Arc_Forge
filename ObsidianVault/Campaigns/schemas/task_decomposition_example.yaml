@@ -1,0 +1,42 @@
+# Task decomposition output format (Stage 1).
+# Human-guided: system proposes; human approves or edits granularity.
+# Used as input to Stage 2.
+
+arc_id: first_arc
+storyboard_ref: _rag_outputs/first_arc_storyboard.md
+
+encounters:
+  - id: highway_chase
+    name: Highway Chase
+    type: combat
+    sequence: 1
+    storyboard_section: "III. First Combat (Highway Chase)"
+    after: null
+    before: boardings
+  - id: boardings
+    name: Boardings
+    type: combat
+    sequence: 2
+    storyboard_section: "IV. Second Combat (Boardings)"
+    after: highway_chase
+    before: train_hijacking
+  - id: train_hijacking
+    name: Train Hijacking
+    type: combat
+    sequence: 3
+    storyboard_section: "V. Third Combat (Train Hijacking)"
+    after: boardings
+    before: null
+
+opportunities:
+  - id: optional_negotiation
+    name: Optional Ork Negotiation
+    type: social
+    sequence: 2
+    optional: true
+    storyboard_section: "IV. Second Combat (Boardings)"
+    note: "If players pursue parley with Orks instead of full combat."
+
+sequence_constraints:
+  - "Highway Chase before Boardings"
+  - "Boardings before Train Hijacking"

@@ -1,0 +1,31 @@
+feature_id,feature_name,category,status,priority_score,phase,effort_estimate_days,actual_effort_days,completion_date,dependencies,blocks,acceptance_criteria_met,test_coverage,documentation_complete,user_value,implementation_effort,dependency_risk,current_coverage_impact,notes
+EX-007,OCR for Scanned PDFs,Content Extraction,Planned,9,1,20,,,,"EX-010,EX-008",false,0,false,10,6,Medium,5.9,Critical path feature, start early
+REST-001,REST API Endpoints,Automation,Planned,8,1,25,,,,"BATCH-001,WEBHOOK-001,ZOTERO-001,PLUGIN-001,EXTAPI-001",false,0,false,9,7,Medium,8.2,Critical path, blocks 5 features
+EVENT-001,Event-Driven Processing,Automation,Planned,7,1,15,,,,"CROSS-001",false,0,false,8,5,Low,4.7,Major UX improvement
+PERF-001,Performance Optimization,Performance,Planned,6,1,20,,,,"",false,0,false,8,6,Low-Medium,4.4,Enables scale
+BATCH-001,Batch Endpoints,Automation,Planned,8,1,10,,,,"REST-001",false,0,false,9,7,Medium,3.2,Depends on REST API
+PROG-001,Progress Indicators,User Experience,Planned,5,1,5,,,,"",false,0,false,6,3,Low,1.5,Low effort, high value
+ERR-001,Error Recovery,User Experience,Planned,5,1,10,,,,"",false,0,false,6,5,Low,2.2,Reliability improvement
+AI-001,AI Summarization,AI & Summarization,Planned,8,2,30,,,,"QA-001,KEY-001",false,0,false,10,8,High,9.8,High user value
+TABLE-001,Table & Figure Extraction,Content Extraction,Planned,8,2,35,,,,"",false,0,false,8,7,Medium,8.2,Preserves critical content
+ENTITY-001,Auto-Entity Extraction (NER),Annotation & Linking,Planned,7,2,35,,,,"",false,0,false,9,8,High,7.4,Major workflow improvement
+META-001,Auto-Metadata Extraction,Metadata & Enrichment,Planned,7,2,20,,,,"CITATION-001",false,0,false,8,6,Medium,5.9,Enables citations
+LAYOUT-001,Multi-Column Layout Detection,Content Extraction,Planned,7,2,15,,,,"EX-007",false,0,false,8,6,Medium,4.4,Depends on OCR
+CITATION-001,Citation Extraction,Metadata & Enrichment,Planned,7,2,15,,,,"META-001",false,0,false,8,6,Medium,4.4,Depends on Auto-Metadata
+QA-001,Q&A Interface,AI & Summarization,Planned,6,2,20,,,,"AI-001",false,0,false,6,8,High,3.2,Depends on AI Summarization
+KEY-001,Key Point Extraction,AI & Summarization,Planned,7,2,15,,,,"AI-001",false,0,false,8,6,High,4.4,Depends on AI Summarization
+WEBHOOK-001,Webhook Triggers,Automation,Planned,6,2,10,,,,"REST-001",false,0,false,6,5,Medium,2.9,Depends on REST API
+FORMULA-001,Formula Preservation,Content Extraction,Planned,5,2,20,,,,"TABLE-001",false,0,false,6,7,Medium,3.2,Depends on Table Extraction
+PDFPLUS-001,PDF++ Annotation Sync,Annotation & Linking,Planned,7,3,20,,,,"BIDIR-001,RICH-001",false,0,false,8,5,Low-Medium,5.9,Workflow integration
+ZOTERO-001,Zotero Integration,Integration,Planned,6,3,20,,,,"REST-001,BIBTEX-001",false,0,false,7,6,Medium,5.9,Depends on REST API
+TAGGING-001,Auto-Tagging,Metadata & Enrichment,Planned,5,3,15,,,,"TOPIC-001",false,0,false,6,6,Medium,3.7,Organization improvement
+BIDIR-001,Bidirectional Links,Annotation & Linking,Planned,7,3,15,,,,"PDFPLUS-001",false,0,false,8,5,Low-Medium,4.4,Depends on PDF++ Sync
+RICH-001,Rich Annotations,Annotation & Linking,Planned,7,3,15,,,,"PDFPLUS-001,SHAPE-001",false,0,false,8,5,Low-Medium,4.4,Depends on PDF++ Sync
+PLUGIN-001,Obsidian Plugin,Integration,Planned,8,3,30,,,,"REST-001",false,0,false,9,8,Medium,8.8,Depends on REST API
+BIBTEX-001,BibTeX Export,Export & Formats,Planned,5,3,10,,,,"ZOTERO-001",false,0,false,6,5,Medium,2.9,Depends on Zotero
+TOPIC-001,Topic Modeling,Metadata & Enrichment,Planned,5,3,20,,,,"TAGGING-001",false,0,false,6,8,Medium,3.7,Depends on Auto-Tagging
+EXTAPI-001,External Tool APIs,Integration,Planned,5,3,10,,,,"REST-001",false,0,false,6,5,Medium,2.9,Depends on REST API
+EXPORT-001,Export Formats (JSON/CSV),Export & Formats,Planned,5,4,10,,,,"",false,0,false,6,4,Low,2.9,Data portability
+CROSS-001,Cross-Platform Support,User Experience,Planned,4,4,20,,,,"EVENT-001",false,0,false,5,6,Medium,2.9,Depends on Event-Driven
+VERSION-001,Versioning & Sync,Integration,Planned,4,4,30,,,,"",false,0,false,5,7,High,2.9,Data safety
+SHAPE-001,Shape Annotations,Annotation & Linking,Planned,5,4,15,,,,"RICH-001",false,0,false,6,5,Medium,3.7,Depends on Rich Annotations

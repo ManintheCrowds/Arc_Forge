@@ -1,0 +1,7 @@
+{"message":"Diagnostic mode enabled","timestamp":"2026-01-16T13:10:00.9344780-06:00","level":"INFO","data":{"log_path":"D:\\wrath_and_glory\\ObsidianVault\\scripts\\test_diagnostic.log"}}
+{"message":"Configuration loaded","timestamp":"2026-01-16T13:10:00.9915241-06:00","level":"INFO","data":{"pdf_root":"D:\\wrath_and_glory\\ObsidianVault\\pdf","config_path":"D:\\wrath_and_glory\\ObsidianVault\\scripts\\ingest_config.json"}}
+{"message":"PDF scan completed","timestamp":"2026-01-16T13:10:00.9990491-06:00","level":"INFO","data":{"pdf_root":"D:\\wrath_and_glory\\ObsidianVault\\pdf","pdf_count":23}}
+{"message":"Latest PDF time determined","timestamp":"2026-01-16T13:10:01.0164617-06:00","level":"INFO","data":{"latest_pdf_time_utc":"2026-01-15T22:58:00.0620015Z"}}
+{"message":"State file parsed","timestamp":"2026-01-16T13:10:01.0371796-06:00","level":"INFO","data":{"state_type":"System.Management.Automation.PSCustomObject","state_path":"D:\\wrath_and_glory\\ObsidianVault\\scripts\\ingest_state.json","has_last_run_utc":true}}
+{"message":"State file read","timestamp":"2026-01-16T13:10:01.0442020-06:00","level":"INFO","data":{"state_exists":true,"state_path":"D:\\wrath_and_glory\\ObsidianVault\\scripts\\ingest_state.json","last_run_utc":"2026-01-16T19:08:39.3979417Z"}}
+{"message":"Ingestion decision","timestamp":"2026-01-16T13:10:01.0467208-06:00","level":"INFO","data":{"last_run_utc":"2026-01-16T19:08:39.3979417Z","latest_pdf_time_utc":"2026-01-15T22:58:00.0620015Z","reason":"no_new_pdfs","should_ingest":false}}

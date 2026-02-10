@@ -1,0 +1,7 @@
+arc_id: test_arc
+encounters:
+- feedback:
+  - instruction: add
+    target: x
+    type: expand
+  id: e1

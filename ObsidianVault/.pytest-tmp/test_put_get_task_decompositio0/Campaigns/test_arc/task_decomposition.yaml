@@ -1,0 +1,10 @@
+arc_id: test_arc
+encounters:
+- id: e1
+  name: Enc 1
+  sequence: 1
+  type: combat
+opportunities: []
+sequence_constraints:
+- e1 first
+storyboard_ref: _rag_outputs/storyboard.md

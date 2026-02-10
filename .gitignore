@@ -1,0 +1,11 @@
+# Wrath & Glory IP: rulebook/supplement/character PDFs — do not commit
+*.pdf
+PCs/
+temp_pdfs/
+ObsidianVault/pdf/
+
+# Optional: derived content from W&G PDFs (extracted text, AI summaries); regenerate locally
+Sources/_summaries/
+Sources/_extracted_text/
+ObsidianVault/Sources/_summaries/
+ObsidianVault/Sources/_extracted_text/

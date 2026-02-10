@@ -1,0 +1,28 @@
+arc_id: schemas
+storyboard_ref: Campaigns\_rag_outputs\first_arc_storyboard.md
+encounters:
+- id: first_combat_highway_chase
+  name: First Combat (Highway Chase)
+  type: combat
+  sequence: 1
+  storyboard_section: III. First Combat (Highway Chase)
+  after: null
+  before: second_combat_boardings
+- id: second_combat_boardings
+  name: Second Combat (Boardings)
+  type: combat
+  sequence: 2
+  storyboard_section: IV. Second Combat (Boardings)
+  after: first_combat_highway_chase
+  before: third_combat_train_hijacking
+- id: third_combat_train_hijacking
+  name: Third Combat (Train Hijacking)
+  type: combat
+  sequence: 3
+  storyboard_section: V. Third Combat (Train Hijacking)
+  after: second_combat_boardings
+  before: null
+opportunities: []
+sequence_constraints:
+- first_combat_highway_chase before second_combat_boardings
+- second_combat_boardings before third_combat_train_hijacking
