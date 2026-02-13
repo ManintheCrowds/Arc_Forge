@@ -65,6 +65,40 @@ See [UI_PENDING_TASK_DECOMP.md](UI_PENDING_TASK_DECOMP.md) for full task breakdo
 - **Rate limiting docs** (verify): docs note limits and storage backend configuration.
   - Done when: docs mention storage backend config (Redis).
 
+### E) RAG: Haystack integration (backlog)
+
+**Context:** Arc Forge uses a custom RAG pipeline (`scripts/rag_pipeline.py`) with keyword/theme retrieval and no semantic search. Haystack (Apache 2.0, free) adds dense/sparse retrieval, hybrid search, and modular pipelines.
+
+**Gap analysis summary**
+
+| Gap | Severity | Arc Forge today | Haystack offers |
+|-----|----------|-----------------|-----------------|
+| Semantic search | High | None (keyword/theme only) | Dense embeddings, vector similarity |
+| Hybrid retrieval | Medium | None | Dense + sparse (BM25) with RRF |
+| Document store | Low | JSON index file | InMemory, Chroma, Qdrant, etc. |
+| Pipeline modularity | Medium | Monolithic `run_pipeline()` | Composable DAG, pluggable components |
+| Built-in evaluation | Medium | Manual (06_rag_evaluation.md) | Metrics, tracing, observability |
+| Canon logic | — | Strict/Loose Canon, chunk tags | Must reimplement via metadata filters or custom retriever |
+
+**Preserve:** Canon modes (Strict/Loose/Inspired By), chunk tags (system, faction, location, tone), TTRPG grounding prompts, entity extraction.
+
+**Task decomposition (WBS)**
+
+| # | Phase | Goal | Dependencies | Parallel? |
+|---|-------|------|--------------|-----------|
+| 1 | **Deps & spike** | Add `haystack-ai` to requirements; spike InMemoryDocumentStore + InMemoryEmbeddingRetriever with sample campaign docs. | None | — |
+| 2 | **Retriever adapter** | Implement Haystack retriever that wraps or replaces `DocumentIndex.retrieve()`; support metadata filters for chunk tags (system, faction, tone). | 1 | — |
+| 3 | **Canon bridge** | Map Strict/Loose/Inspired By to Haystack retrieval behavior (filter vs boost vs no filter). | 2 | — |
+| 4 | **Integration point** | Wire Haystack retriever into `retrieve_context()` in `rag_pipeline.py`; feature-flag or config toggle to switch between legacy and Haystack. | 2, 3 | — |
+| 5 | **Tests** | Unit tests for Haystack retriever; integration test that runs pipeline with Haystack path and asserts outputs. | 4 | — |
+| 6 | **Docs** | Update `campaign/05_rag_integration.md` and README with Haystack setup, config options, and fallback behavior. | 4 | Can run in parallel with 5 |
+
+**Files:** `ObsidianVault/scripts/rag_pipeline.py`, `scripts/requirements-enhancements.txt` (or new `requirements-rag.txt`), `campaign_kb/campaign/05_rag_integration.md`, `scripts/tests/test_rag_pipeline.py`.
+
+**Done when:** (1) Haystack retriever is selectable via config, (2) semantic retrieval works over campaign docs + PDFs, (3) canon modes preserved, (4) tests pass, (5) docs updated.
+
+**Reference:** [Apidog RAG frameworks](https://apidog.com/blog/best-open-source-rag-frameworks/); Haystack [choosing a document store](https://docs.haystack.deepset.ai/docs/choosing-a-document-store), [hybrid retrieval tutorial](https://haystack.deepset.ai/tutorials/33_hybrid_retrieval).
+
 ---
 
 ## Task 2: README — Testing section
@@ -207,6 +241,7 @@ See [UI_PENDING_TASK_DECOMP.md](UI_PENDING_TASK_DECOMP.md) for full task breakdo
 
 - ~~Rate limiting on `/api/run/*` and/or PUTs.~~ (done)
 - ~~Startup config/path validation and clear error messaging.~~ (done)
+- **Haystack RAG integration** — See §E above; WBS phases 1–6.
 
 ## Startup config/path validation (implemented)
 
