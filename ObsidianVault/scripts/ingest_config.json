@@ -2,8 +2,8 @@
   "_purpose": "Configure PDF ingestion for Obsidian source and atomic notes.",
   "_dependencies": "PDF++ cache (optional), local filesystem paths.",
   "_modification_notes": "Initial ingestion configuration for Wrath & Glory vault.",
-  "vault_root": "D:\\arc_forge\\ObsidianVault",
-  "pdf_root": "D:\\arc_forge\\ObsidianVault\\pdf",
+  "vault_root": "D:\\Arc_Forge\\ObsidianVault",
+  "pdf_root": "D:\\Arc_Forge\\ObsidianVault\\pdf",
   "source_notes_dir": "Sources",
   "rules_dir": "Rules",
   "npcs_dir": "NPCs",
@@ -109,7 +109,7 @@
   },
   "rag_pipeline": {
     "enabled": true,
-    "campaign_kb_root": "D:\\arc_forge\\campaign_kb",
+    "campaign_kb_root": "D:\\Arc_Forge\\campaign_kb",
     "campaign_docs": [
       "campaign/00_overview.md",
       "campaign/01_factions.md",
@@ -171,6 +171,11 @@
       "index_cache": "document_index.json",
       "entity_cache_dir": "entities",
       "invalidate_on_mtime_change": true
+    },
+    "chunk_tags": {
+      "defaults": {
+        "system": "W&G"
+      }
     },
     "query_mode": {
       "skip_full_analysis": true,

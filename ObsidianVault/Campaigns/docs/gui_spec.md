@@ -142,6 +142,14 @@ Optional: per-encounter **lifecycle** (draft_v1 → feedback → draft_v2 → �
 
 ---
 
+## Workbench Chat
+
+**Scope:** Per-note (active note as context) or per-folder. Optional `context_path` sends note content to the LLM.
+
+**API:** `POST /api/workbench/chat` body: `{ message, context_path?, rag_query? }`. Proxies to Ollama (default) when available.
+
+---
+
 ## Summary Checklist for Implementation
 
 - [ ] Pipeline view (Storyboard → S1 → … → S5) and arc file-tree

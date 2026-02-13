@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from rag_pipeline import DocumentIndex, load_pipeline_config
+from rag_pipeline import CHUNK_TAG_KEYS, DocumentIndex, load_pipeline_config
 
 
 # PURPOSE: Validate pipeline configuration loads with defaults.
@@ -86,4 +86,37 @@ def test_document_index_retrieval_modes(tmp_path):
     )
     assert isinstance(loose_result, list)
     assert len(loose_result) <= 10
+
+
+# PURPOSE: B2.4 – test DocumentIndex.build emits tags with schema keys.
+# DEPENDENCIES: DocumentIndex, CHUNK_TAG_KEYS, temp dir.
+# MODIFICATION NOTES: All entries must have tags dict with schema keys; PDF gets system W&G.
+def test_document_index_build_emits_tags(tmp_path):
+    index_path = tmp_path / "document_index.json"
+    doc_index = DocumentIndex(index_path)
+    text_map = {
+        "[PDF] wrathandglory_rules.txt": "Wrath and Glory rules. Dice rolls and damage.",
+        "campaign_kb/campaign/00_overview.md": "Campaign overview with grimdark tone.",
+    }
+    doc_index.build(text_map, theme_keywords=["grimdark"], invalidate_on_mtime=False)
+    assert len(doc_index.index) == 2
+
+    for doc_key, entry in doc_index.index.items():
+        tags = entry.get("tags")
+        assert tags is not None, f"Entry {doc_key} must have tags"
+        for k in CHUNK_TAG_KEYS:
+            assert k in tags, f"Entry {doc_key} must have tag key {k}"
+            assert isinstance(tags[k], str), f"Entry {doc_key} tag {k} must be str"
+
+    pdf_entry = doc_index.index["[PDF] wrathandglory_rules.txt"]
+    assert pdf_entry["tags"]["system"] == "W&G", "PDF with wrath in path should get system W&G"
+
+    campaign_entry = doc_index.index["campaign_kb/campaign/00_overview.md"]
+    assert campaign_entry["tags"]["system"] == "W&G", "Campaign doc should get system W&G"
+
+    # Verify tags persisted to disk
+    loaded = json.loads(index_path.read_text(encoding="utf-8"))
+    for doc_key in text_map:
+        assert "tags" in loaded[doc_key]
+        assert all(k in loaded[doc_key]["tags"] for k in CHUNK_TAG_KEYS)
 # CONTINUE TESTING: add end-to-end pipeline run with mocked LLM calls.

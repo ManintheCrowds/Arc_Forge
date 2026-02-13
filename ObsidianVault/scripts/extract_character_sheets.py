@@ -163,7 +163,7 @@ def extract_character_sheets(
 def main():
     """Main entry point."""
     # Default paths
-    pc_dir = Path("D:\\arc_forge\\PCs")
+    pc_dir = Path("D:\\Arc_Forge\\PCs")
     config_path = Path(__file__).parent / "ingest_config.json"
     
     # Load config
@@ -177,10 +177,10 @@ def main():
     
     # Get output directory from config or use default
     if config:
-        vault_root = Path(config.get("vault_root", "D:\\arc_forge\\ObsidianVault"))
+        vault_root = Path(config.get("vault_root", "D:\\Arc_Forge\\ObsidianVault"))
         output_dir = vault_root / config.get("extracted_text_dir", "Sources/_extracted_text")
     else:
-        vault_root = Path("D:\\arc_forge\\ObsidianVault")
+        vault_root = Path("D:\\Arc_Forge\\ObsidianVault")
         output_dir = vault_root / "Sources/_extracted_text"
     
     # Validate and resolve paths

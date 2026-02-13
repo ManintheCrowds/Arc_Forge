@@ -106,7 +106,7 @@ Implementation: retrieval accepts `retrieval_mode` (B3); filter/rank behavior is
 
 ## Implementation (chunk tags and retrieval)
 
-- **Ingestion (B2):** Chunk tags are stored per document key in `Campaigns/_rag_cache/document_index.json` as an optional `"tags"` dict on each index entry (keys = schema field names above). Re-ingest updates index and tags.
+- **Ingestion (B2):** Chunk tags are stored per document key in `Campaigns/_rag_cache/document_index.json` as an optional `"tags"` dict on each index entry. Keys: `system`, `faction`, `location`, `time_period`, `mechanical_vs_narrative`, `tone` (lowercase per schema above). Omitted keys are treated as unrestricted for filtering. Re-ingest updates index and tags.
 - **Retrieval (B3):** The retrieval API accepts `retrieval_mode` (`Strict Canon` | `Loose Canon` | `Inspired By`) and optional `tag_filters`; behavior is documented in the "Retrieval API" subsection below.
 
 ## Retrieval API

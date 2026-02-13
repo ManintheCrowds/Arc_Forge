@@ -37,26 +37,26 @@ Get-Content scripts\ingest_diagnostic.log -Tail 10
 
 ### Force Ingestion
 ```powershell
-cd D:\wrath_and_glory\ObsidianVault\scripts
+cd D:\Arc_Forge\ObsidianVault\scripts
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "watch_ingest.ps1" -Diagnostic
 ```
 
 ### Rebuild Index
 ```powershell
-cd D:\wrath_and_glory\ObsidianVault\scripts
+cd D:\Arc_Forge\ObsidianVault\scripts
 python build_index.py --overwrite
 ```
 
 ### Check System Status
 ```powershell
 # PDF count
-(Get-ChildItem "D:\wrath_and_glory\ObsidianVault\pdf" -Filter *.pdf -Recurse).Count
+(Get-ChildItem "D:\Arc_Forge\ObsidianVault\pdf" -Filter *.pdf -Recurse).Count
 
 # Source note count
-(Get-ChildItem "D:\wrath_and_glory\ObsidianVault\Sources" -Filter *.md -Recurse).Count
+(Get-ChildItem "D:\Arc_Forge\ObsidianVault\Sources" -Filter *.md -Recurse).Count
 
 # Latest PDF
-Get-ChildItem "D:\wrath_and_glory\ObsidianVault\pdf" -Filter *.pdf -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+Get-ChildItem "D:\Arc_Forge\ObsidianVault\pdf" -Filter *.pdf -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 ```
 
 ## Scheduled Task
@@ -67,7 +67,7 @@ Get-ChildItem "D:\wrath_and_glory\ObsidianVault\pdf" -Filter *.pdf -Recurse | So
 
 **Command:**
 ```
-powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File "D:\wrath_and_glory\ObsidianVault\scripts\watch_ingest.ps1"
+powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File "D:\Arc_Forge\ObsidianVault\scripts\watch_ingest.ps1"
 ```
 
 **Management:**

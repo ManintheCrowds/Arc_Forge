@@ -1,0 +1,7 @@
+arc_id: first_arc
+encounters:
+  - id: highway_chase
+    feedback:
+      - type: expand
+        target: Mechanics
+        instruction: Add Pilot.

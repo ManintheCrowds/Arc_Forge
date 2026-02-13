@@ -6,11 +6,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory
@@ -210,6 +212,68 @@ def _resolve_session_path(raw: str) -> Path:
     return p
 
 
+def _parse_frontmatter(text: str) -> Tuple[Dict[str, Any], str]:
+    """Parse YAML frontmatter from markdown. Returns (frontmatter_dict, body)."""
+    m = re.match(r"^---\s*\n(.*?)\n---\s*\n(.*)", text, re.DOTALL)
+    if not m:
+        return {}, text
+    fm_text, body = m.groups()
+    try:
+        fm = yaml.safe_load(fm_text) or {}
+    except yaml.YAMLError:
+        fm = {}
+    return fm, body
+
+
+def _parse_date_value(val: Any) -> Optional[str]:
+    """Extract sortable date string from frontmatter value (date, session_date, timeline_order)."""
+    if val is None:
+        return None
+    s = str(val).strip()
+    if not s:
+        return None
+    # Try ISO format (YYYY-MM-DD)
+    try:
+        datetime.fromisoformat(s[:10])
+        return s[:10]
+    except ValueError:
+        pass
+    return s
+
+
+def _scan_dated_notes(campaign: str, module: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Scan Campaigns/{campaign}/ and _session_memory for .md with frontmatter date. Returns [{path, date, title, type}] sorted by date."""
+    base = CAMPAIGNS / campaign
+    session_dir = CAMPAIGNS / "_session_memory"
+    dirs_to_scan: List[Path] = []
+    if base.exists() and base.is_dir():
+        dirs_to_scan.append(base)
+    if session_dir.exists() and session_dir.is_dir():
+        dirs_to_scan.append(session_dir)
+    out: List[Dict[str, Any]] = []
+    campaigns_resolved = CAMPAIGNS.resolve()
+    for d in dirs_to_scan:
+        for f in d.rglob("*.md"):
+            try:
+                if not f.is_file():
+                    continue
+                rel = f.relative_to(campaigns_resolved)
+                path_str = str(rel).replace("\\", "/")
+                text = f.read_text(encoding="utf-8", errors="replace")
+                fm, _ = _parse_frontmatter(text)
+                date_val = fm.get("date") or fm.get("session_date") or fm.get("timeline_order")
+                sort_date = _parse_date_value(date_val)
+                if not sort_date:
+                    continue
+                title = fm.get("title") or f.stem
+                note_type = fm.get("type") or "note"
+                out.append({"path": path_str, "date": sort_date, "title": str(title), "type": str(note_type)})
+            except (OSError, ValueError):
+                continue
+    out.sort(key=lambda x: (x["date"], x["title"]))
+    return out
+
+
 def _list_session_memory_files() -> List[Dict[str, str]]:
     """List .md files under Campaigns/_session_memory. Paths are absolute for API use."""
     memory_dir = CAMPAIGNS / "_session_memory"
@@ -243,6 +307,17 @@ def _artifacts(arc_id: str) -> Dict[str, bool]:
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+_DOCS_DIR = _UI_DIR / "docs"
+_ALLOWED_DOCS = {"manual_io_checklist.md", "WORKBENCH_NOT_IMPLEMENTED.md"}  # allowlist for path traversal safety
+
+
+@app.route("/guide/<path:filename>", methods=["GET"])
+def serve_guide(filename):
+    if filename not in _ALLOWED_DOCS:
+        return _error_response("not found", 404)
+    return send_from_directory(_DOCS_DIR, filename, mimetype="text/markdown")
 
 
 @app.route("/api/status", methods=["GET"])
@@ -394,7 +469,7 @@ def api_feedback(arc_id):
     return jsonify({"status": "saved", "path": str(path)})
 
 
-@app.route("/api/arc/<arc_id>/file/<path:subpath>", methods=["GET"])
+@app.route("/api/arc/<arc_id>/file/<path:subpath>", methods=["GET", "PUT"])
 def api_arc_file(arc_id, subpath):
     arc_id = secure_filename(arc_id) or "first_arc"
     # Reject absolute or backslash segments; allow ".." but only when resolved path stays under arc.
@@ -405,12 +480,20 @@ def api_arc_file(arc_id, subpath):
     base_res = base.resolve()
     if base_res not in full.parents:
         return _error_response("invalid path", 400)
-    if not full.is_file():
-        return _error_response("not_found", 404)
+    if request.method == "GET":
+        if not full.is_file():
+            return _error_response("not_found", 404)
+        try:
+            return full.read_text(encoding="utf-8")
+        except Exception as e:
+            return _error_response("read_failed", 500, detail=str(e))
+    # PUT
     try:
-        return full.read_text(encoding="utf-8")
+        full.parent.mkdir(parents=True, exist_ok=True)
+        full.write_text(request.get_data(as_text=True) or "", encoding="utf-8")
+        return jsonify({"status": "saved", "path": str(full)})
     except Exception as e:
-        return _error_response("read_failed", 500, detail=str(e))
+        return _error_response("write_failed", 500, detail=str(e))
 
 
 @app.route("/api/run/stage1", methods=["POST"])
@@ -424,9 +507,8 @@ def api_run_stage1():
         storyboard_path = (CAMPAIGNS / storyboard_path).resolve()
     if not storyboard_path.exists():
         return _error_response(
-            "storyboard not found",
+            "Storyboard not found. Ensure a storyboard exists under Campaigns/_rag_outputs/ (or pass a path).",
             400,
-            detail=f"Expected under {CAMPAIGNS / '_rag_outputs'} or provide storyboard_path. Got: {storyboard_path}",
         )
     if os.environ.get("WORKFLOW_UI_FAKE_RUNS") == "1":
         out_dir = (output_dir / arc_id).resolve()
@@ -460,16 +542,20 @@ def api_run_stage2():
     output_dir = _arc_dir(arc_id)
     if not td_path.exists():
         return _error_response(
-            "task_decomposition not found",
+            "Task decomposition not found. Run S1 first to generate task_decomposition.yaml, or provide task_decomposition_path.",
             400,
-            detail=f"Expected {td_path} (or pass task_decomposition_path).",
         )
     if not storyboard_path.exists():
         return _error_response(
-            "storyboard not found",
+            "Storyboard not found. Ensure a storyboard exists under Campaigns/_rag_outputs/ (or pass a path).",
             400,
-            detail=f"Expected under {CAMPAIGNS / '_rag_outputs'} or provide storyboard_path. Got: {storyboard_path}",
         )
+    if os.environ.get("WORKFLOW_UI_FAKE_RUNS") == "1":
+        enc_dir = output_dir.resolve() / "encounters"
+        enc_dir.mkdir(parents=True, exist_ok=True)
+        draft_path = enc_dir / "test_encounter_draft_v1.md"
+        draft_path.write_text("# Test Encounter\n\n## Setup\nFake S2 output.\n", encoding="utf-8")
+        return jsonify({"status": "success", "written": 1, "encounters": 1, "opportunities": 0, "fake": True})
     try:
         res = run_stage_2(td_path.resolve(), storyboard_path.resolve(), arc_id, config_path.resolve(), output_dir)
         return jsonify(res)
@@ -485,7 +571,10 @@ def api_run_stage4():
     feedback_path = body.get("feedback_path")
     arc_id = body.get("arc_id")
     if not draft_path or not draft_path.exists():
-        return _error_response("draft_path required", 400, detail="draft_path must exist.")
+        return _error_response(
+            "Draft path required. Select an encounter draft from the dropdown (run S2 first to generate drafts).",
+            400,
+        )
     if not feedback_path and arc_id:
         feedback_path = str(_arc_dir(arc_id) / f"{arc_id}_feedback.yaml")
         if not Path(feedback_path).exists():
@@ -493,10 +582,15 @@ def api_run_stage4():
     feedback_path = Path(feedback_path) if feedback_path else None
     if not feedback_path or not feedback_path.exists():
         return _error_response(
-            "feedback_path required",
+            f"Feedback file required. Edit feedback in S3 (Edit Feedback), save {arc_id or 'first_arc'}_feedback.yaml, then run S4.",
             400,
-            detail="Provide feedback_path or arc_id; feedback file must exist.",
         )
+    if os.environ.get("WORKFLOW_UI_FAKE_RUNS") == "1":
+        name = draft_path.stem  # e.g. highway_chase_draft_v1
+        v2_name = name.replace("_v1", "_v2") if "_v1" in name else name + "_v2"
+        out_path = draft_path.parent / f"{v2_name}.md"
+        out_path.write_text("# Refined Encounter\n\n## Setup\nFake S4 output.\n", encoding="utf-8")
+        return jsonify({"status": "success", "path": str(out_path), "output_path": str(out_path), "encounter_id": "test", "version": "v2", "fake": True})
     try:
         from scripts.rag_pipeline import load_pipeline_config
         cfg = load_pipeline_config(Path(body.get("config_path") or str(CONFIG_PATH)))
@@ -522,6 +616,14 @@ def api_run_stage5():
         if not storyboard_path.exists():
             storyboard_path = CAMPAIGNS / "_rag_outputs" / "first_arc_storyboard.md"
         storyboard_path = storyboard_path if storyboard_path.exists() else None
+    if os.environ.get("WORKFLOW_UI_FAKE_RUNS") == "1":
+        arc_res = arc_dir.resolve()
+        arc_res.mkdir(parents=True, exist_ok=True)
+        expanded = arc_res / f"{arc_id}_expanded_storyboard.md"
+        expanded.write_text("# Expanded Storyboard\n\nFake S5 output.\n", encoding="utf-8")
+        json_path = arc_res / f"{arc_id}_encounters.json"
+        json_path.write_text(json.dumps({"arc_id": arc_id, "encounters": []}), encoding="utf-8")
+        return jsonify({"status": "success", "final_md": str(expanded), "expanded_storyboard": str(expanded), "json_path": str(json_path), "campaign_kb_path": str(campaign_kb_path.resolve()), "fake": True})
     try:
         res = export_final_specs(
             arc_id,
@@ -533,6 +635,302 @@ def api_run_stage5():
         return jsonify(res)
     except Exception as e:
         return _error_response("stage5_failed", 500, detail=str(e))
+
+
+_EXCLUDED_CAMPAIGN_DIRS = {"_rag_outputs", "_session_memory", "_rag_cache", "docs", "schemas"}
+
+
+def _list_workbench_campaigns() -> List[str]:
+    """List dirs under Campaigns/ excluding internal dirs."""
+    if not CAMPAIGNS.exists() or not CAMPAIGNS.is_dir():
+        return []
+    out = []
+    for p in CAMPAIGNS.iterdir():
+        if p.is_dir() and p.name not in _EXCLUDED_CAMPAIGN_DIRS and not p.name.startswith("_"):
+            out.append(p.name)
+    return sorted(out)
+
+
+def _list_workbench_modules(campaign: str) -> List[str]:
+    """List subdirs under Campaigns/{campaign}/; if none, return ['default']."""
+    base = CAMPAIGNS / campaign
+    if not base.exists() or not base.is_dir():
+        return ["default"]
+    subdirs = [p.name for p in base.iterdir() if p.is_dir() and not p.name.startswith("_")]
+    return sorted(subdirs) if subdirs else ["default"]
+
+
+def _scan_workbench_tree(campaign: str, module: Optional[str] = None, note_type: Optional[str] = None, status: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Scan Campaigns/{campaign}/ for .md with frontmatter. Returns [{path, name, type, status}]."""
+    base = CAMPAIGNS / campaign
+    scan_dir = base / module if module and module != "default" else base
+    if not scan_dir.exists() or not scan_dir.is_dir():
+        return []
+    out: List[Dict[str, Any]] = []
+    campaigns_resolved = CAMPAIGNS.resolve()
+    for f in scan_dir.rglob("*.md"):
+        try:
+            if not f.is_file():
+                continue
+            rel = f.relative_to(campaigns_resolved)
+            path_str = str(rel).replace("\\", "/")
+            text = f.read_text(encoding="utf-8", errors="replace")
+            fm, _ = _parse_frontmatter(text)
+            note_type_val = fm.get("type") or "note"
+            status_val = fm.get("status") or ""
+            if note_type and note_type_val != note_type:
+                continue
+            if status and status_val != status:
+                continue
+            out.append({"path": path_str, "name": f.stem, "type": str(note_type_val), "status": str(status_val)})
+        except (OSError, ValueError):
+            continue
+    return out
+
+
+_WIKILINK_RE = re.compile(r"\[\[([^\]|]+)(?:\|[^\]]*)?\]\]")
+
+
+def _build_idea_web_graph(campaign: str, module: Optional[str] = None) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Build nodes and edges from Campaigns/{campaign}/ for Idea Web (tags + wikilinks)."""
+    base = CAMPAIGNS / campaign
+    scan_dir = base / module if module and module != "default" else base
+    if not scan_dir.exists() or not scan_dir.is_dir():
+        return [], []
+    campaigns_resolved = CAMPAIGNS.resolve()
+    nodes: List[Dict[str, Any]] = []
+    node_by_path: Dict[str, Dict[str, Any]] = {}
+    node_by_stem: Dict[str, str] = {}
+    edges: List[Dict[str, str]] = []
+    for f in scan_dir.rglob("*.md"):
+        try:
+            if not f.is_file():
+                continue
+            rel = f.relative_to(campaigns_resolved)
+            path_str = str(rel).replace("\\", "/")
+            text = f.read_text(encoding="utf-8", errors="replace")
+            fm, body = _parse_frontmatter(text)
+            title = fm.get("title") or f.stem
+            note_type = fm.get("type") or "note"
+            tags = fm.get("tags")
+            if isinstance(tags, list):
+                tags = [str(t) for t in tags]
+            elif tags is not None:
+                tags = [str(tags)]
+            else:
+                tags = []
+            node = {"id": path_str, "label": title, "type": str(note_type), "tags": tags}
+            nodes.append(node)
+            node_by_path[path_str] = node
+            stem = f.stem.lower().replace(" ", "_")
+            node_by_stem[stem] = path_str
+            node_by_stem[f.stem.lower()] = path_str
+            node_by_stem[f.stem] = path_str
+            for m in _WIKILINK_RE.finditer(body):
+                target = m.group(1).strip()
+                target_stem = target.lower().replace(" ", "_").replace("-", "_")
+                target_path = node_by_stem.get(target_stem) or node_by_stem.get(target.lower()) or node_by_stem.get(target)
+                if target_path and target_path != path_str:
+                    edges.append({"from": path_str, "to": target_path})
+        except (OSError, ValueError):
+            continue
+    return nodes, edges
+
+
+@app.route("/api/workbench/idea-web", methods=["GET"])
+def api_workbench_idea_web():
+    """Return graph nodes and edges from tags + wikilinks for Idea Web."""
+    campaign = request.args.get("campaign", "").strip() or "first_arc"
+    module = request.args.get("module", "").strip() or None
+    if not campaign or campaign.startswith("_"):
+        return _error_response("invalid campaign", 400)
+    nodes, edges = _build_idea_web_graph(campaign, module)
+    return jsonify({"nodes": nodes, "edges": edges})
+
+
+def _build_dependencies_graph(campaign: str, module: Optional[str] = None) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
+    """Build nodes and edges from depends_on frontmatter."""
+    base = CAMPAIGNS / campaign
+    scan_dir = base / module if module and module != "default" else base
+    if not scan_dir.exists() or not scan_dir.is_dir():
+        return [], []
+    campaigns_resolved = CAMPAIGNS.resolve()
+    nodes: List[Dict[str, Any]] = []
+    node_by_path: Dict[str, Dict[str, Any]] = {}
+    node_by_stem: Dict[str, str] = {}
+    files_data: List[Tuple[Path, str, Dict[str, Any]]] = []
+    for f in sorted(scan_dir.rglob("*.md")):
+        try:
+            if not f.is_file():
+                continue
+            rel = f.relative_to(campaigns_resolved)
+            path_str = str(rel).replace("\\", "/")
+            text = f.read_text(encoding="utf-8", errors="replace")
+            fm, _ = _parse_frontmatter(text)
+            title = fm.get("title") or f.stem
+            note_type = fm.get("type") or "note"
+            tags = fm.get("tags") or []
+            if isinstance(tags, list):
+                tags = [str(t) for t in tags]
+            else:
+                tags = [str(tags)]
+            node = {"id": path_str, "label": title, "type": str(note_type), "tags": tags}
+            nodes.append(node)
+            node_by_path[path_str] = node
+            stem = f.stem.lower().replace(" ", "_")
+            node_by_stem[stem] = path_str
+            node_by_stem[f.stem.lower()] = path_str
+            node_by_stem[f.stem] = path_str
+            files_data.append((f, path_str, fm))
+        except (OSError, ValueError):
+            continue
+    edges: List[Dict[str, str]] = []
+    for _f, path_str, fm in files_data:
+        depends_on = fm.get("depends_on")
+        if not depends_on:
+            continue
+        if isinstance(depends_on, str):
+            depends_on = [depends_on]
+        for dep in depends_on:
+            dep_str = str(dep).strip()
+            dep_stem = dep_str.lower().replace(" ", "_").replace("-", "_")
+            target_path = node_by_stem.get(dep_stem) or node_by_stem.get(dep_str.lower()) or node_by_stem.get(dep_str)
+            if target_path and target_path != path_str:
+                edges.append({"from": path_str, "to": target_path})
+    involved = {e["from"] for e in edges} | {e["to"] for e in edges}
+    return [n for n in nodes if n["id"] in involved], edges
+
+
+@app.route("/api/workbench/dependencies", methods=["GET"])
+def api_workbench_dependencies():
+    """Return graph nodes and edges from depends_on frontmatter."""
+    campaign = request.args.get("campaign", "").strip() or "first_arc"
+    module = request.args.get("module", "").strip() or None
+    if not campaign or campaign.startswith("_"):
+        return _error_response("invalid campaign", 400)
+    nodes, edges = _build_dependencies_graph(campaign, module)
+    return jsonify({"nodes": nodes, "edges": edges})
+
+
+@app.route("/api/workbench/campaigns", methods=["GET"])
+def api_workbench_campaigns():
+    """List campaigns (arc dirs) for module selector."""
+    return jsonify({"campaigns": _list_workbench_campaigns()})
+
+
+@app.route("/api/workbench/modules", methods=["GET"])
+def api_workbench_modules():
+    """List modules under campaign; ['default'] if no subdirs."""
+    campaign = request.args.get("campaign", "").strip() or "first_arc"
+    if not campaign or campaign.startswith("_"):
+        return _error_response("invalid campaign", 400)
+    return jsonify({"modules": _list_workbench_modules(campaign)})
+
+
+@app.route("/api/workbench/tree", methods=["GET"])
+def api_workbench_tree():
+    """List .md nodes with frontmatter for campaign/module; optional type/status filter."""
+    campaign = request.args.get("campaign", "").strip() or "first_arc"
+    module = request.args.get("module", "").strip() or None
+    note_type = request.args.get("type", "").strip() or None
+    status = request.args.get("status", "").strip() or None
+    if not campaign or campaign.startswith("_"):
+        return _error_response("invalid campaign", 400)
+    nodes = _scan_workbench_tree(campaign, module, note_type, status)
+    return jsonify({"nodes": nodes})
+
+
+@app.route("/api/workbench/create-module", methods=["POST"])
+@limiter.limit("20/minute")
+def api_workbench_create_module():
+    """Create Campaigns/{campaign}/{module}/ with stub scene/npc files (workbench structure)."""
+    body = request.get_json(force=True, silent=True) or {}
+    campaign = secure_filename(body.get("campaign") or body.get("campaign_name") or "").strip()
+    module = secure_filename(body.get("module") or body.get("module_name") or "").strip()
+    if not campaign or campaign.startswith("_"):
+        return _error_response("campaign required", 400)
+    if not module or module.startswith("_"):
+        return _error_response("module required", 400)
+    root = CAMPAIGNS / campaign / module
+    try:
+        root.resolve().relative_to(CAMPAIGNS.resolve())
+    except ValueError:
+        return _error_response("invalid path", 400)
+    if root.exists():
+        return _error_response("module already exists", 409)
+    scenes = max(0, int(body.get("starting_scenes") or body.get("starting_scene_count") or 1))
+    npcs = max(0, int(body.get("starting_npcs") or body.get("npc_count") or 1))
+    root.mkdir(parents=True, exist_ok=False)
+    readme = root / "README.md"
+    readme.write_text(f"# {module}\n\nModule scaffold for {campaign}.\n", encoding="utf-8")
+    for i in range(1, scenes + 1):
+        p = root / f"scene_{i:02d}.md"
+        p.write_text(
+            f"---\ntype: scene\ntitle: Scene {i:02d}\nmodule: {module}\ncampaign: {campaign}\nstatus: draft\n---\n\n# Scene {i:02d}\n",
+            encoding="utf-8",
+        )
+    for i in range(1, npcs + 1):
+        p = root / f"npc_{i:02d}.md"
+        p.write_text(
+            f"---\ntype: npc\ntitle: NPC {i:02d}\nmodule: {module}\ncampaign: {campaign}\nstatus: draft\n---\n\n# NPC {i:02d}\n",
+            encoding="utf-8",
+        )
+    return jsonify({"status": "created", "path": str(root)})
+
+
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434").rstrip("/")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama2")
+
+
+@app.route("/api/workbench/chat", methods=["POST"])
+@limiter.limit("30/minute")
+def api_workbench_chat():
+    """Chat with LLM (Ollama). Body: { message, context_path?, rag_query? }."""
+    body = request.get_json(force=True, silent=True) or {}
+    message = (body.get("message") or "").strip()
+    if not message:
+        return _error_response("message required", 400)
+    context_path = body.get("context_path")
+    context_text = ""
+    if context_path and isinstance(context_path, str):
+        if ".." in context_path or context_path.startswith("/") or "\\" in context_path:
+            pass
+        else:
+            try:
+                base_res = CAMPAIGNS.resolve()
+                full = (base_res / context_path.replace("\\", "/")).resolve()
+                if base_res in full.parents or full == base_res:
+                    if full.is_file():
+                        context_text = full.read_text(encoding="utf-8", errors="replace")
+            except (OSError, ValueError):
+                pass
+    prompt = (context_text[:4000] + "\n\n---\n\n" + message) if context_text else message
+    try:
+        req = urllib.request.Request(
+            OLLAMA_URL + "/api/generate",
+            data=json.dumps({"model": OLLAMA_MODEL, "prompt": prompt, "stream": False}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=60) as r:
+            data = json.loads(r.read().decode())
+        reply = (data.get("response") or "").strip()
+        return jsonify({"reply": reply, "status": "ok"})
+    except urllib.error.URLError as e:
+        return _error_response("LLM unavailable (Ollama). Start Ollama or set OLLAMA_URL.", 503, detail=str(e))
+    except Exception as e:
+        return _error_response("chat_failed", 500, detail=str(e))
+
+
+@app.route("/api/workbench/timeline", methods=["GET"])
+def api_workbench_timeline():
+    """Chronological list of notes by frontmatter date. campaign=arc (e.g. first_arc); module=optional."""
+    campaign = request.args.get("campaign", "first_arc").strip() or "first_arc"
+    module = request.args.get("module", "").strip() or None
+    if not campaign or campaign.startswith("_"):
+        return _error_response("invalid campaign", 400)
+    items = _scan_dated_notes(campaign, module)
+    return jsonify({"items": items})
 
 
 @app.route("/api/session/files", methods=["GET"])

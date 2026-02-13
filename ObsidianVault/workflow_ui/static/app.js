@@ -15,7 +15,8 @@
   function formatErr(e) {
     if (!e) return "Unknown error";
     if (typeof e === "string") return e;
-    return e.error || e.reason || e.detail || e.message || JSON.stringify(e);
+    const msg = (e && (e.error || e.reason || e.detail || e.message)) || String(e);
+    return msg === "[object Object]" ? "Unknown error" : msg;
   }
 
   function setProgress(id, active) {

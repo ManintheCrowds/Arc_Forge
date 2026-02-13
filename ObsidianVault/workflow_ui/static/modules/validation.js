@@ -8,7 +8,15 @@ export const ENCOUNTER_TYPES = ["combat", "social", "exploration", "environmenta
 export function validateTaskDecomp(data) {
   const errors = [];
   if (!data.arc_id) errors.push("arc_id is required.");
+  if (data.storyboard_ref != null && (typeof data.storyboard_ref !== "string" || !data.storyboard_ref.trim())) {
+    errors.push("storyboard_ref must be a non-empty path when provided.");
+  }
   const encs = data.encounters || [];
+  const opps = data.opportunities || [];
+  const encIds = new Set([
+    ...encs.map((e) => e.id).filter(Boolean),
+    ...opps.map((o) => o.id).filter(Boolean),
+  ]);
   encs.forEach((e, i) => {
     if (!e.id) errors.push(`encounters[${i}].id is required.`);
     if (!e.name) errors.push(`encounters[${i}].name is required.`);
@@ -19,8 +27,13 @@ export function validateTaskDecomp(data) {
     if (e.sequence == null || Number.isNaN(Number(e.sequence))) {
       errors.push(`encounters[${i}].sequence must be a number.`);
     }
+    if (e.after && !encIds.has(e.after)) {
+      errors.push(`encounters[${i}].after "${e.after}" must reference an existing encounter id.`);
+    }
+    if (e.before && !encIds.has(e.before)) {
+      errors.push(`encounters[${i}].before "${e.before}" must reference an existing encounter id.`);
+    }
   });
-  const opps = data.opportunities || [];
   opps.forEach((o, i) => {
     if (!o.id) errors.push(`opportunities[${i}].id is required.`);
     if (!o.name) errors.push(`opportunities[${i}].name is required.`);
@@ -30,6 +43,12 @@ export function validateTaskDecomp(data) {
     }
     if (o.sequence == null || Number.isNaN(Number(o.sequence))) {
       errors.push(`opportunities[${i}].sequence must be a number.`);
+    }
+    if (o.after && !encIds.has(o.after)) {
+      errors.push(`opportunities[${i}].after "${o.after}" must reference an existing encounter or opportunity id.`);
+    }
+    if (o.before && !encIds.has(o.before)) {
+      errors.push(`opportunities[${i}].before "${o.before}" must reference an existing encounter or opportunity id.`);
     }
   });
   return errors;

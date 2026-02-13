@@ -1,0 +1,35 @@
+# PURPOSE: Run ObsidianVault scripts pytest suite on push/PR.
+# DEPENDENCIES: campaign_kb requirements + scripts requirements-test
+# MODIFICATION NOTES: Path-filtered; runs from ObsidianVault.
+
+name: ObsidianVault scripts tests
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "ObsidianVault/scripts/**"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "ObsidianVault/scripts/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install campaign_kb dependencies
+        run: pip install -r campaign_kb/requirements.txt
+
+      - name: Install scripts test dependencies
+        run: pip install -r ObsidianVault/scripts/requirements-test.txt
+
+      - name: Run pytest
+        run: cd ObsidianVault && python -m pytest scripts/tests/ -v --tb=short --ignore=scripts/tests/performance_benchmarks.py

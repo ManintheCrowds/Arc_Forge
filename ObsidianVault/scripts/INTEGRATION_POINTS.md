@@ -12,7 +12,7 @@ Each long-term enhancement has specific integration points in the codebase. This
 
 ### Integration Point: `ingest_pdfs.py` - `extract_text()` function
 
-**Location:** `D:\arc_forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~228
+**Location:** `D:\Arc_Forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~228
 
 **Current Flow:**
 1. Try PDF++ cache
@@ -55,7 +55,7 @@ def extract_text(...):
 
 ### Integration Point: `ingest_pdfs.py` - `build_source_note()` function
 
-**Location:** `D:\arc_forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~364
+**Location:** `D:\Arc_Forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~364
 
 **Current Flow:**
 1. Build source note from template
@@ -108,7 +108,7 @@ def build_source_note(..., text: str = ""):
 
 ### Integration Point: `ingest_pdfs.py` - `process_single_pdf()` function
 
-**Location:** `D:\arc_forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~481
+**Location:** `D:\Arc_Forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~481
 
 **Current Flow:**
 1. Extract text
@@ -161,7 +161,7 @@ def process_single_pdf(...):
 
 ### Integration Point: `ingest_pdfs.py` - `process_single_pdf()` function
 
-**Location:** `D:\arc_forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~481
+**Location:** `D:\Arc_Forge\ObsidianVault\scripts\ingest_pdfs.py`, line ~481
 
 **Current Flow:**
 1. Extract text
@@ -248,7 +248,7 @@ async def get_status(job_id: str):
 
 ### Integration Point: `entity_extractor.py` - `extract_entities()` function
 
-**Location:** `D:\arc_forge\ObsidianVault\scripts\entity_extractor.py`, line ~60
+**Location:** `D:\Arc_Forge\ObsidianVault\scripts\entity_extractor.py`, line ~60
 
 **Current Flow:**
 1. Use spaCy NER for basic extraction

@@ -2,6 +2,7 @@
 # DEPENDENCIES: pytest, flask, workflow_ui.app (run from ObsidianVault).
 # CONTINUE TESTING: Add storyboard_workflow unit tests if desired (see docs/DEVELOPMENT_PLAN_REMAINING.md).
 
+import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -550,3 +551,208 @@ def test_tools_gradio_location_header(client):
     assert r.status_code == 302
     expected = getattr(app_module, "GRADIO_APP_URL", "http://localhost:7861")
     assert r.headers.get("Location") == expected
+
+
+# --- Workbench Phase 3 API tests ---
+
+
+def test_workbench_idea_web(client, tmp_campaigns):
+    """GET /api/workbench/idea-web returns nodes/edges from .md with tags + wikilinks."""
+    arc = tmp_campaigns / "first_arc"
+    arc.mkdir()
+    (arc / "scene_a.md").write_text(
+        "---\ntitle: Scene A\ntype: scene\ntags: [combat, intro]\n---\n\nPlot [[scene_b]] and [[npc_1]].\n",
+        encoding="utf-8",
+    )
+    (arc / "scene_b.md").write_text(
+        "---\ntitle: Scene B\ntype: scene\ntags: [drama]\n---\n\nFollow-up.\n",
+        encoding="utf-8",
+    )
+    (arc / "npc_1.md").write_text(
+        "---\ntitle: NPC 1\ntype: npc\ntags: [ally]\n---\n\nCharacter.\n",
+        encoding="utf-8",
+    )
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.get("/api/workbench/idea-web?campaign=first_arc")
+    assert r.status_code == 200
+    data = r.get_json()
+    assert "nodes" in data and "edges" in data
+    assert len(data["nodes"]) >= 3
+    assert any(e["from"] == "first_arc/scene_a.md" and e["to"] == "first_arc/scene_b.md" for e in data["edges"]) or any(
+        e["from"] == "first_arc/scene_a.md" and e["to"] == "first_arc/npc_1.md" for e in data["edges"]
+    )
+
+
+def test_workbench_idea_web_invalid_campaign(client, tmp_campaigns):
+    """GET /api/workbench/idea-web with invalid campaign returns 400."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.get("/api/workbench/idea-web?campaign=_internal")
+    assert r.status_code == 400
+
+
+def test_workbench_dependencies(client, tmp_campaigns):
+    """GET /api/workbench/dependencies returns nodes/edges from depends_on frontmatter."""
+    arc = tmp_campaigns / "first_arc"
+    arc.mkdir()
+    (arc / "task_a.md").write_text(
+        "---\ntitle: Task A\ntype: task\ndepends_on: [task_b]\n---\n\nNeeds B.\n",
+        encoding="utf-8",
+    )
+    (arc / "task_b.md").write_text(
+        "---\ntitle: Task B\ntype: task\n---\n\nPrerequisite.\n",
+        encoding="utf-8",
+    )
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.get("/api/workbench/dependencies?campaign=first_arc")
+    assert r.status_code == 200
+    data = r.get_json()
+    assert "nodes" in data and "edges" in data
+    assert any(e["from"] == "first_arc/task_a.md" and e["to"] == "first_arc/task_b.md" for e in data["edges"])
+    assert len(data["nodes"]) >= 2
+
+
+def test_workbench_dependencies_invalid_campaign(client, tmp_campaigns):
+    """GET /api/workbench/dependencies with invalid campaign returns 400."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.get("/api/workbench/dependencies?campaign=_internal")
+    assert r.status_code == 400
+
+
+def test_workbench_create_module(client, tmp_campaigns):
+    """POST /api/workbench/create-module creates dirs + stub files."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.post(
+            "/api/workbench/create-module",
+            json={"campaign": "new_campaign", "module": "new_module", "starting_scenes": 2, "starting_npcs": 1},
+            content_type="application/json",
+        )
+    assert r.status_code == 200
+    data = r.get_json()
+    assert data.get("status") == "created"
+    assert "path" in data
+    root = tmp_campaigns / "new_campaign" / "new_module"
+    assert root.exists()
+    assert (root / "README.md").exists()
+    assert (root / "scene_01.md").exists()
+    assert (root / "scene_02.md").exists()
+    assert (root / "npc_01.md").exists()
+
+
+def test_workbench_create_module_already_exists(client, tmp_campaigns):
+    """POST /api/workbench/create-module for existing module returns 409."""
+    (tmp_campaigns / "existing" / "mod").mkdir(parents=True)
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.post(
+            "/api/workbench/create-module",
+            json={"campaign": "existing", "module": "mod"},
+            content_type="application/json",
+        )
+    assert r.status_code == 409
+
+
+def test_workbench_create_module_missing_campaign(client, tmp_campaigns):
+    """POST /api/workbench/create-module without campaign returns 400."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.post(
+            "/api/workbench/create-module",
+            json={"module": "mod"},
+            content_type="application/json",
+        )
+    assert r.status_code == 400
+
+
+def test_workbench_chat_ok(client, tmp_campaigns):
+    """POST /api/workbench/chat returns 200 when Ollama responds (mocked)."""
+    mock_resp = MagicMock()
+    mock_resp.read.return_value = b'{"response": "Hello from LLM"}'
+    mock_resp.__enter__ = MagicMock(return_value=mock_resp)
+    mock_resp.__exit__ = MagicMock(return_value=False)
+    with patch("urllib.request.urlopen", return_value=mock_resp):
+        r = client.post(
+            "/api/workbench/chat",
+            json={"message": "Hello"},
+            content_type="application/json",
+        )
+    assert r.status_code == 200
+    data = r.get_json()
+    assert data.get("status") == "ok"
+    assert "reply" in data
+    assert "Hello from LLM" in data["reply"]
+
+
+def test_workbench_chat_ollama_down(client, tmp_campaigns):
+    """POST /api/workbench/chat returns 503 when Ollama is unavailable."""
+    import urllib.error
+
+    with patch("urllib.request.urlopen", side_effect=urllib.error.URLError("Connection refused")):
+        r = client.post(
+            "/api/workbench/chat",
+            json={"message": "Hello"},
+            content_type="application/json",
+        )
+    assert r.status_code == 503
+    data = r.get_json()
+    assert "error" in data or "LLM" in str(data).lower() or "Ollama" in str(data)
+
+
+def test_workbench_chat_missing_message(client, tmp_campaigns):
+    """POST /api/workbench/chat without message returns 400."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.post(
+            "/api/workbench/chat",
+            json={},
+            content_type="application/json",
+        )
+    assert r.status_code == 400
+
+
+def test_workbench_chat_context_path_traversal_rejected(client, tmp_campaigns):
+    """POST /api/workbench/chat with context_path outside CAMPAIGNS does not read file."""
+    leak_file = tmp_campaigns.parent / "leak.txt"
+    leak_file.write_text("LEAKED_CONTENT", encoding="utf-8")
+
+    captured = []
+
+    def capturing_urlopen(req, **kwargs):
+        captured.append(req.data)
+        mock = MagicMock()
+        mock.read.return_value = b'{"response": "Hello"}'
+        mock.__enter__ = MagicMock(return_value=mock)
+        mock.__exit__ = MagicMock(return_value=False)
+        return mock
+
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        with patch("urllib.request.urlopen", side_effect=capturing_urlopen):
+            r = client.post(
+                "/api/workbench/chat",
+                json={"message": "hi", "context_path": "../leak.txt"},
+                content_type="application/json",
+            )
+    assert r.status_code == 200
+    assert len(captured) == 1
+    body = json.loads(captured[0].decode())
+    assert "LEAKED_CONTENT" not in body.get("prompt", "")
+
+
+def test_workbench_create_module_traversal_rejected(client, tmp_campaigns):
+    """POST /api/workbench/create-module rejects traversal (secure_filename strips ..)."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.post(
+            "/api/workbench/create-module",
+            json={"campaign": "..", "module": "x"},
+            content_type="application/json",
+        )
+    assert r.status_code == 400
+
+
+def test_workbench_create_module_path_containment(client, tmp_campaigns):
+    """POST /api/workbench/create-module enforces path containment for valid paths."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        r = client.post(
+            "/api/workbench/create-module",
+            json={"campaign": "safe", "module": "mod"},
+            content_type="application/json",
+        )
+    assert r.status_code == 200
+    mod_dir = tmp_campaigns / "safe" / "mod"
+    assert mod_dir.exists()

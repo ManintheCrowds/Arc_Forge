@@ -4,6 +4,7 @@ Agent-referenceable plan. Execute tasks in order; each has Goal, Files, Done-whe
 
 ## Source of truth
 
+- **Integration & test status:** [UI_INTEGRATION_AND_TEST_STATUS.md](UI_INTEGRATION_AND_TEST_STATUS.md) — Phase 3–4 review complete; integration matrix, gap analysis, render-state audit, prioritized remaining work.
 - **Audit plan:** `D:\CodeRepositories\.cursor\plans\workflow_gui_audit_and_i_o_testing_b75be279.plan.md` — §3.1 (API tests), §3.2 (manual I/O checklist), §5–6 (README Testing).
 - **GUI spec:** [../Campaigns/docs/gui_spec.md](../Campaigns/docs/gui_spec.md).
 - **App:** [../app.py](../app.py). **Tests:** [../tests/test_api.py](../tests/test_api.py).
@@ -25,6 +26,7 @@ Agent-referenceable plan. Execute tasks in order; each has Goal, Files, Done-whe
 
 ### A) Testing and verification
 
+- **Phase 3–4 status:** See [UI_INTEGRATION_AND_TEST_STATUS.md](UI_INTEGRATION_AND_TEST_STATUS.md) for integration matrix, gap analysis, and prioritized remaining work (P0–P2).
 - **Playwright E2E expansion** (remaining): Add S2/S4/S5 coverage and assert artifact outputs for each stage.
   - Done when: Additional Playwright tests run with fixtures and validate stage outputs.
 - **Manual I/O checklist alignment** (verify): Ensure steps mention wizard toggle and auto-refresh behavior.
@@ -43,6 +45,18 @@ Agent-referenceable plan. Execute tasks in order; each has Goal, Files, Done-whe
   - Done when: each stage panel includes a short “Requires/Outputs” line.
 - **Cross-links to campaign_kb** (remaining): Link NPC/location IDs in feedback/encounters to KB entries.
   - Done when: feedback UI supports selection/autocomplete from KB sources.
+
+### UX backlog (triaged)
+
+See [UX_BACKLOG_TRIAGED.md](UX_BACKLOG_TRIAGED.md) for 10 prioritized items with effort, priority, and implementation notes. Recommended next: UW-3 (actionable error messages).
+
+### Workbench status
+
+See [WORKBENCH_NOT_IMPLEMENTED.md](WORKBENCH_NOT_IMPLEMENTED.md) for Workbench implementation status. Phase 3 complete: Idea Web, Timeline, RAG search, Workflow, Module selector, Note editor, Chat, Dependencies, and Create module are all implemented.
+
+### UI pending task decomposition (consolidated)
+
+See [UI_PENDING_TASK_DECOMP.md](UI_PENDING_TASK_DECOMP.md) for full task breakdown of all pending Workbench + UX backlog items, with effort estimates and suggested implementation order.
 
 ### D) Security + operational readiness
 
@@ -65,6 +79,8 @@ Agent-referenceable plan. Execute tasks in order; each has Goal, Files, Done-whe
 - Section links to the manual I/O checklist (Task 3) and to this doc for remaining work.
 
 **Reference:** Audit plan §5–6, §3.2.
+
+**Status:** Done. README Testing section complete; links to manual_io_checklist and this doc.
 
 ---
 
@@ -90,6 +106,8 @@ Agent-referenceable plan. Execute tasks in order; each has Goal, Files, Done-whe
 9. Provenance: Encounters list — **Expected:** shows "draft vN" and "from {arc}_feedback.yaml" where applicable.
 
 **Reference:** Audit plan §3.2.
+
+**Status:** Done. manual_io_checklist.md exists with nine steps, wizard/auto-refresh note; README links to it.
 
 ---
 

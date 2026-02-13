@@ -21,10 +21,10 @@ One place for all tracks, phases, and task IDs. Full detail lives in track secti
 
 | Phase | Task IDs | One-line goal |
 |-------|----------|----------------|
-| **Phase 0** | — | Single orchestration doc (this file); linked from README_workflow / integration map |
-| **Phase 1** | C1, C2, A1 | Meta-prompt script + doc; Frame output format doc |
-| **Phase 2** | A2, A3, A4 | Story Architect script; wire Frame → Stage 1; tests |
-| **Phase 3** | B1, B2, B3, B4 | RAG chunk schema; ingestion tags; retrieval modes; prompt-side instruction |
+| **Phase 0** | — | Single orchestration doc (this file); linked from README_workflow / integration map ✓ |
+| **Phase 1** | C1, C2, A1 | Meta-prompt script + doc; Frame output format doc ✓ |
+| **Phase 2** | A2, A3, A4 | Story Architect script; wire Frame → Stage 1; tests ✓ |
+| **Phase 3** | B1, B2, B3, B4 | RAG chunk schema; ingestion tags; retrieval modes; prompt-side instruction (B1 ✓) |
 | **Phase 4** | D1, D2, D3 | workflow_ui: Archivist/Foreshadow API + UI; Future work list. Track E = GUI backlog (no task IDs here) |
 
 ---
@@ -35,10 +35,10 @@ One place for all tracks, phases, and task IDs. Full detail lives in track secti
 
 | ID | Goal | Done when |
 |----|------|-----------|
-| A1 | Define Frame output format | [frame_output_format.md](frame_output_format.md) exists; ref’d from integration map or README_workflow |
-| A2 | Story Architect script | `run_story_architect(...)` in e.g. `scripts/frame_workflow.py`; CLI runnable; output matches format |
-| A3 | Wire Frame upstream of Stage 1 | README_workflow or spec describes order: Frame → Select+Expand → S1 |
-| A4 | Tests | pytest with mocked `generate_text`; output has expected structure |
+| A1 | Define Frame output format | [frame_output_format.md](frame_output_format.md) exists; ref’d from integration map or README_workflow ✓ |
+| A2 | Story Architect script | `run_story_architect(...)` in e.g. `scripts/frame_workflow.py`; CLI runnable; output matches format ✓ |
+| A3 | Wire Frame upstream of Stage 1 | README_workflow or spec describes order: Frame → Select+Expand → S1 ✓ |
+| A4 | Tests | pytest with mocked `generate_text`; output has expected structure ✓ |
 
 **Order:** A1 → A2 → A3 → A4 (A3 can be doc-only first).
 
@@ -48,7 +48,7 @@ One place for all tracks, phases, and task IDs. Full detail lives in track secti
 
 | ID | Goal | Done when |
 |----|------|-----------|
-| B1 | RAG chunk schema and doc | 05_rag_integration updated with chunk metadata schema + retrieval modes |
+| B1 | RAG chunk schema and doc | 05_rag_integration updated with chunk metadata schema + retrieval modes ✓ |
 | B2 | Emit/store tags at ingestion | New/re-ingested chunks have tags; no regression |
 | B3 | Retrieval API accepts mode | Callers can pass Strict/Loose/Inspired; behavior in 05_rag_integration |
 | B4 | Prompt-side instruction | Optional "Retrieval Mode" at one call site; doc shows pattern |
@@ -61,8 +61,8 @@ One place for all tracks, phases, and task IDs. Full detail lives in track secti
 
 | ID | Goal | Done when |
 |----|------|-----------|
-| C1 | Script or CLI for meta-prompt | e.g. `scripts/meta_prompt.py`; reads context path, spine + meta-prompt + state → generate_text → output |
-| C2 | Doc | One line in README_workflow or narrative_workbench_spec: how to run meta-prompt |
+| C1 | Script or CLI for meta-prompt | e.g. `scripts/meta_prompt.py`; reads context path, spine + meta-prompt + state → generate_text → output ✓ |
+| C2 | Doc | One line in README_workflow or narrative_workbench_spec: how to run meta-prompt ✓ |
 
 **Order:** C1 → C2. No dependency on Frame or RAG.
 
@@ -99,9 +99,15 @@ From [DEVELOPMENT_PLAN_REMAINING.md](../../workflow_ui/docs/DEVELOPMENT_PLAN_REM
 ## Suggested Implementation Order
 
 1. **Phase 0:** This doc + link from README_workflow / integration map ✓  
-2. **Phase 1:** C1–C2 (meta-prompt), A1 (Frame output format)  
-3. **Phase 2:** A2 → A3 → A4 (Story Architect, wire, tests)  
-4. **Phase 3:** B1 → B2 → B3 → B4 (RAG schema, ingestion, retrieval, prompt)  
+2. **Phase 1:** C1–C2 (meta-prompt), A1 (Frame output format) ✓  
+3. **Phase 2:** A2 → A3 → A4 (Story Architect, wire, tests) ✓  
+4. **Phase 3:** B1 ✓ → B2 → B3 → B4 (RAG schema, ingestion, retrieval, prompt)  
 5. **Phase 4 (optional):** D1 → D2; E items as needed  
 
 RAG (Phase 3) and Frame (Phase 2) can be swapped; both depend only on Phase 0 and Phase 1 docs.
+
+---
+
+## Next: Phase 2–3 Readiness
+
+Phase 0–1 and Frame (Phase 2) are complete; B1 done. **Next:** Phase 3 (RAG B2–B4) or Phase 4 (workflow_ui Archivist/Foreshadowing).

@@ -1,6 +1,10 @@
-// PURPOSE: Optional guided wizard for S1–S5.
-// DEPENDENCIES: none
-// MODIFICATION NOTES: New Wave C feature.
+// PURPOSE: Optional guided wizard for S1–S5; UW-10 first-run overlay for empty tree.
+// DEPENDENCIES: api.js
+// MODIFICATION NOTES: UW-10 first-run flow.
+
+import { get } from "./api.js";
+
+const FIRST_RUN_DISMISSED_KEY = "workflow_ui:first_run_dismissed";
 
 const steps = [
   { id: "s1", title: "S1 Task Decomp", hint: "Requires storyboard under Campaigns/_rag_outputs/." },
@@ -9,6 +13,37 @@ const steps = [
   { id: "s4", title: "S4 Refine", hint: "Pick a draft and feedback file." },
   { id: "s5", title: "S5 Export", hint: "Exports expanded storyboard, JSON, campaign_kb file." },
 ];
+
+function isTreeEmpty(arcs, tree) {
+  if (!arcs || arcs.length === 0) return true;
+  const files = (tree && tree.files) || [];
+  const encounters = (tree && tree.encounters) || [];
+  const opportunities = (tree && tree.opportunities) || [];
+  return files.length === 0 && encounters.length === 0 && opportunities.length === 0;
+}
+
+export function checkFirstRunOverlay() {
+  const overlay = document.getElementById("first-run-overlay");
+  const dismissCheck = document.getElementById("first-run-dismiss");
+  if (!overlay || !dismissCheck) return;
+  if (localStorage.getItem(FIRST_RUN_DISMISSED_KEY) === "1") {
+    overlay.classList.remove("visible");
+    return;
+  }
+  get("/api/arcs").then((d) => {
+    const arcs = (d && d.arcs) || [];
+    const arcId = arcs[0] || "first_arc";
+    return get("/api/arc/" + encodeURIComponent(arcId) + "/tree").then((tree) => {
+      if (isTreeEmpty(arcs, tree)) {
+        overlay.classList.add("visible");
+      } else {
+        overlay.classList.remove("visible");
+      }
+    });
+  }).catch(() => {
+    overlay.classList.add("visible");
+  });
+}
 
 export function initWizard(showTab) {
   const toggle = document.getElementById("wizard-toggle");
@@ -40,4 +75,15 @@ export function initWizard(showTab) {
   });
 
   render();
+
+  const overlay = document.getElementById("first-run-overlay");
+  const dismissCheck = document.getElementById("first-run-dismiss");
+  if (overlay && dismissCheck) {
+    dismissCheck.addEventListener("change", () => {
+      if (dismissCheck.checked) {
+        localStorage.setItem(FIRST_RUN_DISMISSED_KEY, "1");
+        overlay.classList.remove("visible");
+      }
+    });
+  }
 }

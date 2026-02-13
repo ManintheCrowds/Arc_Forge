@@ -7,15 +7,25 @@ import { escapeHtml, formatErr, setProgress } from "./utils.js";
 
 export function refreshSessionMemoryFiles() {
   return get("/api/session/files").then((d) => {
-    const sel = document.getElementById("session-foreshadow-dropdown");
-    if (!sel) return;
     const files = d.files || [];
-    sel.innerHTML = "<option value=\"\">(pick from _session_memory or type below)</option>" +
+    const optionsHtml = "<option value=\"\">(pick from _session_memory or type below)</option>" +
       files.map((f) => `<option value="${escapeHtml(f.path)}">${escapeHtml(f.name)}</option>`).join("");
-    sel.onchange = function () {
-      const input = document.getElementById("session-foreshadow-path");
-      if (input) input.value = sel.value || "";
-    };
+    const foreshadowSel = document.getElementById("session-foreshadow-dropdown");
+    if (foreshadowSel) {
+      foreshadowSel.innerHTML = optionsHtml;
+      foreshadowSel.onchange = function () {
+        const input = document.getElementById("session-foreshadow-path");
+        if (input) input.value = foreshadowSel.value || "";
+      };
+    }
+    const archivistSel = document.getElementById("session-archivist-dropdown");
+    if (archivistSel) {
+      archivistSel.innerHTML = optionsHtml;
+      archivistSel.onchange = function () {
+        const input = document.getElementById("session-archivist-path");
+        if (input) input.value = archivistSel.value || "";
+      };
+    }
   }).catch(() => {});
 }
 

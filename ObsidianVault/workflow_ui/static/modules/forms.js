@@ -9,6 +9,7 @@ import { escapeHtml, setValidationErrors } from "./utils.js";
 import { getArcId } from "./state.js";
 import { showFileModal } from "./modal.js";
 import { formatErr } from "./utils.js";
+import { initKbAutocomplete } from "./kb_autocomplete.js";
 
 let tdDirty = false;
 let fbDirty = false;
@@ -242,6 +243,7 @@ function renderFeedbackForm(data) {
   const items = enc ? (enc.feedback || []) : [];
   itemsDiv.innerHTML = items.map((it, i) => feedbackItemRow(it, i)).join("");
   itemsDiv.querySelectorAll(".del-fb").forEach((btn) => btn.onclick = () => removeFeedbackItem(parseInt(btn.dataset.idx, 10)));
+  initKbAutocomplete(itemsDiv);
   window._fbData = data;
 }
 
@@ -262,8 +264,8 @@ function typeFields(t, it) {
     change: () => `<input placeholder="target" value="${escapeHtml(it.target || "")}" data-f="target" /><input placeholder="from" value="${escapeHtml(it.from != null ? it.from : "")}" data-f="from" /><input placeholder="to" value="${escapeHtml(it.to != null ? it.to : "")}" data-f="to" />`,
     add_mechanic: () => `<input placeholder="detail" value="${escapeHtml(it.detail || "")}" data-f="detail" />`,
     remove: () => `<input placeholder="target or instruction" value="${escapeHtml(it.target || it.instruction || "")}" data-f="target" />`,
-    link_npc: () => `<input placeholder="npc_id" value="${escapeHtml(it.npc_id || "")}" data-f="npc_id" /><input placeholder="instruction" value="${escapeHtml(it.instruction || "")}" data-f="instruction" />`,
-    link_location: () => `<input placeholder="location_id" value="${escapeHtml(it.location_id || "")}" data-f="location_id" /><input placeholder="instruction" value="${escapeHtml(it.instruction || "")}" data-f="instruction" />`,
+    link_npc: () => `<input placeholder="npc_id" value="${escapeHtml(it.npc_id || "")}" data-f="npc_id" data-autocomplete="npc" /><input placeholder="instruction" value="${escapeHtml(it.instruction || "")}" data-f="instruction" />`,
+    link_location: () => `<input placeholder="location_id" value="${escapeHtml(it.location_id || "")}" data-f="location_id" data-autocomplete="location" /><input placeholder="instruction" value="${escapeHtml(it.instruction || "")}" data-f="instruction" />`,
     other: () => `<input placeholder="instruction or detail" value="${escapeHtml(it.instruction || it.detail || "")}" data-f="instruction" />`,
   };
   return (F[t] || F.other)();
@@ -349,6 +351,7 @@ export function initFeedbackHandlers() {
     itemsDiv.querySelectorAll(".del-fb").forEach((btn) => {
       btn.onclick = () => removeFeedbackItem(parseInt(btn.dataset.idx, 10));
     });
+    initKbAutocomplete(itemsDiv);
   });
 }
 

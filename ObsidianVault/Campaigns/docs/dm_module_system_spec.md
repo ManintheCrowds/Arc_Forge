@@ -47,6 +47,15 @@ status: draft|final
 ---
 ```
 
+**Idea Web extraction**
+
+- **tags** (frontmatter): `tags: [a, b, c]` — list of strings; used for grouping and filtering.
+- **[[wikilinks]]** (body): `[[NoteName]]` or `[[NoteName|display]]` — links between notes. API matches link targets to note paths/stems.
+
+**Dependencies graph**
+
+- **depends_on** (frontmatter): `depends_on: [id, ...]` — list of note ids (stems or paths). Edges are directed: this note depends on those.
+
 ## Flexible workflow graph (replaces rigid 6-phase model)
 Default graph (editable by the DM):
 ```

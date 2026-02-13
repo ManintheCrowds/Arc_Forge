@@ -100,6 +100,17 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "watch_ingest.ps1"
 
 3. Verify write permissions on vault directory
 
+### Issue: KeyError 'source' when running RAG pipeline with query
+**Symptom:** `KeyError: 'source'` at `run_pipeline` line ~1412 when calling `python rag_pipeline.py --config ingest_config.json --query "orks"` (or any query).
+
+**Cause:** `retrieve_context()` returns different schemas depending on which backend is used:
+- **KB search** (campaign_kb DB): returns `section_id`, `document_id`, `section_title`, `text`, `score` — no `source`
+- **DocumentIndex / text scan fallback**: returns `source`, `score`, `text`
+
+`run_pipeline()` expects `item["source"]` for all results. When `use_kb_search` is True and the campaign_kb DB has matching sections, the KB path is used and the consumer fails.
+
+**Fix:** Normalize `retrieve_context()` so all return paths include a `source` key (e.g. derive from `document_id` or document path for KB results). See [known-issues.md](D:\CodeRepositories\.cursor\state\known-issues.md) for details. For architecture and improvement roadmap: [docs/ERROR_MONITORING_AND_KNOWN_ISSUES.md](docs/ERROR_MONITORING_AND_KNOWN_ISSUES.md).
+
 ### Issue: Index Not Updating
 **Symptom:** Source_Index.md is outdated
 

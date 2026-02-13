@@ -2,6 +2,8 @@
 
 Repeatable, stepwise checklist for validating GUI I/O in the browser. Run from ObsidianVault; open http://127.0.0.1:5050.
 
+Wizard flow available via toggle; auto-refresh optional. Use wizard for guided step-by-step; standard view for free navigation.
+
 ## Nine steps (Task 3)
 
 | Step | Action | Expected |
@@ -26,3 +28,16 @@ Repeatable, stepwise checklist for validating GUI I/O in the browser. Run from O
 |------|--------|----------|
 | 10 | **Archivist:** Enter path to session note (with Session Summary block), Run Archivist | Status success; output in `Campaigns/_session_memory/YYYY-MM-DD_archivist.md`; result shows output_path. |
 | 11 | **Foreshadow:** Enter path to archivist output (or dropdown), Run Foreshadow | Status success; threads.md updated; result shows output_path. |
+
+---
+
+## Workbench (Phase 3)
+
+| Step | Action | Expected |
+|------|--------|----------|
+| W1 | **Load Workbench:** Switch to Workbench tab, select campaign/module | Module selector populated; tree shows notes; right/bottom tabs visible. |
+| W2 | **Note editor:** Click a note in the tree | Note loads in editor; Save, Toggle preview, Save as card work. |
+| W3 | **Create module:** Enter campaign + module name, click Create module | Dirs and stub files created; tree refreshes. |
+| W4 | **Workflow:** Open Workflow tab, select a node, click Run selected node | Stage runs; output or error shown. |
+| W5 | **Idea Web / Dependencies:** Open bottom tabs | Graph shows nodes/edges from tags+wikilinks or depends_on; or empty if no data. |
+| W6 | **Chat:** Open Chat tab, send a message | Reply appears (requires Ollama); or 503 if Ollama down. |

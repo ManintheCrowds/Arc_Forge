@@ -6,6 +6,7 @@
   <title>Storyboard Workflow</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
 </head>
 <body>
   <div class="layout">
@@ -87,9 +88,10 @@
                 <button type="button" id="save-note">Save</button>
                 <button type="button" id="save-card">Save as card</button>
               </div>
+              <div id="note-editor-out" class="out" style="display:none;"></div>
               <div class="editor-panels">
                 <textarea id="note-editor" placeholder="Select a note to edit..."></textarea>
-                <div id="note-preview" class="note-preview"></div>
+                <div id="note-preview" class="note-preview" style="display:none;"></div>
               </div>
               <div class="citations">
                 <h4>Inline citations</h4>
@@ -103,8 +105,8 @@
                 <button data-right="workflow">Workflow</button>
               </div>
               <div id="right-chat" class="right-panel visible">
-                <p class="muted">Chat panel (per note or folder). Placeholder.</p>
-                <div class="out" id="chat-history"></div>
+                <p class="muted">Chat with LLM (Ollama). Select a note for context. Requires Ollama running.</p>
+                <div class="out chat-history" id="chat-history"></div>
                 <div class="form-group">
                   <input type="text" id="chat-input" placeholder="Ask or draft..." />
                 </div>
@@ -112,16 +114,16 @@
               </div>
               <div id="right-rag" class="right-panel">
                 <div class="form-group">
-                  <label>RAG query</label>
+                  <label>Search campaign KB</label>
                   <input type="text" id="rag-query" placeholder="Search campaign KB..." />
                 </div>
                 <button type="button" id="rag-search">Search</button>
                 <div class="out" id="rag-results"></div>
               </div>
               <div id="right-workflow" class="right-panel">
-                <p class="muted">Workflow graph placeholder. Drag nodes to reorder.</p>
-                <div id="workflow-graph" class="placeholder">Brainstorm → Outline → SceneDraft → NPCs → Review → Export</div>
-                <button type="button" id="run-workflow-node">Run selected node</button>
+                <div id="workflow-graph" class="workflow-graph">Brainstorm → Outline → SceneDraft → NPCs → Review → Export</div>
+                <button type="button" id="run-workflow-node" disabled>Run selected node</button>
+                <div id="workflow-run-out" class="out" style="margin-top:0.5em;"></div>
               </div>
             </aside>
           </div>
@@ -131,12 +133,24 @@
               <button data-bottom="idea-web">Idea web</button>
               <button data-bottom="dependencies">Dependencies</button>
             </div>
-            <div id="bottom-timeline" class="bottom-panel visible">Timeline placeholder (frontmatter date).</div>
-            <div id="bottom-idea-web" class="bottom-panel">Idea web placeholder (tags + links).</div>
-            <div id="bottom-dependencies" class="bottom-panel">Dependency graph placeholder (depends_on).</div>
+            <div id="bottom-timeline" class="bottom-panel visible"><p class="muted">Loading timeline…</p></div>
+            <div id="bottom-idea-web" class="bottom-panel"><p class="muted">Loading idea web…</p></div>
+            <div id="bottom-dependencies" class="bottom-panel"><p class="muted">Loading dependencies…</p></div>
           </div>
         </div>
         <div id="workspace-legacy" class="workspace-view">
+          <div id="first-run-overlay" class="first-run-overlay">
+            <div class="first-run-card">
+              <h3>Get started</h3>
+              <ol>
+                <li>Ensure <code>Campaigns/</code> exists and <code>scripts/ingest_config.json</code> is configured.</li>
+                <li>Add a storyboard under <code>Campaigns/_rag_outputs/</code> (e.g. from frame workflow).</li>
+                <li>Run S1 to generate task_decomposition, then S2 → S3 → S4 → S5.</li>
+                <li>See <a href="/guide/manual_io_checklist.md" target="_blank" rel="noopener noreferrer">Manual I/O checklist</a> for stepwise validation.</li>
+              </ol>
+              <label class="check-item"><input type="checkbox" id="first-run-dismiss" /> Don&apos;t show again</label>
+            </div>
+          </div>
           <div class="legacy-layout">
             <aside class="side">
               <h3>Arc file-tree</h3>
@@ -148,6 +162,8 @@
               <div class="onboarding" id="onboarding">
                 <h3>Getting started</h3>
                 <p>Start with S1 after a storyboard exists under <code>Campaigns/_rag_outputs/</code>. Then proceed S2 → S3 → S4 → S5.</p>
+                <p>Pipeline diagram: see header strip above, or scroll to <a href="#pipeline-mermaid">Pipeline diagram</a> below.</p>
+                <p><a href="/guide/manual_io_checklist.md" target="_blank" rel="noopener noreferrer">Manual I/O checklist</a> — stepwise validation.</p>
                 <ul class="checklist">
                   <li><span id="status-campaigns" class="status">…</span> <code>Campaigns/</code> directory</li>
                   <li><span id="status-config" class="status">…</span> <code>scripts/ingest_config.json</code></li>
@@ -175,11 +191,11 @@
               <div class="tabs">
                 <div class="tab-group">
                   <div class="tab-label">Pipeline</div>
-                  <button data-tab="s1">S1 Task Decomp</button>
-                  <button data-tab="s2">S2 Drafts</button>
-                  <button data-tab="s3">S3 Feedback</button>
-                  <button data-tab="s4">S4 Refine</button>
-                  <button data-tab="s5">S5 Export</button>
+                  <button data-tab="s1">S1 (1) Task Decomp</button>
+                  <button data-tab="s2">S2 (2) Drafts</button>
+                  <button data-tab="s3">S3 (3) Feedback</button>
+                  <button data-tab="s4">S4 (4) Refine</button>
+                  <button data-tab="s5">S5 (5) Export</button>
                 </div>
                 <div class="tab-group">
                   <div class="tab-label">Forms</div>
@@ -218,21 +234,25 @@
               </div>
               <div id="panel-s1" class="stage-panel">
                 <p>Run Stage 1: Storyboard → task_decomposition. Uses storyboard_path, arc_id, output_dir.</p>
+                <p class="stage-io">Requires: storyboard under <code>Campaigns/_rag_outputs/</code>. Outputs: <code>task_decomposition.yaml</code>.</p>
                 <button class="run" id="run-s1">Run Stage 1</button>
                 <div class="out" id="out-s1"></div>
               </div>
               <div id="panel-s2" class="stage-panel">
                 <p>Run Stage 2: Task decomposition + storyboard → encounter drafts (RAG + campaign_kb).</p>
+                <p class="stage-io">Requires: <code>task_decomposition.yaml</code>, storyboard. Outputs: <code>encounters/*_draft_v1.md</code>, <code>opportunities/*</code>.</p>
                 <div class="progress" id="progress-s2">Running Stage 2…</div>
                 <button class="run" id="run-s2">Run Stage 2</button>
                 <div class="out" id="out-s2"></div>
               </div>
               <div id="panel-s3" class="stage-panel">
                 <p>S3 is human-only: edit feedback in &quot;Edit Feedback&quot;, then run S4 per encounter.</p>
+                <p class="stage-io">Requires: encounter drafts. Outputs: <code>{arc_id}_feedback.yaml</code> (via Edit Feedback).</p>
                 <div class="out" id="out-s3"></div>
               </div>
               <div id="panel-s4" class="stage-panel">
                 <p>Refine one encounter from feedback. Choose draft and feedback path (defaults from arc).</p>
+                <p class="stage-io">Requires: draft .md, <code>{arc_id}_feedback.yaml</code>. Outputs: new <code>*_draft_vN.md</code>.</p>
                 <div class="form-group">
                   <label>Draft (encounter .md)</label>
                   <select id="s4-draft"></select>
@@ -243,6 +263,7 @@
               </div>
               <div id="panel-s5" class="stage-panel">
                 <p>Export final specs: hierarchical MD, expanded storyboard, JSON, campaign_kb.</p>
+                <p class="stage-io">Requires: encounter files. Outputs: expanded storyboard, JSON, campaign_kb.</p>
                 <button class="run" id="run-s5">Export final specs</button>
                 <div class="out" id="out-s5"></div>
               </div>
@@ -252,7 +273,8 @@
                 <div class="progress" id="progress-session">Running session task…</div>
                 <div class="form-group">
                   <label>Session note path (for Archivist)</label>
-                  <input type="text" id="session-archivist-path" placeholder="e.g. Campaigns/_session_memory/session.md or absolute path" />
+                  <select id="session-archivist-dropdown"><option value="">(pick from _session_memory or type below)</option></select>
+                  <input type="text" id="session-archivist-path" placeholder="e.g. Campaigns/_session_memory/session.md or absolute path" style="margin-top: 0.25em;" />
                 </div>
                 <button class="run" id="run-archivist">Run Archivist</button>
                 <div class="form-group" style="margin-top: 1em;">
@@ -308,7 +330,10 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3 id="file-modal-title">File</h3>
-        <button type="button" id="file-modal-close">Close</button>
+        <div class="modal-header-actions">
+          <button type="button" id="file-modal-copy">Copy</button>
+          <button type="button" id="file-modal-close">Close</button>
+        </div>
       </div>
       <pre id="file-modal-content" class="modal-content"></pre>
       <div id="file-modal-note" class="modal-note"></div>

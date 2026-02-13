@@ -1,5 +1,5 @@
 # PURPOSE: Machine-parseable GUI audit workflow (T1–T6). Used by run_audit_tasks.py and tests.
-# PATHS: Repo-relative from arc_forge root.
+# PATHS: Repo-relative from Arc_Forge root.
 
 workflow: gui_audit
 

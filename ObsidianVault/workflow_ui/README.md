@@ -12,7 +12,7 @@ pip install -r workflow_ui/requirements.txt
 python -m workflow_ui.app
 ```
 
-Then open http://127.0.0.1:5050
+Then open http://127.0.0.1:5050. API documentation: Open http://127.0.0.1:5050/docs for interactive OpenAPI (Swagger) docs.
 
 **Required paths (when running via `python -m workflow_ui.app`):** `Campaigns/` must exist and be a directory; `scripts/ingest_config.json` must exist (used by session ingest). If either is missing, the app prints clear errors to stderr and exits with code 1. When using `flask run`, validation is not run at startup (paths are checked on first use).
 
@@ -66,12 +66,14 @@ Or from ObsidianVault: `cd workflow_ui && pytest tests/ -v`. (If `pytest` is not
 
 ### Playwright (E2E)
 
-Install Playwright browsers after dependencies:
+Install Playwright and Chromium after dependencies:
 
 ```bash
 pip install -r workflow_ui/requirements.txt
-python -m playwright install
+python -m playwright install chromium
 ```
+
+See [docs/PLAYWRIGHT_INTEGRATION.md](docs/PLAYWRIGHT_INTEGRATION.md) for integration patterns and how to extend E2E coverage.
 
 **Env requirements:** Storyboard under `Campaigns/_rag_outputs/` (or path passed to Stage 1); `ingest_config.json` in `scripts/` for Stage 2/4 and for Session memory (Archivist/Foreshadow). "Real" run stages (S1, S2, S4, S5) and Session memory need RAG/LLM; tests mock workflow functions so RAG/LLM are not invoked.
 

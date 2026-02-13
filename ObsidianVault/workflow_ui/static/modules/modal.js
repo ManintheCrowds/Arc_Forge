@@ -31,4 +31,17 @@ export function initModalHandlers() {
   if (fileModalClose) fileModalClose.addEventListener("click", closeFileModal);
   const fileModalBackdrop = document.getElementById("file-modal-backdrop");
   if (fileModalBackdrop) fileModalBackdrop.addEventListener("click", closeFileModal);
+  const fileModalCopy = document.getElementById("file-modal-copy");
+  const modalContent = document.getElementById("file-modal-content");
+  if (fileModalCopy && modalContent) {
+    fileModalCopy.addEventListener("click", () => {
+      const text = modalContent.textContent || "";
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = fileModalCopy.textContent;
+        fileModalCopy.textContent = "Copied";
+        setTimeout(() => { fileModalCopy.textContent = orig; }, 1500);
+      }).catch(() => {});
+    });
+  }
 }

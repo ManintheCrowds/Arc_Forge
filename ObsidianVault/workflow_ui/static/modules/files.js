@@ -7,14 +7,23 @@ import { showFileModal } from "./modal.js";
 import { escapeHtml, formatErr } from "./utils.js";
 import { getArcId } from "./state.js";
 
+function notFoundHint(relPath) {
+  const p = relPath.replace(/\\/g, "/");
+  if (p.includes("encounters") || p.includes("opportunities")) return "Run S2 to generate drafts.";
+  if (p.includes("task_decomposition")) return "Run S1 first to generate task_decomposition.yaml.";
+  if (p.includes("feedback") || p.includes("_feedback")) return "Edit Feedback (S3) and save feedback.yaml first.";
+  return "";
+}
+
 export function viewFile(relPath) {
   const arcId = getArcId();
   const url = "/api/arc/" + encodeURIComponent(arcId) + "/file/" + encodeURIComponent(relPath.replace(/\\/g, "/"));
   fetch(url).then((r) => {
     if (!r.ok) {
+      const hint = notFoundHint(relPath);
       return r.json().then((j) => {
-        showFileModal("Not found", formatErr(j) || relPath, "", true);
-      }).catch(() => showFileModal("Not found", relPath, "", true));
+        showFileModal("Not found", formatErr(j) || relPath, hint, true);
+      }).catch(() => showFileModal("Not found", relPath, hint, true));
       return;
     }
     return r.text().then((text) => {

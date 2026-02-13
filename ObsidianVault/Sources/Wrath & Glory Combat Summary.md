@@ -6,9 +6,9 @@
 
 ---
 title: "Wrath & Glory Combat Summary"
-source_file: "D:/arc_forge/ObsidianVault/pdf/dod_docs/Wrath & Glory Combat Summary.pdf"
-source_path: "D:/arc_forge/ObsidianVault/pdf/dod_docs/Wrath & Glory Combat Summary.pdf"
-source_link: "file:///D%3A/arc_forge/ObsidianVault/pdf/dod_docs/Wrath%20%26%20Glory%20Combat%20Summary.pdf"
+source_file: "D:/Arc_Forge/ObsidianVault/pdf/dod_docs/Wrath & Glory Combat Summary.pdf"
+source_path: "D:/Arc_Forge/ObsidianVault/pdf/dod_docs/Wrath & Glory Combat Summary.pdf"
+source_link: "file:///D%3A/Arc_Forge/ObsidianVault/pdf/dod_docs/Wrath%20%26%20Glory%20Combat%20Summary.pdf"
 source_pages: "unknown (PDF++ extraction pending)"
 doc_type: "unverified"
 created: "2026-01-16"
@@ -17,7 +17,7 @@ tags: ["type/source", "status/draft"]
 
 ## Summary
 
-- Extracted text saved to: [[D:/arc_forge/ObsidianVault/Sources/_extracted_text/Wrath & Glory Combat Summary.txt]]
+- Extracted text saved to: [[D:/Arc_Forge/ObsidianVault/Sources/_extracted_text/Wrath & Glory Combat Summary.txt]]
 - Excerpt captured for quick review.
 
 
@@ -44,7 +44,7 @@ tags: ["type/source", "status/draft"]
 
 ## Source
 
-- [Open PDF](file:///D%3A/arc_forge/ObsidianVault/pdf/dod_docs/Wrath%20%26%20Glory%20Combat%20Summary.pdf)
+- [Open PDF](file:///D%3A/Arc_Forge/ObsidianVault/pdf/dod_docs/Wrath%20%26%20Glory%20Combat%20Summary.pdf)
 
 
 

@@ -53,6 +53,131 @@ import hashlib
 import os
 from collections import defaultdict
 
+# Schema keys for chunk tags (B2); empty string = unrestricted for filtering.
+CHUNK_TAG_KEYS = (
+    "system",
+    "faction",
+    "location",
+    "time_period",
+    "mechanical_vs_narrative",
+    "tone",
+)
+
+
+# PURPOSE: Extract chunk-level tags from doc key and text for B2 ingestion.
+# DEPENDENCIES: 05_rag_integration chunk metadata schema.
+# MODIFICATION NOTES: Heuristic-based; config overrides win when non-empty.
+def extract_chunk_tags(
+    doc_key: str,
+    text: str,
+    doc_type: str,
+    config: Optional[Dict[str, Any]] = None,
+) -> Dict[str, str]:
+    """
+    Compute tags for a chunk per schema in 05_rag_integration.md.
+    Returns dict with keys: system, faction, location, time_period, mechanical_vs_narrative, tone.
+    """
+    config = config or {}
+    defaults = config.get("defaults", {})
+    overrides = config.get("overrides", {})
+
+    key_lower = doc_key.lower()
+    text_lower = text[:15000].lower()  # First 15K chars for heuristic
+
+    # System: PDFs with wrath/warhammer/W&G; campaign -> W&G
+    system = ""
+    if doc_type == "campaign":
+        system = "W&G"
+    elif "wrath" in key_lower or "warhammer" in key_lower or "w&g" in key_lower:
+        system = "W&G"
+    elif "d&d" in key_lower or "dragon" in key_lower:
+        system = "D&D"
+    if not system and defaults.get("system"):
+        system = str(defaults["system"])
+
+    # Faction: keyword match
+    faction = ""
+    faction_keywords = [
+        ("ork", "Orks"),
+        ("inquisition", "Inquisition"),
+        ("mechanicus", "Mechanicus"),
+        ("astartes", "Adeptus Astartes"),
+        ("ecclesiarchy", "Ecclesiarchy"),
+        ("militarum", "Astra Militarum"),
+    ]
+    for kw, label in faction_keywords:
+        if kw in text_lower or kw in key_lower:
+            faction = label
+            break
+    if not faction and defaults.get("faction"):
+        faction = str(defaults["faction"])
+
+    # Location: keyword match
+    location = ""
+    location_keywords = ["gilead", "footfall", "ostia", "void"]
+    for kw in location_keywords:
+        if kw in text_lower:
+            location = kw.capitalize()
+            break
+    if not location and defaults.get("location"):
+        location = str(defaults["location"])
+
+    # Time_period: default empty
+    time_period = str(defaults.get("time_period", ""))
+
+    # Mechanical_vs_narrative: rules/mechanics vs narrative
+    mechanical_vs_narrative = ""
+    mech_keywords = ["dice", "damage", "dn ", "test", "roll", "wounds", "shock", "tier"]
+    narr_keywords = ["adventure", "scene", "narrative", "story", "hook"]
+    mech_count = sum(1 for kw in mech_keywords if kw in text_lower)
+    narr_count = sum(1 for kw in narr_keywords if kw in text_lower)
+    if mech_count > narr_count:
+        mechanical_vs_narrative = "mechanical"
+    elif narr_count > mech_count:
+        mechanical_vs_narrative = "narrative"
+    if not mechanical_vs_narrative and defaults.get("mechanical_vs_narrative"):
+        mechanical_vs_narrative = str(defaults["mechanical_vs_narrative"])
+
+    # Tone: explicit terms
+    tone = ""
+    tone_keywords = [
+        ("grimdark", "grimdark"),
+        ("heroic", "heroic"),
+        ("absurd", "absurd"),
+        ("neutral", "neutral"),
+    ]
+    for kw, label in tone_keywords:
+        if kw in text_lower:
+            tone = label
+            break
+    if not tone and defaults.get("tone"):
+        tone = str(defaults["tone"])
+
+    tags = {
+        "system": system,
+        "faction": faction,
+        "location": location,
+        "time_period": time_period,
+        "mechanical_vs_narrative": mechanical_vs_narrative,
+        "tone": tone,
+    }
+
+    # Apply per-doc overrides (exact key or pattern)
+    for override_key, override_values in overrides.items():
+        if override_key == doc_key:
+            for k, v in (override_values or {}).items():
+                if k in tags and v:
+                    tags[k] = str(v)
+            break
+        # Support fnmatch-style pattern (simple substring)
+        if override_key in doc_key:
+            for k, v in (override_values or {}).items():
+                if k in tags and v:
+                    tags[k] = str(v)
+            break
+
+    return tags
+
 
 # PURPOSE: Lightweight document index for fast retrieval without loading full text.
 # DEPENDENCIES: filesystem access, json.
@@ -102,7 +227,13 @@ class DocumentIndex:
         except Exception:
             return None
     
-    def build(self, text_map: Dict[str, str], theme_keywords: List[str], invalidate_on_mtime: bool = True):
+    def build(
+        self,
+        text_map: Dict[str, str],
+        theme_keywords: List[str],
+        invalidate_on_mtime: bool = True,
+        chunk_tags_config: Optional[Dict[str, Any]] = None,
+    ):
         """
         Build index from text_map, extracting metadata and keywords per document.
         
@@ -110,19 +241,23 @@ class DocumentIndex:
             text_map: Dictionary mapping document keys to text content.
             theme_keywords: List of theme keywords to extract.
             invalidate_on_mtime: If True, check mtime and skip if unchanged.
+            chunk_tags_config: Optional dict with "defaults" and "overrides" for B2 tags.
         """
         logger.info(f"Building document index for {len(text_map)} documents...")
         updated_count = 0
         new_count = 0
-        
+        chunk_tags_config = chunk_tags_config or {}
+
         for doc_key, text in text_map.items():
             # Check if entry exists and is still valid
             was_already_indexed = doc_key in self.index
-            if invalidate_on_mtime and was_already_indexed:
+            existing_tags = (self.index.get(doc_key) or {}).get("tags")
+            needs_tags = not existing_tags or not all(k in (existing_tags or {}) for k in CHUNK_TAG_KEYS)
+            if invalidate_on_mtime and was_already_indexed and not needs_tags:
                 cached_mtime = self.index[doc_key].get("mtime")
                 current_mtime = self._get_file_mtime(doc_key)
                 if cached_mtime and current_mtime and cached_mtime == current_mtime:
-                    # Skip if unchanged
+                    # Skip if unchanged and already has full tags
                     continue
             
             # Extract metadata
@@ -142,10 +277,18 @@ class DocumentIndex:
             # Extract themes (fast regex-based)
             themes = build_theme_counts(text[:50000], theme_keywords)  # First 50K for speed
             
-            # Chunk-level tags (B2): optional per schema in 05_rag_integration.md
-            tags: Dict[str, str] = {}
-            if doc_type == "pdf":
-                tags = {"system": "W&G"}
+            # Chunk-level tags (B2): extract_chunk_tags with schema keys
+            tags = extract_chunk_tags(doc_key, text, doc_type, chunk_tags_config)
+            # Ensure all schema keys present
+            for k in CHUNK_TAG_KEYS:
+                if k not in tags:
+                    tags[k] = ""
+            # Preserve existing tags on re-index: config/heuristic wins over existing for non-empty
+            existing = (self.index.get(doc_key) or {}).get("tags") or {}
+            for k in CHUNK_TAG_KEYS:
+                if k in existing and existing[k] and not tags.get(k):
+                    tags[k] = existing[k]
+            tags = {k: tags.get(k, "") or "" for k in CHUNK_TAG_KEYS}
             
             # Store metadata
             self.index[doc_key] = {
@@ -156,7 +299,7 @@ class DocumentIndex:
                 "keywords": keywords,
                 "themes": themes,
                 "preview": text[:500],  # First 500 chars for preview
-                "tags": tags,
+                "tags": tags or {},
             }
             
             if was_already_indexed:
@@ -337,7 +480,7 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
     base_config = load_config(config_path)
     rag_defaults = {
         "enabled": True,
-        "campaign_kb_root": "D:\\arc_forge\\campaign_kb",
+        "campaign_kb_root": "D:\\Arc_Forge\\campaign_kb",
         "campaign_docs": [
             "campaign/00_overview.md",
             "campaign/01_factions.md",
@@ -404,7 +547,7 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
 
     rag_config = merge_config(rag_defaults, base_config.get("rag_pipeline", {}))
 
-    vault_root = Path(base_config.get("vault_root", "D:\\arc_forge\\ObsidianVault"))
+    vault_root = Path(base_config.get("vault_root", "D:\\Arc_Forge\\ObsidianVault"))
     output_dir = Path(rag_config["output_dir"])
     if not output_dir.is_absolute():
         output_dir = vault_root / output_dir
@@ -1256,6 +1399,7 @@ def run_pipeline(
             text_map,
             rag_config.get("theme_keywords", []),
             invalidate_on_mtime=cache_config.get("invalidate_on_mtime_change", True),
+            chunk_tags_config=rag_config.get("chunk_tags", {}),
         )
 
     # Query mode: Fast path with lazy evaluation

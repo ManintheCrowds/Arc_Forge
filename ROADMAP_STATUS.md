@@ -12,7 +12,7 @@ Unified test run from repo root (`.\scripts\run_tests.ps1`):
 | workflow_ui        | 45 passed, 1 skipped| OK     |
 | ObsidianVault scripts | 273 passed, 9 skipped | OK  |
 
-**Overall:** All suites passed. Prerequisites: pytest, Python 3.x; run from `arc_forge` root.
+**Overall:** All suites passed. Prerequisites: pytest, Python 3.x; run from Arc_Forge root.
 
 ## Grading (plan rubric)
 
