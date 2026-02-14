@@ -38,6 +38,14 @@ class IngestDocsRequest(BaseModel):
     docs_root: str | None = Field(default=None, description="Directory containing reference docs.")
 
 
+class IngestCampaignDocsRequest(BaseModel):
+    # PURPOSE: Validate campaign docs ingestion (RAG-aligned sources).
+    # DEPENDENCIES: Pydantic
+    # MODIFICATION NOTES: Aligns campaign_kb with RAG pipeline campaign_docs.
+
+    docs_root: str | None = Field(default=None, description="Campaign docs directory (default: campaign_docs_root).")
+
+
 class IngestRepoRequest(BaseModel):
     # PURPOSE: Validate GitHub repo ingestion request inputs.
     # DEPENDENCIES: Pydantic
@@ -96,3 +104,26 @@ class MergeResponse(BaseModel):
 
     output_path: str
     citations_included: int
+
+
+class DaggrRunCompleteRequest(BaseModel):
+    # PURPOSE: WatchTower run-complete payload from report_run.
+    # DEPENDENCIES: Pydantic
+    # MODIFICATION NOTES: T4 - campaign_kb serves as WatchTower receiver.
+
+    workflow: str
+    duration_sec: float
+    success: bool
+    project: str = "campaign_kb"
+
+
+class ErrorReportRequest(BaseModel):
+    # PURPOSE: WatchTower /api/errors payload from log_structured_error.
+    # DEPENDENCIES: Pydantic
+    # MODIFICATION NOTES: T4 - structured error reporting.
+
+    project: str = "unknown"
+    error_type: str
+    message: str
+    traceback: str = ""
+    context: dict | None = None

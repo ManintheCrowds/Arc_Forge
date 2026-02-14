@@ -32,6 +32,16 @@
 | Adventure |  |  |  |  |  |  |
 | Bios |  |  |  |  |  |  |
 
+## Automated Evaluation (optional)
+
+Enable heuristic evaluation in `ingest_config.json` under `rag_pipeline`:
+
+```json
+"evaluation": { "enabled": true }
+```
+
+When enabled, the pipeline runs `evaluate_content_pack` after generation and writes `rag_evaluation.json` to the output dir. Scores are heuristic-based (citation density, structure checks via regex for `## Scope`, `### Mechanics`, etc., tone keywords). Coherence defaults to placeholder (3.0); set `evaluation.coherence_method: "llm"` to use LLM-based coherence scoring (requires generation provider).
+
 ## Testing Checklist
 - [ ] Run `rag_pipeline.py` against the campaign docs
 - [ ] Validate output files in `Campaigns/_rag_outputs`

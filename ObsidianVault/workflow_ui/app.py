@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+import traceback
 import urllib.error
 import urllib.request
 from datetime import datetime
@@ -29,6 +30,11 @@ if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
 # Import after path fix (storyboard_workflow imports rag_pipeline as top-level; scripts/ must be on path)
+try:
+    from scripts.error_handling import log_structured_error
+except ImportError:
+    def log_structured_error(*args, **kwargs):
+        pass
 from scripts.session_ingest import run_archivist, run_foreshadowing
 from scripts.storyboard_workflow import (
     export_final_specs,
@@ -57,6 +63,16 @@ def _error_response(message: str, status_code: int, detail: str | None = None):
     return jsonify(_error_payload(message, detail=detail)), status_code
 
 
+def _log_workflow_error(entry: str, e: Exception, context: dict | None = None) -> None:
+    """Log structured error for workflow_ui entry points (T2.3)."""
+    log_structured_error(
+        type(e).__name__,
+        str(e),
+        traceback.format_exc(),
+        context={"entry": entry, **(context or {})},
+    )
+
+
 @app.errorhandler(429)
 def ratelimit_exceeded(e):
     """Return JSON and Retry-After on rate limit (Flask-Limiter sets Retry-After when RATELIMIT_HEADERS_ENABLED)."""
@@ -65,7 +81,11 @@ def ratelimit_exceeded(e):
 
 SCRIPTS = _VAULT / "scripts"
 CAMPAIGNS = Path(os.environ.get("WORKFLOW_UI_CAMPAIGNS_PATH", str(_VAULT / "Campaigns")))
-CONFIG_PATH = Path(os.environ.get("WORKFLOW_UI_CONFIG_PATH", str(SCRIPTS / "ingest_config.json")))
+_CONFIG_ENV = (
+    os.environ.get("RAG_INGEST_CONFIG_PATH", "").strip()
+    or os.environ.get("WORKFLOW_UI_CONFIG_PATH", "").strip()
+)
+CONFIG_PATH = Path(_CONFIG_ENV) if _CONFIG_ENV else (SCRIPTS / "ingest_config.json")
 CAMPAIGN_KB = _VAULT.parent / "campaign_kb"
 # Base URL for campaign_kb API (proxy target); set CAMPAIGN_KB_URL to override.
 CAMPAIGN_KB_URL = os.environ.get("CAMPAIGN_KB_URL", "http://127.0.0.1:8000").rstrip("/")
@@ -528,6 +548,7 @@ def api_run_stage1():
         res = run_stage_1(storyboard_path.resolve(), arc_id, output_dir.resolve(), body.get("storyboard_ref"))
         return jsonify(res)
     except Exception as e:
+        _log_workflow_error("api_run_stage1", e, {"arc_id": arc_id})
         return _error_response("stage1_failed", 500, detail=str(e))
 
 
@@ -560,6 +581,7 @@ def api_run_stage2():
         res = run_stage_2(td_path.resolve(), storyboard_path.resolve(), arc_id, config_path.resolve(), output_dir)
         return jsonify(res)
     except Exception as e:
+        _log_workflow_error("api_run_stage2", e, {"arc_id": arc_id})
         return _error_response("stage2_failed", 500, detail=str(e))
 
 
@@ -598,6 +620,7 @@ def api_run_stage4():
         res = refine_encounter(draft_path.resolve(), feedback_path.resolve(), rag_config)
         return jsonify(res)
     except Exception as e:
+        _log_workflow_error("api_refine_encounter", e)
         return _error_response("stage4_failed", 500, detail=str(e))
 
 
@@ -634,6 +657,7 @@ def api_run_stage5():
         )
         return jsonify(res)
     except Exception as e:
+        _log_workflow_error("api_run_stage5", e, {"arc_id": arc_id})
         return _error_response("stage5_failed", 500, detail=str(e))
 
 
@@ -974,6 +998,7 @@ def api_session_archivist():
         res = run_archivist(session_path, CONFIG_PATH, output_path=output_path, system_prompt_path=None)
         return jsonify(res)
     except Exception as e:
+        _log_workflow_error("api_session_archivist", e)
         return _error_response("archivist_failed", 500, detail=str(e))
 
 
@@ -996,6 +1021,7 @@ def api_session_foreshadow():
         res = run_foreshadowing(context_path, CONFIG_PATH, output_path=output_path, system_prompt_path=None)
         return jsonify(res)
     except Exception as e:
+        _log_workflow_error("api_session_foreshadow", e)
         return _error_response("foreshadow_failed", 500, detail=str(e))
 
 

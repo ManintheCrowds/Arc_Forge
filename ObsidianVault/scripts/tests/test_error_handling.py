@@ -2,10 +2,12 @@
 # DEPENDENCIES: pytest, error_handling module.
 # MODIFICATION NOTES: Tests retry logic, error collection, and fallback decorators.
 
-import pytest
+import json
+import sys
 import time
 from pathlib import Path
-import sys
+
+import pytest
 
 # Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -15,6 +17,7 @@ try:
         retry_with_backoff,
         with_fallback,
         ErrorCollector,
+        log_structured_error,
     )
     ERROR_HANDLING_AVAILABLE = True
 except ImportError:
@@ -211,6 +214,40 @@ class TestErrorCollector:
         
         captured = capsys.readouterr()
         assert "successfully" in captured.out.lower() or "no errors" in captured.out.lower()
+
+
+class TestLogStructuredError:
+    """T5.4 – test log_structured_error writes JSON with expected keys."""
+
+    def test_log_structured_error_writes_file(self, tmp_path):
+        """log_structured_error must write JSON line with error_type, message, traceback, timestamp, context."""
+        log_file = tmp_path / "errors.log"
+        log_structured_error(
+            "KeyError",
+            "'source'",
+            "Traceback (most recent call last):\n  File \"test.py\", line 1, in <module>\nKeyError: 'source'",
+            context={"entry": "run_pipeline"},
+            log_path=str(log_file),
+        )
+        assert log_file.exists()
+        lines = log_file.read_text(encoding="utf-8").strip().split("\n")
+        assert len(lines) == 1
+        data = json.loads(lines[0])
+        assert data["error_type"] == "KeyError"
+        assert data["message"] == "'source'"
+        assert "Traceback" in data["traceback"]
+        assert "timestamp" in data
+        assert data["context"] == {"entry": "run_pipeline"}
+
+    def test_log_structured_error_appends(self, tmp_path):
+        """log_structured_error must append to existing file."""
+        log_file = tmp_path / "errors.log"
+        log_structured_error("E1", "m1", "tb1", log_path=str(log_file))
+        log_structured_error("E2", "m2", "tb2", log_path=str(log_file))
+        lines = log_file.read_text(encoding="utf-8").strip().split("\n")
+        assert len(lines) == 2
+        assert json.loads(lines[0])["error_type"] == "E1"
+        assert json.loads(lines[1])["error_type"] == "E2"
 
 
 if __name__ == "__main__":

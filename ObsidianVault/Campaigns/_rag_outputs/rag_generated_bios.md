@@ -1,22 +1,19 @@
 # RAG Generated: bios
 
 NPC Bio 1:
-
-Role: Captain of the Death Korps of Krieg
-Motivation: Protecting the Imperium and its citizens from threats within and outside the Gilead System
-Secret: Has a personal vendetta against a particular faction within the Gilead System, resulting in a secret agenda that may not align with the overall goals of the Death Korps.
-Hook: Is seeking to recruit new members for an upcoming mission to eliminate a growing threat to the Imperium.
+Role: Infiltrator
+Motivation: Uncovering enemy secrets for the greater good of the Absolutors Chapter
+Secret: Has been working undercover within a rival chapter, gathering intel on their operations and weaknesses.
+Hook: Uncovers a plot by the rival chapter to steal powerful psychic artifacts from the Eldar Empire, leading to a race against time to stop them before they can use the stolen power against the Imperium.
 
 NPC Bio 2:
-
-Role: Skitarius Tech Advisor Delta-Signis-45
-Motivation: Uncovering and neutralizing threats to the Imperium through advanced technology and strategic planning.
-Secret: Has discovered a hidden cache of forbidden knowledge that could potentially threaten the stability of the Imperium, but is unsure of its full implications.
-Hook: Is seeking to form an alliance with a select group of characters in order to uncover a powerful artifact rumored to be hidden within the Gilead System.
+Role: Saboteur
+Motivation: Bringing chaos and disorder to enemy forces through cunning and stealth
+Secret: Holds a personal vendetta against a high-ranking officer in the enemy chapter, and will stop at nothing to bring them down.
+Hook: Discovered a hidden cache of weapons and supplies belonging to the enemy, leading to a race against time to eliminate their source of strength before they can use it against the Absolutors.
 
 NPC Bio 3:
-
-Role: Primaris Astartes Renegade White Scar Primus Tarquinius Superbus
-Motivation: Defying the Imperium's authority and leading his faction against those who would seek to oppress them.
-Secret: Has discovered a hidden weakness in the Imperium's defenses that could lead to a significant advantage for his faction, but is unsure of how to exploit it.
-Hook: Is seeking to form an uneasy alliance with a select group of characters in order to take down a powerful foe and prove his worth as a leader.
+Role: Librarian
+Motivation: Unlocking the secrets of the Warp to further the goals of the Absolutors Chapter
+Secret: Possesses a hidden agenda to uncover a lost Psyker artifact rumored to hold immense power, which they plan to use to tip the balance of the war in favor of the Imperium.
+Hook: Uncovers a hidden cult operating within the Gilead System, using their twisted rituals to channel dark energy into the Warp, threatening the stability of the entire system.

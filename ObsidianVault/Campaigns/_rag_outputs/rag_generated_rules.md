@@ -1,39 +1,21 @@
 # RAG Generated: rules
 
-Wrath & Glory Rules Module: Entities, Items, Locations, and NPCs
+ Wrath & Glory Module: Reiver Psychological Warfare
 
-Overview: This concise module summarizes the key rules, important NPCs, notable items, equipment, or artifacts, and campaign-relevant information in Wrath & Glory: Of the Gilead System. It includes the following entities, items, locations, and NPCs:
+Summary: In this module, you will learn how to utilize your Primaris Reiver's unique abilities to conduct psychological warfare and coordinated terror attacks behind enemy lines. You will discover the mechanics of infiltration, stealth, and sabotage, as well as how to use your Mark X Phobos Power Armour and other advanced technology to gain an advantage on the battlefield.
 
-Entities:
-
-* Death Korps of Krieg (Imperial armoured infantry)
-* Augmetic Arm (location within the Gilead System)
-* Core (location within the Gilead System)
-* Tools & Equipment (location within the Gilead System)
-
-Items, Equipment, or Artifacts:
-
-* Rusty boat hook
-* Boltgun
-* Hellfire Bolt Rounds
-
-NPCs:
-
-* Atticus (Space Marine Scout)
-* Constantina (Sister of Battle)
-* Delta-Signis-45 (Skitarius tech advisor)
-* Tarquinius Superbus (Primaris Astartes Renegade White Scar Primaris)
+Scope: This module focuses on the Reiver's abilities and equipment, specifically designed for conducting psychological warfare and terror attacks. It covers the rules for infiltration, stealth, and sabotage, as well as how to use your Mark X Phobos Power Armour and other advanced technology to gain an advantage on the battlefield.
 
 Mechanics:
 
-* Armour for Abhumans
-* Augmentics and equipment/gear for characters
-* Keyword-based abilities and talents
+* Infiltration: Reivers have a bonus of +1 when making Stealth rolls to enter enemy territory undetected.
+* Stealth: Reivers can use their Psychic Mastery ability to remain hidden even in plain sight, gaining a +2 bonus to Stealth checks.
+* Sabotage: Reivers can use their Force Stave to disable or destroy enemy equipment and vehicles, adding +1 to the attack roll.
+* Mark X Phobos Power Armour: Reivers wear this advanced armour, providing them with a +1 bonus to Armour saves against psychic attacks and +2 to Melee Attacks. The armour also includes a built-in Librarius Discipline ability, allowing the Reiver to use Psychic Mastery once per battle without needing to roll for it.
+* Psychic Mastery: As a Primaris Reiver, you have access to this unique discipline, which allows you to manipulate the minds of others. You can use your Psychic Mastery ability once per battle to affect a single enemy within 12 inches, causing them to become confused and disoriented for one turn.
 
 Example of Play:
 
-* Atticus, a Space Marine Scout, uses his Boltgun to take down an enemy Death Korps of Krieg soldier during a skirmish within the Gilead System.
-* Constantina, a Sister of Battle, uses her Defence skill to dodge an attack from a Tarquinius Superbus, a Primaris Astartes Renegade White Scar Primaris, during a battle within Augmetic Arm.
-* Delta-Signis-45, a Skitarius tech advisor, repairs a broken Rusty boat hook using his Mechanical skill, allowing the group to continue their mission within Tools & Equipment.
+You are a Reiver of the Absolutors Chapter, tasked with conducting psychological warfare and coordinated terror attacks behind enemy lines. You infiltrate a heavily fortified Ork stronghold, using your Stealth ability to avoid detection as you make your way deeper into the facility. Once inside, you use your Sabotage ability to disable critical systems, causing chaos and confusion among the Orks. With the Orks now in disarray, you activate your Mark X Phobos Power Armour, using its advanced technology to take down multiple enemies at once and secure a crucial victory for your Chapter.
 
-This module provides a concise summary of the key rules, important NPCs, notable items, equipment, or artifacts, and campaign-relevant information in Wrath & Glory: Of the Gilead System. It includes only the entities listed above and does not mention any items, weapons, or artifacts that are not in the canonical items list.
+Remember, as a Reiver, you are committed to mastering psychological warfare and unleashing your full Primaris strength in carefully coordinated terror attacks. With your unique abilities and equipment, you are a formidable force on the battlefield, capable of striking fear into the hearts of even the most hardened foes.

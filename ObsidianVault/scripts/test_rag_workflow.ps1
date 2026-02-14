@@ -54,8 +54,8 @@ try:
     pdf_map = read_pdf_texts(
         pdf_dir,
         file_pattern=rag_config.get('pdf_file_pattern', '*.txt'),
-        max_chunk_size=pdf_config.get('max_chunk_size', 50000),
-        max_chunks_per_pdf=pdf_config.get('max_chunks_per_pdf', 10),
+        max_chunk_size=pdf_config.get('max_chunk_size', 8000),
+        max_chunks_per_pdf=pdf_config.get('max_chunks_per_pdf', 50),
         max_total_text_chars=pdf_config.get('max_total_text_chars', 2000000),
     )
     

@@ -1,0 +1,6 @@
+# RAG semantic retrieval (Option B: ChromaDB-only)
+# Install with: pip install -r requirements-rag.txt
+# Note: sentence-transformers pulls PyTorch (~2GB); use CPU-only if disk constrained
+
+chromadb>=0.4.0
+sentence-transformers>=2.2.0

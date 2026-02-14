@@ -49,6 +49,23 @@ python -m workflow_ui.gradio_app
 
 Default Gradio URL: `http://localhost:7861`. Override with `GRADIO_APP_URL` (Flask) and `GRADIO_PORT` (Gradio app). The Gradio screen calls the Flask app's `/api/kb/search` (no duplicate backend logic).
 
+## Environment variables
+
+| Variable | Purpose | Default | Used by |
+|----------|---------|---------|---------|
+| `WORKFLOW_UI_HOST` | Flask bind host | 127.0.0.1 | app.py |
+| `WORKFLOW_UI_PORT` | Flask port | 5050 | app.py |
+| `WORKFLOW_UI_CAMPAIGNS_PATH` | Campaigns directory | ObsidianVault/Campaigns | app.py |
+| `WORKFLOW_UI_CONFIG_PATH` | ingest_config.json path (fallback) | scripts/ingest_config.json | app.py |
+| `RAG_INGEST_CONFIG_PATH` | Canonical ingest_config.json path (overrides WORKFLOW_UI_CONFIG_PATH) | (none) | app.py, rag_workflow |
+| `CAMPAIGN_KB_URL` | campaign_kb API base (proxy target) | http://127.0.0.1:8000 | app.py |
+| `CAMPAIGN_KB_DAGGR_URL` | Redirect target for /tools/kb-daggr | http://localhost:7860 | app.py |
+| `GRADIO_APP_URL` | Redirect target for /tools/gradio | http://localhost:7861 | app.py |
+| `WORKFLOW_UI_URL` | Flask app base for gradio_app to call /api/kb/search | http://127.0.0.1:5050 | gradio_app.py |
+| `GRADIO_PORT` | Gradio app port | 7861 | gradio_app.py |
+| `WATCHTOWER_METRICS_URL` | Base URL for POST /api/errors (error reporting) | (unset = no-op) | error_handling.py via workflow_ui |
+| `WATCHTOWER_ERRORS_URL` | Base URL for POST /api/errors | fallback to WATCHTOWER_METRICS_URL | error_handling.py |
+
 ## Backend contract
 
 GUI uses the same entry points as the CLI: `run_stage_1`, `run_stage_2`, `refine_encounter`, `export_final_specs`. Paths and `arc_id` are sent in request bodies; Stage 4 accepts `arc_id` and derives `feedback_path` when omitted.
@@ -85,4 +102,5 @@ See [docs/PLAYWRIGHT_INTEGRATION.md](docs/PLAYWRIGHT_INTEGRATION.md) for integra
 - [Campaigns/docs/gui_spec.md](../Campaigns/docs/gui_spec.md) – full GUI spec  
 - [Campaigns/docs/workflow_diagrams.md](../Campaigns/docs/workflow_diagrams.md) – pipeline and file-tree diagrams
 - [docs/DEVELOPMENT_PLAN_REMAINING.md](docs/DEVELOPMENT_PLAN_REMAINING.md) – remaining tasks and agent-referenceable plan
+- [docs/DAGGR_INTEGRATION.md](docs/DAGGR_INTEGRATION.md) – Daggr redirect vs embed decision
 - `.cursor/docs/GRADIO_FRAMEWORK.md` – Gradio + Daggr conventions (cross-codebase)

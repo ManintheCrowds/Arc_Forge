@@ -241,7 +241,7 @@ def draft_encounter(
         f"**Encounter:** {name} (id: {eid}, type: {etype})\n"
         f"**Storyboard section:** {section}\n\n"
         f"**Storyboard excerpt:**\n{story_excerpt}\n\n"
-        f"**Mechanics context (use or adapt):**\n{context_summary[:2000]}\n\n"
+        f"**Mechanics context (use or adapt):**\n{context_summary[:rag_config.get('search', {}).get('max_chunk_chars', 2000)]}\n\n"
         f"**NPC reference (link or paraphrase):**\n{npc_excerpt[:1500]}\n\n"
         f"**Location reference:**\n{loc_excerpt[:1500]}\n\n"
         "Output format:\n"

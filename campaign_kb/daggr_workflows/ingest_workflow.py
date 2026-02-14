@@ -87,6 +87,20 @@ def _run_docs(docs_root_str: str, source_name: str) -> str:
 
 
 @with_run_reporting
+def _run_campaign_docs(docs_root_str: str, source_name: str) -> str:
+    """Ingest campaign docs (RAG-aligned). Run before RAG with use_kb_search=true."""
+    db = SessionLocal()
+    try:
+        root = Path(docs_root_str.strip()) if docs_root_str.strip() else settings.campaign_docs_root
+        docs, sections = ingest_reference_docs(db, root, source_name or "campaign_docs")
+        return f"Campaign docs: {docs} documents, {sections} sections"
+    except Exception as e:
+        return f"Campaign docs ingest error: {str(e)}"
+    finally:
+        db.close()
+
+
+@with_run_reporting
 def _run_repos(repo_urls_str: str, timeout: float, source_name: str) -> str:
     db = SessionLocal()
     try:
@@ -138,6 +152,18 @@ docs_node = FnNode(
     outputs={"result": gr.Textbox(label="Docs ingest result", lines=2)},
 )
 
+campaign_docs_root_in = gr.Textbox(
+    label="Campaign docs root (RAG-aligned)",
+    value=str(settings.campaign_docs_root),
+    lines=1,
+)
+source_campaign_docs = gr.Textbox(label="Source name (campaign)", value="campaign_docs", lines=1)
+campaign_docs_node = FnNode(
+    fn=_run_campaign_docs,
+    inputs={"docs_root_str": campaign_docs_root_in, "source_name": source_campaign_docs},
+    outputs={"result": gr.Textbox(label="Campaign docs ingest result", lines=2)},
+)
+
 repos_in = gr.Textbox(
     label="Repo URLs (one per line)",
     value="\n".join(settings.repo_urls),
@@ -153,7 +179,7 @@ repos_node = FnNode(
 
 graph = Graph(
     name="Campaign KB Ingest",
-    nodes=[pdf_node, seed_node, dod_node, docs_node, repos_node],
+    nodes=[pdf_node, seed_node, dod_node, docs_node, campaign_docs_node, repos_node],
 )
 
 if __name__ == "__main__":

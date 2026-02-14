@@ -9,16 +9,18 @@ import json
 import logging
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from utils import load_config, validate_vault_path
 
 # #region agent log
-DEBUG_LOG_PATH = Path("d:\\CodeRepositories\\.cursor\\debug.log")
 def _debug_log(location: str, message: str, data: dict, hypothesis_id: str = "A"):
+    import os
+    log_path = Path(os.environ.get("RAG_DEBUG_LOG_PATH", "d:\\CodeRepositories\\.cursor\\debug.log"))
     try:
-        with open(DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
+        with open(log_path, "a", encoding="utf-8") as f:
             f.write(json.dumps({
                 "sessionId": "debug-session",
                 "runId": "run1",
@@ -28,7 +30,8 @@ def _debug_log(location: str, message: str, data: dict, hypothesis_id: str = "A"
                 "data": data,
                 "timestamp": int(time.time() * 1000)
             }) + "\n")
-    except: pass
+    except OSError as e:
+        logger.debug(f"_debug_log failed: {e}")
 # #endregion
 
 logger = logging.getLogger(__name__)
@@ -51,7 +54,20 @@ except ImportError:
 
 import hashlib
 import os
+import traceback
 from collections import defaultdict
+
+try:
+    from error_handling import log_structured_error
+except ImportError:
+    def log_structured_error(*args, **kwargs):
+        pass
+
+try:
+    from rag_evaluation import evaluate_content_pack
+    EVALUATION_AVAILABLE = True
+except ImportError:
+    EVALUATION_AVAILABLE = False
 
 # Schema keys for chunk tags (B2); empty string = unrestricted for filtering.
 CHUNK_TAG_KEYS = (
@@ -233,6 +249,7 @@ class DocumentIndex:
         theme_keywords: List[str],
         invalidate_on_mtime: bool = True,
         chunk_tags_config: Optional[Dict[str, Any]] = None,
+        preview_chars: int = 2000,
     ):
         """
         Build index from text_map, extracting metadata and keywords per document.
@@ -242,6 +259,7 @@ class DocumentIndex:
             theme_keywords: List of theme keywords to extract.
             invalidate_on_mtime: If True, check mtime and skip if unchanged.
             chunk_tags_config: Optional dict with "defaults" and "overrides" for B2 tags.
+            preview_chars: Number of chars for preview field (default 2000).
         """
         logger.info(f"Building document index for {len(text_map)} documents...")
         updated_count = 0
@@ -298,7 +316,7 @@ class DocumentIndex:
                 "type": doc_type,
                 "keywords": keywords,
                 "themes": themes,
-                "preview": text[:500],  # First 500 chars for preview
+                "preview": text[:preview_chars],
                 "tags": tags or {},
             }
             
@@ -346,9 +364,10 @@ class DocumentIndex:
         
         for doc_key, metadata in self.index.items():
             tags = metadata.get("tags") or {}
-            # Strict Canon: exclude entries that don't satisfy all tag_filters
+            # Strict Canon: exclude entries that don't satisfy non-empty tag_filters (empty value = unrestricted)
             if retrieval_mode == "Strict Canon" and tag_filters:
-                if not all(tags.get(k) == v for k, v in tag_filters.items()):
+                restrictive = {k: v for k, v in tag_filters.items() if v}
+                if restrictive and not all(tags.get(k) == v for k, v in restrictive.items()):
                     continue
             # Inspired By: no tag-based filtering; fall through to scoring only
             
@@ -373,12 +392,13 @@ class DocumentIndex:
                 if term in themes:
                     score += themes[term] * 0.3
             
-            # Loose Canon: boost for tag match (exact or partial)
+            # Loose Canon: boost for tag match (exact or partial); empty filter value = unrestricted
             if retrieval_mode == "Loose Canon" and tag_filters:
-                match_count = sum(1 for k, v in tag_filters.items() if tags.get(k) == v)
-                if match_count == len(tag_filters):
+                restrictive = {k: v for k, v in tag_filters.items() if v}
+                match_count = sum(1 for k, v in restrictive.items() if tags.get(k) == v)
+                if restrictive and match_count == len(restrictive):
                     score += 5.0  # Full tag match
-                elif match_count > 0:
+                elif restrictive and match_count > 0:
                     score += 2.0  # Partial tag match
             
             if score > 0:
@@ -459,6 +479,59 @@ class EntityCache:
         except Exception as exc:
             logger.warning(f"Failed to cache entities for {doc_key}: {exc}")
 
+    def _get_composite_key(self, combined_text: str) -> str:
+        """Generate cache key for combined multi-doc extraction."""
+        combined_hash = hashlib.md5(combined_text.encode("utf-8")).hexdigest()[:12]
+        return f"combined_{combined_hash}.json"
+
+    def get_composite(self, doc_keys: List[str], combined_text: str) -> Optional[Dict[str, Any]]:
+        """
+        Get cached entities for a combined set of documents.
+        
+        Args:
+            doc_keys: Document keys that were combined (for verification).
+            combined_text: The combined text that was extracted.
+            
+        Returns:
+            Cached entities dict or None if not cached/invalid.
+        """
+        cache_file = self.cache_dir / self._get_composite_key(combined_text)
+        if not cache_file.exists():
+            return None
+        try:
+            with open(cache_file, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+            expected_hash = hashlib.md5(combined_text.encode("utf-8")).hexdigest()[:12]
+            if cached.get("combined_hash") != expected_hash:
+                return None
+            return cached.get("entities")
+        except Exception as exc:
+            logger.debug(f"Failed to load composite entity cache: {exc}")
+            return None
+
+    def set_composite(self, doc_keys: List[str], combined_text: str, entities: Dict[str, Any]):
+        """
+        Cache entity extraction results for a combined set of documents.
+        
+        Args:
+            doc_keys: Document keys that were combined.
+            combined_text: The combined text that was extracted.
+            entities: Extracted entities dictionary.
+        """
+        cache_file = self.cache_dir / self._get_composite_key(combined_text)
+        try:
+            combined_hash = hashlib.md5(combined_text.encode("utf-8")).hexdigest()[:12]
+            cached_data = {
+                "doc_keys": doc_keys,
+                "combined_hash": combined_hash,
+                "entities": entities,
+                "timestamp": time.time(),
+            }
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump(cached_data, f, indent=2, ensure_ascii=False)
+        except Exception as exc:
+            logger.warning(f"Failed to cache composite entities: {exc}")
+
 
 # PURPOSE: Merge nested configuration dictionaries with defaults.
 # DEPENDENCIES: None.
@@ -495,8 +568,12 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
         "use_kb_search": True,
         "search": {
             "limit": 8,
+            "max_chunk_chars": 2000,
             "source_name": None,
             "doc_type": None,
+        },
+        "retrieval": {
+            "strategy": "docindex",  # "chroma" | "docindex" | "hybrid"
         },
         "summarization": {
             "provider": "ollama",
@@ -514,6 +591,7 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
             "max_tokens": 800,
             "temperature": 0.8,
             "ollama_endpoint": None,
+            "parallel": True,
         },
         "theme_keywords": [
             "faith",
@@ -531,6 +609,11 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
         "pdf_extraction_dir": "Sources/_extracted_text",
         "include_pdfs": True,
         "pdf_file_pattern": "*.txt",
+        "pdf_ingestion": {
+            "max_chunk_size": 8000,
+            "max_chunks_per_pdf": 50,
+            "max_total_text_chars": 2000000,
+        },
         "cache": {
             "enabled": True,
             "cache_dir": "Campaigns/_rag_cache",
@@ -538,10 +621,42 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
             "entity_cache_dir": "entities",
             "invalidate_on_mtime_change": True,
         },
+        "index": {
+            "preview_chars": 8000,
+        },
         "query_mode": {
             "skip_full_analysis": True,
             "max_retrieved_docs": 8,
             "lazy_entity_extraction": True,
+        },
+        "evaluation": {"enabled": False, "coherence_method": "placeholder"},
+        "storyboard": {
+            "campaign_context": [
+                "Rogue Trader crew from Harbinger of Woe",
+                "Mission: Protect family's Hive world from cryo-plague and cult activity",
+                "Setting: Glacial hive world with mag-train lines and frozen plains",
+                "Argent Maw mag-train is the target",
+            ],
+            "constraints": [
+                "Setting is LAND-BASED: highway racing alongside train track, rubble obstacles",
+                "DO NOT mention space, asteroids, or void travel",
+                "Players are ROGUE TRADER CREW, NOT Space Marines",
+                "Carcharodon Astra are FORESHADOWED (hinted at), NOT with the players",
+                "Rogue Trader PC is protecting their family's Hive world",
+                "MUST include Wrath & Glory mechanics (DN tests, Wrath dice, Shifts, etc.)",
+                "Enemy type MUST match specifications (if Ork units are listed, enemies are Orks, NOT cults)",
+                "MUST mention character names from character sheets (Brawn Solo, Godwin, Tarquinius, etc.)",
+                "MUST complete ALL sections: ABSTRACTION LEVEL, SCENE BREAKDOWN, MECHANICAL ELEMENTS, WRATH & GLORY MECHANICS, MINIATURE SETUP, FORESHADOWING & HOOKS, GM NOTES",
+            ],
+        },
+        "use_chroma": False,
+        "chroma": {
+            "persist_dir": "Campaigns/_rag_cache/chroma",
+            "embedding_model": "all-MiniLM-L6-v2",
+            "collection_name": "arc_forge_rag",
+            "chunk_size": 8000,
+            "chunk_overlap": 200,
+            "incremental": False,
         },
     }
 
@@ -597,8 +712,8 @@ def read_campaign_docs(doc_paths: List[Path]) -> Dict[str, str]:
 def read_pdf_texts(
     pdf_extraction_dir: Path,
     file_pattern: str = "*.txt",
-    max_chunk_size: int = 50000,
-    max_chunks_per_pdf: int = 10,
+    max_chunk_size: int = 8000,
+    max_chunks_per_pdf: int = 50,
     max_total_text_chars: int = 2000000,
 ) -> Dict[str, str]:
     """
@@ -607,8 +722,8 @@ def read_pdf_texts(
     Args:
         pdf_extraction_dir: Directory containing extracted PDF text files.
         file_pattern: File pattern to match (default: "*.txt").
-        max_chunk_size: Maximum characters per chunk (default: 50000).
-        max_chunks_per_pdf: Maximum chunks per PDF file (default: 10).
+        max_chunk_size: Maximum characters per chunk (default: 8000).
+        max_chunks_per_pdf: Maximum chunks per PDF file (default: 50).
         max_total_text_chars: Maximum total characters across all PDFs (default: 2M).
         
     Returns:
@@ -794,6 +909,15 @@ def extract_entities_from_docs(
         logger.info(f"Truncating combined text for entity extraction: {len(combined_text):,} -> {MAX_TEXT_FOR_ENTITY_EXTRACTION:,} chars")
         combined_text = combined_text[:MAX_TEXT_FOR_ENTITY_EXTRACTION]
     
+    # Check composite cache when multiple docs (avoids cross-doc contamination)
+    relevant_doc_keys = [dk for dk, _ in relevant_texts]
+    if entity_cache and len(relevant_texts) > 1:
+        cached = entity_cache.get_composite(relevant_doc_keys, combined_text)
+        if cached:
+            for category in entities:
+                entities[category].extend(cached.get(category, []))
+            return entities
+    
     # Extract entities
     extracted = extract_entities_from_text(
         combined_text,
@@ -804,11 +928,14 @@ def extract_entities_from_docs(
     )
     
     if extracted:
-        # Cache results per document
         if entity_cache:
-            for doc_key, text in relevant_texts:
-                # Cache entities for this document (approximate - using combined extraction)
+            if len(relevant_texts) == 1:
+                # Single doc: cache per-doc (correct, no contamination)
+                doc_key, text = relevant_texts[0]
                 entity_cache.set(doc_key, text, extracted)
+            else:
+                # Multi doc: cache composite only (avoids per-doc contamination)
+                entity_cache.set_composite(relevant_doc_keys, combined_text, extracted)
         
         entities = extracted
     
@@ -910,7 +1037,8 @@ def summarize_context(text: str, rag_config: Dict[str, Any]) -> Optional[str]:
     if not SUMMARIZATION_AVAILABLE or not text.strip():
         return None
     summary_cfg = rag_config.get("summarization", {})
-    return summarize_text(
+    start_time = time.time()
+    result = summarize_text(
         text=text,
         provider=summary_cfg.get("provider", "ollama"),
         model=summary_cfg.get("model", "llama2"),
@@ -1010,6 +1138,30 @@ def generate_content_pack(context_summary: str, pattern_report: Dict[str, Any], 
         "Do not create new NPCs or reference entities not in the provided lists.\n"
     )
 
+    gen_cfg = rag_config.get("generation", {})
+    use_parallel = gen_cfg.get("parallel", True)
+
+    def _gen(key: str, prompt: str) -> Tuple[str, str]:
+        try:
+            out = generate_text(prompt, rag_config) or ""
+            return (key, out)
+        except Exception as exc:
+            logger.warning(f"generate_content_pack {key} failed: {exc}")
+            return (key, "")
+
+    if use_parallel:
+        results: Dict[str, str] = {}
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = {
+                executor.submit(_gen, "rules", rules_prompt): "rules",
+                executor.submit(_gen, "adventure", adventure_prompt): "adventure",
+                executor.submit(_gen, "bios", bios_prompt): "bios",
+            }
+            for future in as_completed(futures):
+                key, out = future.result()
+                results[key] = out
+        return results
+
     return {
         "rules": generate_text(rules_prompt, rag_config) or "",
         "adventure": generate_text(adventure_prompt, rag_config) or "",
@@ -1071,6 +1223,27 @@ def generate_storyboard(
         if specifications.get("foreshadowing"):
             specs_text += f"\n**Foreshadowing Elements:**\n{specifications['foreshadowing']}\n"
     
+    storyboard_cfg = rag_config.get("storyboard", {})
+    campaign_context_list = storyboard_cfg.get("campaign_context", [
+        "Rogue Trader crew from Harbinger of Woe",
+        "Mission: Protect family's Hive world from cryo-plague and cult activity",
+        "Setting: Glacial hive world with mag-train lines and frozen plains",
+        "Argent Maw mag-train is the target",
+    ])
+    constraints_list = storyboard_cfg.get("constraints", [
+        "Setting is LAND-BASED: highway racing alongside train track, rubble obstacles",
+        "DO NOT mention space, asteroids, or void travel",
+        "Players are ROGUE TRADER CREW, NOT Space Marines",
+        "Carcharodon Astra are FORESHADOWED (hinted at), NOT with the players",
+        "Rogue Trader PC is protecting their family's Hive world",
+        "MUST include Wrath & Glory mechanics (DN tests, Wrath dice, Shifts, etc.)",
+        "Enemy type MUST match specifications (if Ork units are listed, enemies are Orks, NOT cults)",
+        "MUST mention character names from character sheets (Brawn Solo, Godwin, Tarquinius, etc.)",
+        "MUST complete ALL sections: ABSTRACTION LEVEL, SCENE BREAKDOWN, MECHANICAL ELEMENTS, WRATH & GLORY MECHANICS, MINIATURE SETUP, FORESHADOWING & HOOKS, GM NOTES",
+    ])
+    constraints_block = "\n".join(f"- {c}" for c in constraints_list)
+    campaign_context_block = "\n".join(f"- {c}" for c in campaign_context_list)
+
     grounding_instructions = (
         "CRITICAL GROUNDING RULES:\n"
         "- ONLY use entities, items, locations, and NPCs that appear in the context below.\n"
@@ -1116,20 +1289,9 @@ def generate_storyboard(
         "[Tips for running the scene, pacing, key decisions, important reminders]\n\n"
         "---\n\n"
         "CRITICAL CONSTRAINTS - DO NOT VIOLATE:\n"
-        "- Setting is LAND-BASED: highway racing alongside train track, rubble obstacles\n"
-        "- DO NOT mention space, asteroids, or void travel\n"
-        "- Players are ROGUE TRADER CREW, NOT Space Marines\n"
-        "- Carcharodon Astra are FORESHADOWED (hinted at), NOT with the players\n"
-        "- Rogue Trader PC is protecting their family's Hive world\n"
-        "- MUST include Wrath & Glory mechanics (DN tests, Wrath dice, Shifts, etc.)\n"
-        "- Enemy type MUST match specifications (if Ork units are listed, enemies are Orks, NOT cults)\n"
-        "- MUST mention character names from character sheets (Brawn Solo, Godwin, Tarquinius, etc.)\n"
-        "- MUST complete ALL sections: ABSTRACTION LEVEL, SCENE BREAKDOWN, MECHANICAL ELEMENTS, WRATH & GLORY MECHANICS, MINIATURE SETUP, FORESHADOWING & HOOKS, GM NOTES\n\n"
+        "{constraints_block}\n\n"
         "CAMPAIGN CONTEXT:\n"
-        "- Rogue Trader crew from Harbinger of Woe\n"
-        "- Mission: Protect family's Hive world from cryo-plague and cult activity\n"
-        "- Setting: Glacial hive world with mag-train lines and frozen plains\n"
-        "- Argent Maw mag-train is the target\n\n"
+        "{campaign_context_block}\n\n"
         + grounding_instructions +
         f"**Context Summary:**\n{context}\n\n"
         f"**Canonical NPCs from source:** {top_npcs}\n"
@@ -1149,8 +1311,42 @@ def generate_storyboard(
         "Make it useful for a GM to visualize and run the scene.\n"
         "Include specific Wrath & Glory mechanics with DN values throughout (e.g., 'Pilot (Agi) DN 3', not just 'use DN tests').\n"
     )
-    
+    storyboard_prompt = storyboard_prompt.format(
+        constraints_block=constraints_block,
+        campaign_context_block=campaign_context_block,
+    )
     return generate_text(storyboard_prompt, rag_config) or ""
+
+
+# PURPOSE: Merge two retrieval result lists using Reciprocal Rank Fusion (RRF).
+# DEPENDENCIES: None.
+# MODIFICATION NOTES: k=60 per common practice; deduplicates by source.
+def _merge_rrf(
+    list_a: List[Dict[str, Any]],
+    list_b: List[Dict[str, Any]],
+    k: int = 60,
+) -> List[Dict[str, Any]]:
+    """Apply RRF: score_rrf = sum(1/(k+rank)) for each source across lists."""
+    rrf_scores: Dict[str, float] = {}
+    text_by_source: Dict[str, str] = {}
+    for rank, item in enumerate(list_a):
+        src = item.get("source", "")
+        if src:
+            rrf_scores[src] = rrf_scores.get(src, 0.0) + 1.0 / (k + rank)
+            if src not in text_by_source:
+                text_by_source[src] = item.get("text", "")
+    for rank, item in enumerate(list_b):
+        src = item.get("source", "")
+        if src:
+            rrf_scores[src] = rrf_scores.get(src, 0.0) + 1.0 / (k + rank)
+            if src not in text_by_source:
+                text_by_source[src] = item.get("text", "")
+    merged = [
+        {"source": src, "score": score, "text": text_by_source.get(src, "")}
+        for src, score in rrf_scores.items()
+    ]
+    merged.sort(key=lambda x: x["score"], reverse=True)
+    return merged
 
 
 # PURPOSE: Retrieve relevant context for a query.
@@ -1170,7 +1366,24 @@ def retrieve_context(
     campaign_kb_root = Path(rag_config["campaign_kb_root"])
     use_kb_search = rag_config.get("use_kb_search", True)
     search_cfg = rag_config.get("search", {})
+
+    def _load_text_map() -> Dict[str, str]:
+        doc_paths = resolve_campaign_docs(campaign_kb_root, rag_config.get("campaign_docs", []))
+        tm = read_campaign_docs(doc_paths)
+        if rag_config.get("include_pdfs", True):
+            pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
+            pdf_config = rag_config.get("pdf_ingestion", {})
+            tm.update(read_pdf_texts(
+                pdf_dir,
+                file_pattern=rag_config.get("pdf_file_pattern", "*.txt"),
+                max_chunk_size=pdf_config.get("max_chunk_size", 8000),
+                max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 50),
+                max_total_text_chars=pdf_config.get("max_total_text_chars", 2000000),
+            ))
+        return tm
+
     limit = search_cfg.get("limit", 8)
+    max_chunk_chars = search_cfg.get("max_chunk_chars", 2000)
     query_mode = rag_config.get("query_mode", {})
     if retrieval_mode is None:
         retrieval_mode = query_mode.get("retrieval_mode", "Strict Canon")
@@ -1196,6 +1409,7 @@ def retrieve_context(
             if results:
                 return [
                     {
+                        "source": f"doc_{section.document_id}:sec_{section.id}",
                         "section_id": section.id,
                         "document_id": section.document_id,
                         "section_title": section.section_title,
@@ -1209,8 +1423,93 @@ def retrieve_context(
         except Exception as exc:
             logger.warning(f"Campaign KB search failed, falling back to text scan: {exc}")
 
+    if text_map is None:
+        text_map = _load_text_map()
+
+    retrieval_strategy = rag_config.get("retrieval", {}).get("strategy", "docindex")
+    if rag_config.get("use_chroma") and not retrieval_strategy:
+        retrieval_strategy = "chroma"
+    elif not rag_config.get("use_chroma") and retrieval_strategy == "chroma":
+        retrieval_strategy = "docindex"
+
+    # Hybrid: RRF merge of Chroma + DocumentIndex when both available
+    if retrieval_strategy == "hybrid" and rag_config.get("use_chroma") and doc_index and doc_index.index:
+        chroma_results: List[Dict[str, Any]] = []
+        docindex_results: List[Dict[str, Any]] = []
+        try:
+            from chroma_retriever import ChromaRetriever
+            chroma_cfg = rag_config.get("chroma", {})
+            persist_dir = Path(chroma_cfg.get("persist_dir", "Campaigns/_rag_cache/chroma"))
+            if not persist_dir.is_absolute():
+                vault_root = rag_config.get("vault_root", Path.cwd())
+                persist_dir = Path(vault_root) / persist_dir
+            retriever = ChromaRetriever(
+                persist_dir,
+                embedding_model=chroma_cfg.get("embedding_model", "all-MiniLM-L6-v2"),
+                collection_name=chroma_cfg.get("collection_name", "arc_forge_rag"),
+            )
+            if text_map and retriever.count() == 0:
+                retriever.build_index(text_map, rag_config, rag_config.get("chunk_tags", {}))
+            chroma_results = retriever.retrieve(
+                query, top_k=limit * 2, retrieval_mode=retrieval_mode or "Strict Canon",
+                tag_filters=tag_filters, max_chunk_chars=max_chunk_chars,
+            )
+        except Exception as exc:
+            logger.debug(f"Chroma in hybrid failed: {exc}")
+        if doc_index and text_map:
+            relevant_doc_keys = doc_index.retrieve(
+                query, top_k=limit * 2, retrieval_mode=retrieval_mode, tag_filters=tag_filters
+            )
+            if relevant_doc_keys:
+                query_lower = query.lower()
+                query_terms = [t.lower() for t in query.split() if len(t) > 2]
+                scored: List[Tuple[str, float, str]] = []
+                for doc_key in relevant_doc_keys:
+                    if doc_key in text_map:
+                        text = text_map[doc_key]
+                        lowered = text.lower()
+                        score = sum(lowered.count(term) for term in query_terms)
+                        if score > 0:
+                            scored.append((doc_key, float(score), text))
+                scored.sort(key=lambda x: x[1], reverse=True)
+                docindex_results = [
+                    {"source": s[0], "score": s[1], "text": s[2][:max_chunk_chars]}
+                    for s in scored
+                ]
+        if chroma_results or docindex_results:
+            merged = _merge_rrf(chroma_results, docindex_results, k=60)
+            return merged[:limit]
+
+    # ChromaDB semantic retrieval (Option B)
+    if rag_config.get("use_chroma") and retrieval_strategy != "docindex":
+        try:
+            from chroma_retriever import ChromaRetriever
+            chroma_cfg = rag_config.get("chroma", {})
+            persist_dir = Path(chroma_cfg.get("persist_dir", "Campaigns/_rag_cache/chroma"))
+            if not persist_dir.is_absolute():
+                vault_root = rag_config.get("vault_root", Path.cwd())
+                persist_dir = Path(vault_root) / persist_dir
+            retriever = ChromaRetriever(
+                persist_dir,
+                embedding_model=chroma_cfg.get("embedding_model", "all-MiniLM-L6-v2"),
+                collection_name=chroma_cfg.get("collection_name", "arc_forge_rag"),
+            )
+            if text_map:
+                use_incremental = chroma_cfg.get("incremental", False)
+                if retriever.count() == 0:
+                    retriever.build_index(text_map, rag_config, rag_config.get("chunk_tags", {}))
+                elif use_incremental:
+                    retriever.add_or_update_docs(text_map, rag_config, rag_config.get("chunk_tags", {}))
+            results = retriever.retrieve(query, top_k=limit, retrieval_mode=retrieval_mode or "Strict Canon", tag_filters=tag_filters, max_chunk_chars=max_chunk_chars)
+            if results:
+                return results
+        except ImportError:
+            logger.warning("ChromaDB not available, falling back to legacy retrieval")
+        except Exception as exc:
+            logger.warning(f"ChromaDB retrieval failed: {exc}, falling back to legacy retrieval")
+
     # Fast path: Use DocumentIndex if available (no need to load full text)
-    if doc_index and doc_index.index:
+    if doc_index and doc_index.index and retrieval_strategy != "chroma":
         relevant_doc_keys = doc_index.retrieve(
             query, top_k=limit, retrieval_mode=retrieval_mode, tag_filters=tag_filters
         )
@@ -1230,28 +1529,11 @@ def retrieve_context(
             
             scored.sort(key=lambda x: x[1], reverse=True)
             return [
-                {"source": item[0], "score": item[1], "text": item[2][:2000]}
+                {"source": item[0], "score": item[1], "text": item[2][:max_chunk_chars]}
                 for item in scored[:limit]
             ]
 
-    # Fallback: Full text scanning (slower but works without index)
-    if text_map is None:
-        doc_paths = resolve_campaign_docs(campaign_kb_root, rag_config["campaign_docs"])
-        text_map = read_campaign_docs(doc_paths)
-        
-        # Add PDF content if enabled
-        if rag_config.get("include_pdfs", True):
-            pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
-            pdf_config = rag_config.get("pdf_ingestion", {})
-            pdf_text_map = read_pdf_texts(
-                pdf_dir,
-                file_pattern=rag_config.get("pdf_file_pattern", "*.txt"),
-                max_chunk_size=pdf_config.get("max_chunk_size", 50000),
-                max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 10),
-                max_total_text_chars=pdf_config.get("max_total_text_chars", 2000000),
-            )
-            text_map.update(pdf_text_map)
-    
+    # Fallback: Full text scanning (text_map loaded once at start)
     scored: List[Tuple[str, float, str]] = []
     
     # Extract query terms and phrases
@@ -1285,7 +1567,7 @@ def retrieve_context(
     
     scored.sort(key=lambda x: x[1], reverse=True)
     return [
-        {"source": item[0], "score": item[1], "text": item[2][:2000]}
+        {"source": item[0], "score": item[1], "text": item[2][:max_chunk_chars]}
         for item in scored[:limit]
     ]
 
@@ -1340,10 +1622,157 @@ def write_outputs(
     return outputs
 
 
+# PURPOSE: Run heuristic evaluation of content pack when enabled (06_rag_evaluation rubric).
+# DEPENDENCIES: rag_evaluation.evaluate_content_pack.
+# MODIFICATION NOTES: Optional hook; writes rag_evaluation.json when enabled.
+def _run_evaluation_if_enabled(
+    content_pack: Dict[str, str],
+    pattern_report: Dict[str, Any],
+    rag_config: Dict[str, Any],
+    output_dir: Path,
+) -> Optional[Dict[str, Any]]:
+    """Run evaluation when enabled; return evaluation dict or None."""
+    if not content_pack or not EVALUATION_AVAILABLE:
+        return None
+    eval_cfg = rag_config.get("evaluation", {})
+    if not eval_cfg.get("enabled", False):
+        return None
+    try:
+        evaluation = evaluate_content_pack(
+            content_pack,
+            pattern_report,
+            theme_keywords=rag_config.get("theme_keywords"),
+            rag_config=rag_config,
+        )
+        eval_path = output_dir / "rag_evaluation.json"
+        eval_path.write_text(json.dumps(evaluation, indent=2), encoding="utf-8")
+        logger.info(f"Evaluation written to {eval_path}")
+        return evaluation
+    except Exception as exc:
+        logger.warning(f"Evaluation failed: {exc}")
+        return None
+
+
+# PURPOSE: Composable pipeline stages for testing and extension.
+# DEPENDENCIES: resolve_campaign_docs, read_campaign_docs, read_pdf_texts.
+def stage_ingest(rag_config: Dict[str, Any]) -> Dict[str, str]:
+    """Load campaign docs and PDFs into text_map."""
+    campaign_root = Path(rag_config["campaign_kb_root"])
+    doc_paths = resolve_campaign_docs(campaign_root, rag_config["campaign_docs"])
+    text_map = read_campaign_docs(doc_paths)
+    if rag_config.get("include_pdfs", True):
+        pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
+        pdf_config = rag_config.get("pdf_ingestion", {})
+        pdf_text_map = read_pdf_texts(
+            pdf_dir,
+            file_pattern=rag_config.get("pdf_file_pattern", "*.txt"),
+            max_chunk_size=pdf_config.get("max_chunk_size", 8000),
+            max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 50),
+            max_total_text_chars=pdf_config.get("max_total_text_chars", 2000000),
+        )
+        text_map.update(pdf_text_map)
+    return text_map
+
+
+def stage_index(
+    text_map: Dict[str, str],
+    doc_index: Optional[DocumentIndex],
+    rag_config: Dict[str, Any],
+    cache_config: Dict[str, Any],
+) -> None:
+    """Build or update DocumentIndex from text_map."""
+    if doc_index and cache_config.get("enabled", True):
+        doc_index.build(
+            text_map,
+            rag_config.get("theme_keywords", []),
+            invalidate_on_mtime=cache_config.get("invalidate_on_mtime_change", True),
+            chunk_tags_config=rag_config.get("chunk_tags", {}),
+            preview_chars=rag_config.get("index", {}).get("preview_chars", 2000),
+        )
+
+
+def stage_retrieve(
+    query: str,
+    rag_config: Dict[str, Any],
+    doc_index: Optional[DocumentIndex],
+    text_map: Dict[str, str],
+    retrieval_mode: Optional[str],
+    tag_filters: Optional[Dict[str, str]],
+) -> List[Dict[str, Any]]:
+    """Retrieve context for query."""
+    return retrieve_context(
+        query, rag_config, doc_index=doc_index, text_map=text_map,
+        retrieval_mode=retrieval_mode, tag_filters=tag_filters,
+    )
+
+
+def stage_analyze(
+    text_map: Dict[str, str],
+    relevant_doc_keys: List[str],
+    rag_config: Dict[str, Any],
+    entity_cache: Optional[EntityCache],
+    full_corpus: bool = False,
+) -> Dict[str, Any]:
+    """Build pattern report from documents."""
+    if full_corpus:
+        return build_pattern_report(text_map, rag_config) if rag_config.get("pattern_analysis_enabled") else {}
+    if not rag_config.get("pattern_analysis_enabled") or not rag_config.get("query_mode", {}).get("lazy_entity_extraction", True):
+        return {}
+    entities = extract_entities_from_docs(relevant_doc_keys, text_map, rag_config, entity_cache=entity_cache)
+    combined_relevant = "\n\n".join([text_map[k] for k in relevant_doc_keys if k in text_map])
+    counts = {key: {name: entities[key].count(name) for name in set(entities[key])} for key in entities}
+    themes = build_theme_counts(combined_relevant, rag_config.get("theme_keywords", []))
+    return {"entities": entities, "entity_counts": counts, "themes": themes, "source_docs": relevant_doc_keys}
+
+
+def stage_summarize(
+    text_map: Dict[str, str],
+    relevant_doc_keys: List[str],
+    rag_config: Dict[str, Any],
+    full_corpus: bool = False,
+) -> Optional[str]:
+    """Summarize context from documents."""
+    if not rag_config.get("content_generation_enabled"):
+        return None
+    if full_corpus:
+        combined_text = "\n\n".join(text_map.values())
+        return summarize_context(combined_text, rag_config)
+    return summarize_context_from_docs(relevant_doc_keys, text_map, rag_config)
+
+
+def stage_generate(
+    context_summary: str,
+    pattern_report: Dict[str, Any],
+    rag_config: Dict[str, Any],
+) -> Dict[str, str]:
+    """Generate content pack from context and pattern report."""
+    if not rag_config.get("content_generation_enabled"):
+        return {}
+    return generate_content_pack(context_summary or "", pattern_report, rag_config)
+
+
 # PURPOSE: Run the full RAG pipeline end-to-end with query mode detection.
 # DEPENDENCIES: All helpers in this module, DocumentIndex, EntityCache.
 # MODIFICATION NOTES: B3: accepts retrieval_mode and tag_filters; passes to retrieve_context.
 def run_pipeline(
+    config_path: Path,
+    query: Optional[str] = None,
+    retrieval_mode: Optional[str] = None,
+    tag_filters: Optional[Dict[str, str]] = None,
+) -> Dict[str, Any]:
+    try:
+        return _run_pipeline_impl(config_path, query, retrieval_mode, tag_filters)
+    except Exception as e:
+        log_structured_error(
+            type(e).__name__,
+            str(e),
+            traceback.format_exc(),
+            {"entry": "run_pipeline", "project": "rag_pipeline", "config_path": str(config_path), "query": query},
+        )
+        return {"status": "error", "error_type": type(e).__name__, "error": str(e)}
+
+
+def _run_pipeline_impl(
     config_path: Path,
     query: Optional[str] = None,
     retrieval_mode: Optional[str] = None,
@@ -1369,48 +1798,24 @@ def run_pipeline(
         doc_index = DocumentIndex(index_cache_path)
         entity_cache = EntityCache(cache_dir)
 
-    campaign_root = Path(rag_config["campaign_kb_root"])
-    doc_paths = resolve_campaign_docs(campaign_root, rag_config["campaign_docs"])
-    text_map = read_campaign_docs(doc_paths)
+    text_map = stage_ingest(rag_config)
     # #region agent log
     _debug_log("rag_pipeline.py:468", "Campaign docs loaded", {"count": len(text_map), "total_chars": sum(len(v) for v in text_map.values())}, "B")
     # #endregion
 
-    # Add PDF content if enabled (incremental ingestion with chunking)
-    if rag_config.get("include_pdfs", True):
-        pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
-        pdf_config = rag_config.get("pdf_ingestion", {})
-        pdf_text_map = read_pdf_texts(
-            pdf_dir,
-            file_pattern=rag_config.get("pdf_file_pattern", "*.txt"),
-            max_chunk_size=pdf_config.get("max_chunk_size", 50000),
-            max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 10),
-            max_total_text_chars=pdf_config.get("max_total_text_chars", 2000000),
-        )
-        text_map.update(pdf_text_map)
-        logger.info(f"Added {len(pdf_text_map)} PDF sources to text map")
-        # #region agent log
-        _debug_log("rag_pipeline.py:575", "PDFs added to text_map", {"pdf_count": len(pdf_text_map), "pdf_chars": sum(len(v) for v in pdf_text_map.values())}, "B")
-        # #endregion
-
-    # Build/update document index if caching enabled
-    if doc_index and cache_config.get("enabled", True):
-        doc_index.build(
-            text_map,
-            rag_config.get("theme_keywords", []),
-            invalidate_on_mtime=cache_config.get("invalidate_on_mtime_change", True),
-            chunk_tags_config=rag_config.get("chunk_tags", {}),
-        )
+    stage_index(text_map, doc_index, rag_config, cache_config)
 
     # Query mode: Fast path with lazy evaluation
     if is_query_mode:
         logger.info(f"Query mode: Processing query '{query}' with lazy evaluation")
         
-        # Retrieve relevant documents first (fast)
-        query_context = retrieve_context(
-            query, rag_config, doc_index=doc_index, text_map=text_map,
-            retrieval_mode=retrieval_mode, tag_filters=tag_filters,
+        query_context = stage_retrieve(
+            query, rag_config, doc_index, text_map, retrieval_mode, tag_filters,
         )
+        for item in query_context:
+            src = item.get("source")
+            if src and src not in text_map:
+                text_map[src] = item.get("text", "")
         relevant_doc_keys = [item["source"] for item in query_context]
         
         if not relevant_doc_keys:
@@ -1426,32 +1831,13 @@ def run_pipeline(
         
         logger.info(f"Retrieved {len(relevant_doc_keys)} relevant documents for query")
         
-        # Lazy entity extraction: Only from retrieved documents
-        pattern_report = {}
-        if rag_config.get("pattern_analysis_enabled") and rag_config.get("query_mode", {}).get("lazy_entity_extraction", True):
-            entities = extract_entities_from_docs(relevant_doc_keys, text_map, rag_config, entity_cache=entity_cache)
-            # Build minimal pattern report from subset
-            combined_relevant = "\n\n".join([text_map[k] for k in relevant_doc_keys if k in text_map])
-            counts = {key: {name: entities[key].count(name) for name in set(entities[key])} for key in entities}
-            themes = build_theme_counts(combined_relevant, rag_config.get("theme_keywords", []))
-            pattern_report = {
-                "entities": entities,
-                "entity_counts": counts,
-                "themes": themes,
-                "source_docs": relevant_doc_keys,
-            }
-        
-        # Lazy summarization: Only from retrieved documents
-        context_summary = None
-        if rag_config.get("content_generation_enabled"):
-            context_summary = summarize_context_from_docs(relevant_doc_keys, text_map, rag_config)
-        
-        # Generate content from focused context
-        content_pack = (
-            generate_content_pack(context_summary or "", pattern_report, rag_config)
-            if rag_config.get("content_generation_enabled")
-            else {}
+        pattern_report = stage_analyze(
+            text_map, relevant_doc_keys, rag_config, entity_cache, full_corpus=False,
         )
+        context_summary = stage_summarize(
+            text_map, relevant_doc_keys, rag_config, full_corpus=False,
+        )
+        content_pack = stage_generate(context_summary or "", pattern_report, rag_config)
         
         outputs = write_outputs(
             output_dir=rag_config["output_dir"],
@@ -1460,7 +1846,9 @@ def run_pipeline(
             context_summary=context_summary,
             sources=relevant_doc_keys,  # Only relevant sources
         )
-        
+        evaluation = _run_evaluation_if_enabled(
+            content_pack, pattern_report, rag_config, rag_config["output_dir"]
+        )
         return {
             "status": "success",
             "outputs": outputs,
@@ -1468,6 +1856,7 @@ def run_pipeline(
             "context_summary": context_summary,
             "content_pack": content_pack,
             "query_context": query_context,
+            "evaluation": evaluation,
         }
     
     # Analysis mode: Full corpus processing
@@ -1478,13 +1867,13 @@ def run_pipeline(
         _debug_log("rag_pipeline.py:477", "Combined text created", {"total_sources": len(text_map), "combined_length": len(combined_text), "campaign_sources": len([k for k in text_map.keys() if not k.startswith("[PDF]")]), "pdf_sources": len([k for k in text_map.keys() if k.startswith("[PDF]")])}, "B")
         # #endregion
 
-        pattern_report = build_pattern_report(text_map, rag_config) if rag_config.get("pattern_analysis_enabled") else {}
-        context_summary = summarize_context(combined_text, rag_config) if rag_config.get("content_generation_enabled") else None
-        content_pack = (
-            generate_content_pack(context_summary or "", pattern_report, rag_config)
-            if rag_config.get("content_generation_enabled")
-            else {}
+        pattern_report = stage_analyze(
+            text_map, list(text_map.keys()), rag_config, entity_cache, full_corpus=True,
         )
+        context_summary = stage_summarize(
+            text_map, list(text_map.keys()), rag_config, full_corpus=True,
+        )
+        content_pack = stage_generate(context_summary or "", pattern_report, rag_config)
 
         outputs = write_outputs(
             output_dir=rag_config["output_dir"],
@@ -1493,13 +1882,16 @@ def run_pipeline(
             context_summary=context_summary,
             sources=list(text_map.keys()),
         )
-
+        evaluation = _run_evaluation_if_enabled(
+            content_pack, pattern_report, rag_config, rag_config["output_dir"]
+        )
         return {
             "status": "success",
             "outputs": outputs,
             "pattern_report": pattern_report,
             "context_summary": context_summary,
             "content_pack": content_pack,
+            "evaluation": evaluation,
             "query_context": retrieve_context(
                 query, rag_config, doc_index=doc_index, text_map=text_map,
                 retrieval_mode=retrieval_mode, tag_filters=tag_filters,
@@ -1571,8 +1963,8 @@ def analyze_full_corpus(config_path: Path) -> Dict[str, Any]:
         pdf_text_map = read_pdf_texts(
             pdf_dir,
             file_pattern=rag_config.get("pdf_file_pattern", "*.txt"),
-            max_chunk_size=pdf_config.get("max_chunk_size", 50000),
-            max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 10),
+            max_chunk_size=pdf_config.get("max_chunk_size", 8000),
+            max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 50),
             max_total_text_chars=pdf_config.get("max_total_text_chars", 2000000),
         )
         text_map.update(pdf_text_map)
@@ -1598,16 +1990,27 @@ def analyze_full_corpus(config_path: Path) -> Dict[str, Any]:
 
 # PURPOSE: CLI entrypoint for pipeline execution.
 # DEPENDENCIES: argparse, run_pipeline.
-# MODIFICATION NOTES: Supports query-driven runs.
+# MODIFICATION NOTES: Supports query-driven runs; logs structured errors on failure.
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Wrath and Glory RAG pipeline")
-    parser.add_argument("--config", default="ingest_config.json", help="Path to config file")
-    parser.add_argument("--query", default=None, help="Optional query for context retrieval")
-    args = parser.parse_args()
+    try:
+        parser = argparse.ArgumentParser(description="Wrath and Glory RAG pipeline")
+        parser.add_argument("--config", default="ingest_config.json", help="Path to config file")
+        parser.add_argument("--query", default=None, help="Optional query for context retrieval")
+        args = parser.parse_args()
 
-    config_path = Path(args.config)
-    result = run_pipeline(config_path=config_path, query=args.query)
-    print(json.dumps(result, indent=2))
+        config_path = Path(args.config)
+        result = run_pipeline(config_path=config_path, query=args.query)
+        print(json.dumps(result, indent=2))
+        if result.get("status") == "error":
+            sys.exit(1)
+    except Exception as e:
+        log_structured_error(
+            type(e).__name__,
+            str(e),
+            traceback.format_exc(),
+            {"entry": "main", "project": "rag_pipeline"},
+        )
+        raise
 
 
 if __name__ == "__main__":

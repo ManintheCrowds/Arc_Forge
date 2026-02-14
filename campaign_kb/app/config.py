@@ -3,7 +3,13 @@
 # MODIFICATION NOTES: Initial settings for MVP ingest/search service.
 
 from pathlib import Path
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _campaign_docs_root_default() -> Path:
+    """Default: campaign_kb/campaign (aligns with RAG pipeline campaign_docs)."""
+    return Path(__file__).resolve().parent.parent / "campaign"
 
 
 class Settings(BaseSettings):
@@ -21,6 +27,7 @@ class Settings(BaseSettings):
     ]
     output_dir: Path = Path("D:/arc_forge/output")
     dod_docs_root: Path = Path("D:/arc_forge/pdf/dod_docs")
+    campaign_docs_root: Path = Field(default_factory=_campaign_docs_root_default)
     repo_urls: list[str] = [
         "https://github.com/tecera/dod-importer",
         "https://github.com/LordFckHelmchen/WrathAndGloryXPOptimizer",

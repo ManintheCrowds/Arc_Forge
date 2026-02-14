@@ -65,9 +65,42 @@ See [UI_PENDING_TASK_DECOMP.md](UI_PENDING_TASK_DECOMP.md) for full task breakdo
 - **Rate limiting docs** (verify): docs note limits and storage backend configuration.
   - Done when: docs mention storage backend config (Redis).
 
-### E) RAG: Haystack integration (backlog)
+### E) RAG: Semantic retrieval integration (backlog)
 
-**Context:** Arc Forge uses a custom RAG pipeline (`scripts/rag_pipeline.py`) with keyword/theme retrieval and no semantic search. Haystack (Apache 2.0, free) adds dense/sparse retrieval, hybrid search, and modular pipelines.
+**Context:** Arc Forge uses a custom RAG pipeline (`scripts/rag_pipeline.py`) with keyword/theme retrieval and no semantic search. Two implementation paths are available; choose one before implementation.
+
+---
+
+#### RAG framework options (comparative analysis)
+
+| Criterion | Haystack | LangChain | LlamaIndex | ChromaDB-only | Custom+embeddings |
+|-----------|----------|-----------|------------|---------------|-------------------|
+| **Semantic search** | Yes | Yes | Yes | Yes | Yes |
+| **Metadata/canon filtering** | Native | Manual | Manual | Supported | Full control |
+| **Hybrid (dense+sparse)** | Built-in | Manual | Built-in | Manual | No |
+| **Dependency weight** | High | High | High | Medium | Low |
+| **Integration effort** | Medium | Medium | High | Low | Low |
+| **Canon logic preservation** | Reimplement | Reimplement | Reimplement | Preserve | Preserve |
+| **Ollama compatibility** | Via components | Via components | Via components | N/A (embeddings only) | N/A |
+| **Evaluation tooling** | Built-in | LangSmith (paid) | LlamaCloud (paid) | None | None |
+| **License** | Apache 2.0 | MIT | MIT | Apache 2.0 | — |
+
+**Recommendation:**
+
+| If you value… | Prefer |
+|---------------|--------|
+| Minimal change, canon logic preserved | ChromaDB-only or Custom+embeddings |
+| Semantic + hybrid retrieval, production tooling | Haystack |
+| Maximum connectors, future flexibility | LangChain or LlamaIndex |
+| Smallest footprint, script-based | Custom+embeddings |
+
+**Suggested path:** (1) Short term: ChromaDB + sentence-transformers for minimal disruption. (2) If hybrid retrieval or production observability needed later: migrate to Haystack retriever only; keep generation in `rag_pipeline.py`. (3) Avoid full LangChain/LlamaIndex unless connectors beyond PDF + markdown are required.
+
+**Preserve (all options):** Canon modes (Strict/Loose/Inspired By), chunk tags (system, faction, location, tone), TTRPG grounding prompts, entity extraction.
+
+---
+
+#### Option A: Haystack
 
 **Gap analysis summary**
 
@@ -80,9 +113,7 @@ See [UI_PENDING_TASK_DECOMP.md](UI_PENDING_TASK_DECOMP.md) for full task breakdo
 | Built-in evaluation | Medium | Manual (06_rag_evaluation.md) | Metrics, tracing, observability |
 | Canon logic | — | Strict/Loose Canon, chunk tags | Must reimplement via metadata filters or custom retriever |
 
-**Preserve:** Canon modes (Strict/Loose/Inspired By), chunk tags (system, faction, location, tone), TTRPG grounding prompts, entity extraction.
-
-**Task decomposition (WBS)**
+**WBS**
 
 | # | Phase | Goal | Dependencies | Parallel? |
 |---|-------|------|--------------|-----------|
@@ -98,6 +129,30 @@ See [UI_PENDING_TASK_DECOMP.md](UI_PENDING_TASK_DECOMP.md) for full task breakdo
 **Done when:** (1) Haystack retriever is selectable via config, (2) semantic retrieval works over campaign docs + PDFs, (3) canon modes preserved, (4) tests pass, (5) docs updated.
 
 **Reference:** [Apidog RAG frameworks](https://apidog.com/blog/best-open-source-rag-frameworks/); Haystack [choosing a document store](https://docs.haystack.deepset.ai/docs/choosing-a-document-store), [hybrid retrieval tutorial](https://haystack.deepset.ai/tutorials/33_hybrid_retrieval).
+
+---
+
+#### Option B: ChromaDB-only (minimal change)
+
+**What it is:** Vector DB + embedding model; no orchestration framework. Add `chromadb` and `sentence-transformers`; implement `ChromaRetriever` that respects `retrieval_mode` and `tag_filters` via metadata.
+
+**Pros:** Minimal deps; full control; canon logic preserved; fits existing `rag_pipeline.py` structure. **Cons:** No hybrid (BM25) unless added manually; no built-in evaluation.
+
+**WBS**
+
+| # | Phase | Goal | Dependencies | Parallel? |
+|---|-------|------|--------------|-----------|
+| 1 | **Deps** | Add `chromadb`, `sentence-transformers` to requirements (e.g. `requirements-rag.txt`). | None | — |
+| 2 | **ChromaRetriever** | Implement retriever that: embeds docs with sentence-transformers, stores in ChromaDB with chunk tags as metadata; queries with metadata filter for Strict/Loose/Inspired By. | 1 | — |
+| 3 | **Integration point** | Wire ChromaRetriever into `retrieve_context()`; config toggle `use_chroma: true` vs legacy. | 2 | — |
+| 4 | **Tests** | Unit tests for ChromaRetriever; integration test with sample campaign docs. | 3 | — |
+| 5 | **Docs** | Update `campaign/05_rag_integration.md` and README with ChromaDB setup and config. | 3 | Can run in parallel with 4 |
+
+**Files:** `ObsidianVault/scripts/rag_pipeline.py`, `scripts/requirements-rag.txt` (or `requirements-enhancements.txt`), `campaign_kb/campaign/05_rag_integration.md`, `scripts/tests/test_rag_pipeline.py`.
+
+**Done when:** (1) ChromaDB retriever is selectable via config, (2) semantic retrieval works over campaign docs + PDFs, (3) canon modes preserved, (4) tests pass, (5) docs updated.
+
+**Reference:** [ChromaDB embeddings](https://docs.trychroma.com/docs/embeddings/embedding-functions); [Sentence-Transformers](https://www.sbert.net/).
 
 ---
 
@@ -241,7 +296,7 @@ See [UI_PENDING_TASK_DECOMP.md](UI_PENDING_TASK_DECOMP.md) for full task breakdo
 
 - ~~Rate limiting on `/api/run/*` and/or PUTs.~~ (done)
 - ~~Startup config/path validation and clear error messaging.~~ (done)
-- **Haystack RAG integration** — See §E above; WBS phases 1–6.
+- **RAG semantic retrieval** — See §E above; choose Option A (Haystack) or Option B (ChromaDB-only) before implementation.
 
 ## Startup config/path validation (implemented)
 

@@ -10,8 +10,10 @@ If unset, report_workflow_run_to_watchtower is a no-op. Runs are reported with p
 """
 
 import os
+import sys
 import time
-import json
+import traceback
+from pathlib import Path
 from functools import wraps
 from typing import Optional, Callable, TypeVar
 
@@ -84,80 +86,44 @@ def with_run_reporting(fn: F) -> F:
     """
     Decorator for workflow step functions: measure duration, call fn, then report to
     WatchTower (and optionally local metrics) with project=campaign_kb.
-    Workflow name is taken from DAGGR_CURRENT_WORKFLOW_NAME (set by single_app).
+    Workflow name is taken from DAGGR_CURRENT_WORKFLOW_NAME (set by single_app or run_workflow).
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        # #region agent log
-        try:
-            with open(r"d:\CodeRepositories\.cursor\debug.log", "a", encoding="utf-8") as f:
-                f.write(json.dumps({
-                    "id": "daggr_report_run_entry",
-                    "timestamp": int(time.time() * 1000),
-                    "location": "daggr_workflows/report_run.py:91",
-                    "message": "with_run_reporting wrapper entry",
-                    "data": {
-                        "args_len": len(args),
-                        "kwargs_keys": list(kwargs.keys()),
-                        "workflow_env": os.environ.get("DAGGR_CURRENT_WORKFLOW_NAME", "unknown"),
-                    },
-                    "runId": "pre-fix",
-                    "hypothesisId": "H1"
-                }) + "\n")
-        except Exception:
-            pass
-        # #endregion
         start = time.perf_counter()
         workflow_name = os.environ.get("DAGGR_CURRENT_WORKFLOW_NAME", "unknown")
         success = False
         try:
-            # #region agent log
-            try:
-                with open(r"d:\CodeRepositories\.cursor\debug.log", "a", encoding="utf-8") as f:
-                    f.write(json.dumps({
-                        "id": "daggr_report_run_before_fn",
-                        "timestamp": int(time.time() * 1000),
-                        "location": "daggr_workflows/report_run.py:111",
-                        "message": "before calling workflow fn",
-                        "data": {
-                            "workflow_name": workflow_name,
-                            "args_len": len(args),
-                            "kwargs_keys": list(kwargs.keys()),
-                        },
-                        "runId": "pre-fix",
-                        "hypothesisId": "H1"
-                    }) + "\n")
-            except Exception:
-                pass
-            # #endregion
             out = fn(*args, **kwargs)
             success = True
-            # #region agent log
+            return out
+        except Exception as e:
+            success = False
             try:
-                with open(r"d:\CodeRepositories\.cursor\debug.log", "a", encoding="utf-8") as f:
-                    f.write(json.dumps({
-                        "id": "daggr_report_run_after_fn",
-                        "timestamp": int(time.time() * 1000),
-                        "location": "daggr_workflows/report_run.py:129",
-                        "message": "workflow fn returned",
-                        "data": {
-                            "success": True
-                        },
-                        "runId": "pre-fix",
-                        "hypothesisId": "H1"
-                    }) + "\n")
+                _scripts = Path(__file__).resolve().parent.parent.parent / "ObsidianVault" / "scripts"
+                if str(_scripts) not in sys.path:
+                    sys.path.insert(0, str(_scripts))
+                from error_handling import log_structured_error
+                project = os.environ.get("DAGGR_CURRENT_PROJECT", "campaign_kb")
+                log_structured_error(
+                    type(e).__name__,
+                    str(e),
+                    traceback.format_exc(),
+                    context={"workflow": workflow_name, "project": project},
+                    project=project,
+                )
             except Exception:
                 pass
-            # #endregion
-            return out
+            raise
         finally:
             duration = time.perf_counter() - start
+            project = os.environ.get("DAGGR_CURRENT_PROJECT", "campaign_kb")
             report_workflow_run_to_watchtower(
-                workflow_name, duration, success, project="campaign_kb"
+                workflow_name, duration, success, project=project
             )
             try:
                 from app.monitoring.daggr_metrics import record_workflow_run as record_local
-                record_local(workflow_name, duration, success, project="campaign_kb")
+                record_local(workflow_name, duration, success, project=project)
             except Exception:
                 pass
     return wrapper  # type: ignore[return-value]

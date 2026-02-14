@@ -97,6 +97,8 @@ Unified runner (all three from repo root):
 
 See [scripts/run_tests.sh](scripts/run_tests.sh) (or run_tests.ps1) for exact paths and env notes. For browser I/O validation, see [ObsidianVault/workflow_ui/docs/manual_io_checklist.md](ObsidianVault/workflow_ui/docs/manual_io_checklist.md). workflow_ui exposes OpenAPI at **http://127.0.0.1:5050/docs** when running. Real runs of S2/S4 need RAG/LLM and storyboard under `Campaigns/_rag_outputs/` (or path passed to Stage 1) and `ingest_config.json` for Stage 2/4.
 
+**RAG semantic retrieval (optional):** For ChromaDB-based semantic search, install `pip install -r ObsidianVault/scripts/requirements-rag.txt` and set `use_chroma: true` in `ingest_config.json` → `rag_pipeline`. See [campaign_kb/campaign/05_rag_integration.md](campaign_kb/campaign/05_rag_integration.md) for setup and config.
+
 ## License and Credits
 
 Per project conventions. **Wrath & Glory** is a trademark of its respective owners. Rulebook and supplement PDFs are used locally only and are not distributed with this repo; place your own PDFs in the paths configured in `ObsidianVault/scripts/ingest_config.json` (e.g. `ObsidianVault/pdf/`). See this repo's root `.gitignore` for excluded paths (PDFs and optional derived caches).

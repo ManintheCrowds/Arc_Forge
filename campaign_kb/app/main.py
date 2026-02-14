@@ -4,7 +4,7 @@
 
 from pathlib import Path
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, Response
 from sqlalchemy.orm import Session
 from app.config import settings
 import app.monitoring.daggr_metrics  # noqa: F401 -- register metrics for /metrics
@@ -14,12 +14,15 @@ from app.schemas import (
     IngestSeedRequest,
     IngestDodRequest,
     IngestDocsRequest,
+    IngestCampaignDocsRequest,
     IngestRepoRequest,
     IngestResponse,
     SearchResponse,
     SearchResponseItem,
     MergeRequest,
     MergeResponse,
+    DaggrRunCompleteRequest,
+    ErrorReportRequest,
 )
 from app.ingest.service import (
     ingest_pdfs,
@@ -45,6 +48,54 @@ def metrics():
     """Prometheus metrics (DAGGR workflow runs and same convention as WatchTower)."""
     from prometheus_client import generate_latest
     return generate_latest()
+
+
+@app.post(
+    "/api/daggr/run-complete",
+    status_code=204,
+    include_in_schema=False,
+)
+def daggr_run_complete(payload: DaggrRunCompleteRequest) -> Response:
+    """WatchTower: receive workflow run completion, record to Prometheus metrics."""
+    from app.monitoring.daggr_metrics import record_workflow_run
+    record_workflow_run(
+        payload.workflow,
+        payload.duration_sec,
+        payload.success,
+        project=payload.project,
+    )
+    return Response(status_code=204)
+
+
+@app.post(
+    "/api/errors",
+    status_code=204,
+    include_in_schema=False,
+)
+def report_error(payload: ErrorReportRequest) -> Response:
+    """WatchTower: receive structured errors, append to log file."""
+    import json
+    import time
+    import os
+    log_path = os.environ.get("WATCHTOWER_ERRORS_LOG", "Campaigns/_rag_cache/errors.log")
+    log_file = Path(log_path)
+    if not log_file.is_absolute():
+        log_file = Path.cwd() / log_file
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+    entry = {
+        "project": payload.project,
+        "error_type": payload.error_type,
+        "message": payload.message,
+        "traceback": payload.traceback,
+        "context": payload.context or {},
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    try:
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception:
+        pass  # Do not fail the request
+    return Response(status_code=204)
 
 
 @app.post(
@@ -123,6 +174,24 @@ def ingest_docs_endpoint(
     # MODIFICATION NOTES: MVP ingest endpoint for local docs.
     docs_root = Path(payload.docs_root) if payload.docs_root else settings.dod_docs_root
     documents, sections = ingest_reference_docs(db, docs_root)
+    return IngestResponse(documents_ingested=documents, sections_ingested=sections)
+
+
+@app.post(
+    "/ingest/campaign-docs",
+    response_model=IngestResponse,
+    summary="Ingest campaign docs (RAG-aligned)",
+    description="Ingest campaign docs from campaign_docs_root. Aligns campaign_kb with RAG pipeline sources when use_kb_search is true.",
+)
+def ingest_campaign_docs_endpoint(
+    payload: IngestCampaignDocsRequest,
+    db: Session = Depends(get_db),
+) -> IngestResponse:
+    # PURPOSE: Ingest campaign docs into the knowledge base for RAG KB search.
+    # DEPENDENCIES: FastAPI, SQLAlchemy, app.ingest.service.ingest_reference_docs
+    # MODIFICATION NOTES: Aligns campaign_kb DB with RAG pipeline campaign_docs.
+    docs_root = Path(payload.docs_root) if payload.docs_root else settings.campaign_docs_root
+    documents, sections = ingest_reference_docs(db, docs_root, source_name="campaign_docs")
     return IngestResponse(documents_ingested=documents, sections_ingested=sections)
 
 

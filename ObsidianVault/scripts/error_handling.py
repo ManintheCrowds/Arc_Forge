@@ -1,15 +1,101 @@
 # PURPOSE: Enhanced error handling utilities with retry logic and graceful degradation.
 # DEPENDENCIES: None.
-# MODIFICATION NOTES: Provides retry decorators and error reporting utilities.
+# MODIFICATION NOTES: Provides retry decorators, error reporting, and structured error logging.
 
 from __future__ import annotations
 
+import json
 import logging
+import os
 import time
 from functools import wraps
-from typing import Any, Callable, Optional, TypeVar, Union
+from pathlib import Path
+from typing import Any, Callable, Dict, Optional, TypeVar, Union
 
 logger = logging.getLogger(__name__)
+
+# Default path for structured error log (relative to cwd when not absolute)
+DEFAULT_ERROR_LOG_PATH = "Campaigns/_rag_cache/errors.log"
+
+
+def _post_error_to_watchtower(
+    project: str,
+    error_type: str,
+    message: str,
+    traceback_str: str,
+    context: Optional[Dict[str, Any]] = None,
+) -> bool:
+    """POST error to WatchTower /api/errors. Returns True if successful."""
+    url = (
+        os.environ.get("WATCHTOWER_ERRORS_URL", "").strip()
+        or os.environ.get("WATCHTOWER_METRICS_URL", "").strip()
+    ).rstrip("/")
+    if not url:
+        return False
+    try:
+        import urllib.request
+        endpoint = f"{url}/api/errors"
+        payload = {
+            "project": project,
+            "error_type": error_type,
+            "message": message,
+            "traceback": traceback_str,
+            "context": context or {},
+        }
+        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        req = urllib.request.Request(
+            endpoint,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return resp.status in (200, 204)
+    except Exception as exc:
+        logger.debug(f"WatchTower POST failed: {exc}")
+        return False
+
+
+def log_structured_error(
+    error_type: str,
+    message: str,
+    traceback_str: str,
+    context: Optional[Dict[str, Any]] = None,
+    log_path: Optional[Union[str, Path]] = None,
+    project: Optional[str] = None,
+) -> None:
+    """
+    Write structured error JSON to file for centralized exception capture.
+    If WATCHTOWER_METRICS_URL or WATCHTOWER_ERRORS_URL is set, also POST to /api/errors.
+
+    Args:
+        error_type: Exception type name (e.g. KeyError, ValueError).
+        message: Exception message.
+        traceback_str: Full traceback string.
+        context: Optional dict with entry point, query, etc.
+        log_path: Path to errors log file. Defaults to RAG_ERROR_LOG_PATH env or
+            Campaigns/_rag_cache/errors.log relative to cwd.
+        project: Project label for WatchTower (default from context or "unknown").
+    """
+    ctx = context or {}
+    proj = project or ctx.get("project", "unknown")
+    log_file = Path(log_path) if log_path else Path(os.environ.get("RAG_ERROR_LOG_PATH", DEFAULT_ERROR_LOG_PATH))
+    if not log_file.is_absolute():
+        log_file = Path.cwd() / log_file
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "error_type": error_type,
+        "message": message,
+        "traceback": traceback_str,
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "context": ctx,
+    }
+    try:
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception as exc:
+        logger.warning(f"Failed to write structured error log: {exc}")
+    _post_error_to_watchtower(proj, error_type, message, traceback_str, ctx)
 
 T = TypeVar("T")
 

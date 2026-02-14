@@ -30,7 +30,11 @@ _ROOT = Path(__file__).resolve().parent.parent
 def get_workflow_name() -> str | None:
     if len(sys.argv) > 1:
         return sys.argv[1].lower().strip()
-    return os.environ.get("DAGGR_WORKFLOW", "").strip().lower() or None
+    return (
+        os.environ.get("DAGGR_WORKFLOW_SELECTOR", "").strip().lower()
+        or os.environ.get("DAGGR_WORKFLOW", "").strip().lower()
+        or None
+    )
 
 
 def load_graph(name: str):
@@ -53,6 +57,7 @@ def main() -> int:
             print(f"  {n:10} - {info['description']}")
         print("\nUsage: python -m daggr_workflows.single_app <name>")
         print("   or: DAGGR_WORKFLOW=<name> python -m daggr_workflows.single_app")
+        print("   or: DAGGR_WORKFLOW_SELECTOR=<name> python -m daggr_workflows.single_app")
         print("\nDefaulting to 'search' in 3s (Ctrl+C to cancel)...")
         import time
         try:

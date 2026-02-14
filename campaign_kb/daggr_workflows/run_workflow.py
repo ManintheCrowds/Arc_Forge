@@ -34,6 +34,10 @@ WORKFLOWS = {
         "script": "daggr_workflows/merge_workflow.py",
         "description": "Merge seed doc with citations from KB",
     },
+    "rag": {
+        "script": "daggr_workflows/rag_workflow.py",
+        "description": "Run ObsidianVault RAG pipeline with optional query",
+    },
 }
 
 
@@ -60,6 +64,7 @@ def main() -> int:
         print(f"Script not found: {script}", file=sys.stderr)
         return 1
 
+    os.environ["DAGGR_CURRENT_WORKFLOW_NAME"] = name
     import runpy
     runpy.run_path(str(script), run_name="__main__")
     return 0

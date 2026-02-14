@@ -100,11 +100,11 @@ These items are blocked or deferred:
 
 | # | Improvement | Status |
 |---|-------------|--------|
-| 1 | **Structured error logging** — Wrap `run_pipeline` (and other entry points) in `try/except` that logs `{error_type, message, traceback}` to a file (e.g. `_rag_cache/errors.log`) or to WatchTower if it gains an error endpoint. | [Not started] |
-| 2 | **Unify retrieve_context return schema** — Define a single dict shape (`source`, `score`, `text`) and ensure KB search path maps its results to that shape. Prevents schema mismatches. | [Not started] |
+| 1 | **Structured error logging** — Wrap `run_pipeline` (and other entry points) in `try/except` that logs `{error_type, message, traceback}` to a file (e.g. `_rag_cache/errors.log`) or to WatchTower if it gains an error endpoint. | [Done] — `log_structured_error` in error_handling.py; run_pipeline, main(), workflow_ui routes |
+| 2 | **Unify retrieve_context return schema** — Define a single dict shape (`source`, `score`, `text`) and ensure KB search path maps its results to that shape. Prevents schema mismatches. | [Done] — KB path adds `source`; text_map augmented for downstream |
 | 3 | **Daggr integration for rag_pipeline** — If rag_pipeline is invoked from a Daggr workflow, `with_run_reporting` would at least record success/fail. It does not capture tracebacks; that would need a separate error-reporting step. | [Not started] |
 | 4 | **WatchTower error endpoint** — Add e.g. `POST /api/errors` to accept `{project, error_type, message, traceback}` and store or forward for alerting. Then scripts could POST on exception. | [Not started] |
-| 5 | **Pytest coverage** — Add a test that runs `run_pipeline` with `use_kb_search` mocked to return KB-style results, and assert the consumer handles both schemas (or that normalize happens first). | [Not started] |
+| 5 | **Pytest coverage** — Add a test that runs `run_pipeline` with `use_kb_search` mocked to return KB-style results, and assert the consumer handles both schemas (or that normalize happens first). | [Done] — test_retrieve_context_kb_path_schema, test_retrieve_context_document_index_path_schema, test_run_pipeline_handles_unified_schema, test_log_structured_error |
 
 ---
 
