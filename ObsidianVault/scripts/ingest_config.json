@@ -2,6 +2,7 @@
   "_purpose": "Configure PDF ingestion for Obsidian source and atomic notes.",
   "_dependencies": "PDF++ cache (optional), local filesystem paths.",
   "_modification_notes": "Initial ingestion configuration for Wrath & Glory vault.",
+  "_rag_campaign_kb_disconnect": "RAG campaign_docs are read from disk (campaign_kb_root + campaign_docs). campaign_kb DB is populated by separate ingest (app.config). Two sources of truth unless aligned manually.",
   "vault_root": "D:\\Arc_Forge\\ObsidianVault",
   "pdf_root": "D:\\Arc_Forge\\ObsidianVault\\pdf",
   "source_notes_dir": "Sources",
@@ -164,7 +165,8 @@
     "pdf_ingestion": {
       "max_chunk_size": 8000,
       "max_chunks_per_pdf": 50,
-      "max_total_text_chars": 2000000
+      "max_total_text_chars": 2000000,
+      "chunk_by_sections": false
     },
     "cache": {
       "enabled": true,

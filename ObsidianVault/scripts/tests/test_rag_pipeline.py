@@ -352,6 +352,31 @@ def test_entity_cache_composite_miss_when_doc_changes(tmp_path):
             assert "Farseer" in result.get("NPCs", [])
 
 
+# PURPOSE: Verify real spaCy entity extraction in RAG pipeline (no mock).
+# DEPENDENCIES: entity_extractor, spaCy en_core_web_sm.
+def test_extract_entities_from_docs_real_spacy(tmp_path):
+    """When spaCy is available, extract_entities_from_docs returns real entities."""
+    from rag_pipeline import extract_entities_from_docs, ENTITY_EXTRACTION_AVAILABLE
+
+    if not ENTITY_EXTRACTION_AVAILABLE:
+        pytest.skip("Entity extraction not available (spaCy)")
+
+    text_map = {
+        "doc_a": "John Smith met with the Empire faction in New York. He carried a sword.",
+        "doc_b": "The Inquisitor Kael traveled to Mars.",
+    }
+    rag_config = {"entity_extraction": {}}
+    result = extract_entities_from_docs(
+        ["doc_a", "doc_b"], text_map, rag_config, entity_cache=None
+    )
+    assert isinstance(result, dict)
+    assert "NPCs" in result
+    assert "Factions" in result
+    # With spaCy, we expect at least some entities from this text
+    total = sum(len(v) for v in result.values())
+    assert total >= 1, "Real extraction should find at least one entity"
+
+
 # PURPOSE: T3.8 – test composable pipeline stages with mocked dependencies.
 def test_stage_ingest_returns_text_map(tmp_path):
     """stage_ingest returns text_map from campaign docs."""
@@ -452,6 +477,43 @@ def test_read_pdf_texts_chunks_large_pdf(tmp_path):
     chunked_keys = [k for k in result if "[chunk" in k]
     assert len(chunked_keys) <= 5, "Should respect max_chunks_per_pdf"
     assert all(len(v) <= 1000 + 50 for v in result.values())
+
+
+def test_read_pdf_texts_chunk_by_sections_param(tmp_path):
+    """When chunk_by_sections=True, section-structured text produces different chunk boundaries."""
+    pdf_dir = tmp_path / "extracted"
+    pdf_dir.mkdir()
+    # Text with section headers - chunk_by_sections should split at ## boundaries
+    sectioned_text = (
+        "Intro. " * 50
+        + "\n\n## Combat\n"
+        + "Combat rules. Wrath dice. " * 100
+        + "\n\n## Movement\n"
+        + "Movement rules. " * 50
+    )
+    (pdf_dir / "sectioned.txt").write_text(sectioned_text, encoding="utf-8")
+    result_sections = read_pdf_texts(
+        pdf_dir,
+        max_chunk_size=1500,
+        max_chunks_per_pdf=20,
+        max_total_text_chars=50000,
+        use_chunk_by_sections=True,
+    )
+    result_default = read_pdf_texts(
+        pdf_dir,
+        max_chunk_size=1500,
+        max_chunks_per_pdf=20,
+        max_total_text_chars=50000,
+    )
+    # Both should produce chunks; sectioned may have different boundaries
+    chunked_sections = [k for k in result_sections if "[chunk" in k]
+    chunked_default = [k for k in result_default if "[chunk" in k]
+    assert len(chunked_sections) >= 1, "chunk_by_sections should produce chunks"
+    assert len(chunked_default) >= 1, "default should produce chunks"
+    # At least one chunk with sectioned mode should contain a section header
+    combined_sections = " ".join(result_sections.values())
+    assert "## Combat" in combined_sections or "## Movement" in combined_sections, \
+        "Section headers should be preserved in chunks"
 
 
 def test_stage_ingest_retrieve_integration(tmp_path):

@@ -51,6 +51,8 @@ Or use the **unified launcher** (starts both and opens the browser):
 - Windows: `.\scripts\start_stack.ps1`
 - Linux/macOS: `./scripts/start_stack.sh`
 
+Having issues? See [ObsidianVault/workflow_ui/docs/TROUBLESHOOTING.md](ObsidianVault/workflow_ui/docs/TROUBLESHOOTING.md) (workflow UI) and [ObsidianVault/scripts/TROUBLESHOOTING.md](ObsidianVault/scripts/TROUBLESHOOTING.md) (PDF ingestion).
+
 ## Interfacing the User
 
 - **Primary**: Use **workflow_ui** (browser at http://127.0.0.1:5050) for storyboard→encounter workflow (S1–S5), session memory (Archivist/Foreshadow), and — when campaign_kb is running — KB search, ingest, and merge.
@@ -98,6 +100,10 @@ Unified runner (all three from repo root):
 See [scripts/run_tests.sh](scripts/run_tests.sh) (or run_tests.ps1) for exact paths and env notes. For browser I/O validation, see [ObsidianVault/workflow_ui/docs/manual_io_checklist.md](ObsidianVault/workflow_ui/docs/manual_io_checklist.md). workflow_ui exposes OpenAPI at **http://127.0.0.1:5050/docs** when running. Real runs of S2/S4 need RAG/LLM and storyboard under `Campaigns/_rag_outputs/` (or path passed to Stage 1) and `ingest_config.json` for Stage 2/4.
 
 **RAG semantic retrieval (optional):** For ChromaDB-based semantic search, install `pip install -r ObsidianVault/scripts/requirements-rag.txt` and set `use_chroma: true` in `ingest_config.json` → `rag_pipeline`. See [campaign_kb/campaign/05_rag_integration.md](campaign_kb/campaign/05_rag_integration.md) for setup and config.
+
+## Local-first alignment
+
+Arc Forge aligns with [local-first principles](https://www.inkandswitch.com/local-first): vault and campaign markdown live on disk (you own your data); workflow_ui and scripts run locally. RAG/campaign_kb is optional—ingest and search can run fully offline with local embeddings. Community: [LoFi](https://lofi.so), [Local-First News](https://www.localfirstnews.com/).
 
 ## License and Credits
 

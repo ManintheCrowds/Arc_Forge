@@ -90,6 +90,10 @@ def report_error(payload: ErrorReportRequest) -> Response:
         "context": payload.context or {},
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
+    if payload.error_id is not None:
+        entry["error_id"] = payload.error_id
+    if payload.severity is not None:
+        entry["severity"] = payload.severity
     try:
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")

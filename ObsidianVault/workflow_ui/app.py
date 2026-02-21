@@ -69,7 +69,8 @@ def _log_workflow_error(entry: str, e: Exception, context: dict | None = None) -
         type(e).__name__,
         str(e),
         traceback.format_exc(),
-        context={"entry": entry, **(context or {})},
+        context={"entry": entry, "project": "workflow_ui", **(context or {})},
+        project="workflow_ui",
     )
 
 

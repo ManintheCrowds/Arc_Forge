@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import time
+import uuid
 from functools import wraps
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, TypeVar, Union
@@ -18,12 +19,25 @@ logger = logging.getLogger(__name__)
 DEFAULT_ERROR_LOG_PATH = "Campaigns/_rag_cache/errors.log"
 
 
+def _severity_for_error_type(error_type: str) -> str:
+    """Map exception type to severity. Returns 'critical', 'error', or 'warning'."""
+    critical = {"OSError", "ConnectionError", "TimeoutError", "MemoryError"}
+    warning = {"UserWarning", "DeprecationWarning"}
+    if error_type in critical:
+        return "critical"
+    if error_type in warning:
+        return "warning"
+    return "error"  # KeyError, ValueError, TypeError, etc.
+
+
 def _post_error_to_watchtower(
     project: str,
     error_type: str,
     message: str,
     traceback_str: str,
     context: Optional[Dict[str, Any]] = None,
+    error_id: Optional[str] = None,
+    severity: Optional[str] = None,
 ) -> bool:
     """POST error to WatchTower /api/errors. Returns True if successful."""
     url = (
@@ -42,6 +56,10 @@ def _post_error_to_watchtower(
             "traceback": traceback_str,
             "context": context or {},
         }
+        if error_id is not None:
+            payload["error_id"] = error_id
+        if severity is not None:
+            payload["severity"] = severity
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         req = urllib.request.Request(
             endpoint,
@@ -76,17 +94,24 @@ def log_structured_error(
         log_path: Path to errors log file. Defaults to RAG_ERROR_LOG_PATH env or
             Campaigns/_rag_cache/errors.log relative to cwd.
         project: Project label for WatchTower (default from context or "unknown").
+
+    Env vars: RAG_ERROR_LOG_PATH (client log path), WATCHTOWER_ERRORS_URL or
+    WATCHTOWER_METRICS_URL (WatchTower base URL). See ERROR_MONITORING_AND_KNOWN_ISSUES.md.
     """
     ctx = context or {}
     proj = project or ctx.get("project", "unknown")
+    error_id = str(uuid.uuid4())
+    severity = _severity_for_error_type(error_type)
     log_file = Path(log_path) if log_path else Path(os.environ.get("RAG_ERROR_LOG_PATH", DEFAULT_ERROR_LOG_PATH))
     if not log_file.is_absolute():
         log_file = Path.cwd() / log_file
     log_file.parent.mkdir(parents=True, exist_ok=True)
     payload = {
+        "error_id": error_id,
         "error_type": error_type,
         "message": message,
         "traceback": traceback_str,
+        "severity": severity,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "context": ctx,
     }
@@ -95,7 +120,7 @@ def log_structured_error(
             f.write(json.dumps(payload, ensure_ascii=False) + "\n")
     except Exception as exc:
         logger.warning(f"Failed to write structured error log: {exc}")
-    _post_error_to_watchtower(proj, error_type, message, traceback_str, ctx)
+    _post_error_to_watchtower(proj, error_type, message, traceback_str, ctx, error_id=error_id, severity=severity)
 
 T = TypeVar("T")
 

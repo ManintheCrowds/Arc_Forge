@@ -1,0 +1,12 @@
+{
+  "text_hash": "671cb5423156d7d67e7d25db1905abe5",
+  "summary": "As a Game Master, you can use this summary to quickly reference important information related to the Orks, their activities in the Reach, and notable items and locations. Here are some key points:\n\n* The Orks are a major threat across the galaxy, with no place they cannot be found.\n* In the Reach, the Orks patrol the area, engaging any Cultists they come across.\n* Agents must pass a DN3 Awareness (Int) Test to locate an access conduit that leads into the heart of the Hive.\n* The sump provides a recruitment ground for Gutshiva's Kommandos, and several tunnels lead to lower areas of the Hive.\n* Bitzbak is a Painboy who sews injured Orks back together and has established a dubious reputation.\n* The generator is guarded by Adeptus Mechanicus Skitarii Rangers and a Tech-Priest, and Bitzbak will provide reliable medical assistance and bioniks should the Agents succeed in their mission.\n* Notable items include a microtellyporta, which Bitzbak has become obsessed with, and a Shokk GUTSHIVA\u2019S KOMMANDOS gun that Bitzbak will begin to experiment on once acquired.\n\nWith this information, you can create engaging encounters and challenges for the Agents as they navigate the Reach and interact with the Orks, Korps, and other factions.",
+  "metadata": {
+    "provider": "ollama",
+    "model": "llama2",
+    "tokens_used": 3140,
+    "cost": 0.0,
+    "chunks": 1
+  },
+  "created_at": "2026-02-14T10:44:07.065534"
+}

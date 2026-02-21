@@ -1,19 +1,21 @@
 # RAG Generated: bios
 
-NPC Bio 1:
-Role: Infiltrator
-Motivation: Uncovering enemy secrets for the greater good of the Absolutors Chapter
-Secret: Has been working undercover within a rival chapter, gathering intel on their operations and weaknesses.
-Hook: Uncovers a plot by the rival chapter to steal powerful psychic artifacts from the Eldar Empire, leading to a race against time to stop them before they can use the stolen power against the Imperium.
+Here are three bios for NPCs in Wrath & Glory based on the provided context:
 
-NPC Bio 2:
-Role: Saboteur
-Motivation: Bringing chaos and disorder to enemy forces through cunning and stealth
-Secret: Holds a personal vendetta against a high-ranking officer in the enemy chapter, and will stop at nothing to bring them down.
-Hook: Discovered a hidden cache of weapons and supplies belonging to the enemy, leading to a race against time to eliminate their source of strength before they can use it against the Absolutors.
+NPC 1: Bitzbak, Painboy
+Role: Recruiter and Experimenter
+Motivation: Obsession with medical experimentation and bionics
+Secret: Bitzbak has a secret laboratory hidden beneath the sump where he conducts his experiments on captured Orks.
+Hook: The Agents discover Bitzbak's hidden laboratory and must decide whether to turn him in or keep his secrets.
 
-NPC Bio 3:
-Role: Librarian
-Motivation: Unlocking the secrets of the Warp to further the goals of the Absolutors Chapter
-Secret: Possesses a hidden agenda to uncover a lost Psyker artifact rumored to hold immense power, which they plan to use to tip the balance of the war in favor of the Imperium.
-Hook: Uncovers a hidden cult operating within the Gilead System, using their twisted rituals to channel dark energy into the Warp, threatening the stability of the entire system.
+NPC 2: Skitarii Ranger
+Role: Guardian of the Generator
+Motivation: Loyalty to the Adeptus Mechanicus
+Secret: The Skitarii Ranger has a hidden agenda to overthrow the Tech-Priest who leads their chapter.
+Hook: The Agents must navigate past the Skitarii Ranger to reach the generator, but discover his hidden agenda and must decide whether to support or hinder his rebellion.
+
+NPC 3: Aeldari Loot
+Role: Smuggler and information broker
+Motivation: Profit and power
+Secret: The Aeldari Loot has a connection to the Orks that goes beyond their business dealings.
+Hook: The Agents hire the Aeldari Loot to retrieve information on the Orks' movements, but discover that he is more closely connected to them than they realized.

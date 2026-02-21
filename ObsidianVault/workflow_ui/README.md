@@ -4,10 +4,10 @@ Thin web UI for the Storyboard-to-Encounter workflow. Calls `scripts/storyboard_
 
 ## Run
 
-From **ObsidianVault** (parent of `workflow_ui`):
+From **Arc_Forge** repo root. All paths assume you are in the Arc_Forge repo root; use `cd ObsidianVault` (or `cd {Arc_Forge_root}/ObsidianVault` if your repo folder differs).
 
 ```bash
-cd D:\Arc_Forge\ObsidianVault
+cd ObsidianVault
 pip install -r workflow_ui/requirements.txt
 python -m workflow_ui.app
 ```
@@ -19,7 +19,7 @@ Then open http://127.0.0.1:5050. API documentation: Open http://127.0.0.1:5050/d
 Or:
 
 ```bash
-cd D:\Arc_Forge\ObsidianVault
+cd ObsidianVault
 set FLASK_APP=workflow_ui.app
 flask run --host=127.0.0.1 --port=5050
 ```
@@ -42,7 +42,7 @@ flask run --host=127.0.0.1 --port=5050
 - **To run:** Start the Gradio app in a second terminal (same machine as Flask), then use the header link or open `/tools/gradio`:
 
 ```bash
-cd D:\Arc_Forge\ObsidianVault
+cd ObsidianVault
 pip install -r workflow_ui/requirements.txt   # includes gradio>=4.0.0
 python -m workflow_ui.gradio_app
 ```
@@ -75,7 +75,7 @@ GUI uses the same entry points as the CLI: `run_stage_1`, `run_stage_2`, `refine
 Run API tests from **workflow_ui** so pytest uses project-local temp (`.pytest-tmp/`; no system temp):
 
 ```bash
-cd D:\Arc_Forge\ObsidianVault\workflow_ui
+cd ObsidianVault/workflow_ui
 pytest tests/ -v
 ```
 
@@ -98,6 +98,8 @@ See [docs/PLAYWRIGHT_INTEGRATION.md](docs/PLAYWRIGHT_INTEGRATION.md) for integra
 - **Remaining work:** [docs/DEVELOPMENT_PLAN_REMAINING.md](docs/DEVELOPMENT_PLAN_REMAINING.md) – tasks and agent-referenceable plan.
 
 ## See also
+
+Having issues? See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 - [Campaigns/docs/gui_spec.md](../Campaigns/docs/gui_spec.md) – full GUI spec  
 - [Campaigns/docs/workflow_diagrams.md](../Campaigns/docs/workflow_diagrams.md) – pipeline and file-tree diagrams

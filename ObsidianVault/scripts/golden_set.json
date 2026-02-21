@@ -1,0 +1,98 @@
+{
+  "_purpose": "Golden set for RAG retrieval recall@k evaluation. expected_doc_keys use base doc names (any chunk from that doc counts).",
+  "queries": [
+    {
+      "query": "Orks combat",
+      "type": "faction",
+      "expected_doc_keys": [
+        "[PDF] Abundant Apocryphal Adversaries - The Orks v1.txt",
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\01_factions.md"
+      ],
+      "expected_contains": ["Ork", "combat", "Waaagh"]
+    },
+    {
+      "query": "Wrath dice",
+      "type": "rules",
+      "expected_doc_keys": [
+        "[PDF] Abundant Apocryphal Adversaries - The Orks v1.txt",
+        "[PDF] warhammer40000_wrathandglory_forsakensystemplayersguide.txt",
+        "[PDF] Combat Modifiers Summary v2.1.txt"
+      ],
+      "expected_contains": ["Wrath", "dice", "Exalted"]
+    },
+    {
+      "query": "faith corruption",
+      "type": "theme",
+      "expected_doc_keys": [
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\00_overview.md",
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\01_factions.md"
+      ],
+      "expected_contains": ["faith", "corruption", "heresy"]
+    },
+    {
+      "query": "Inquisitor",
+      "type": "npc",
+      "expected_doc_keys": [
+        "[PDF] Abundant Apocryphal Adversaries - The Orks v1.txt",
+        "[PDF] warhammer40000_wrathandglory_forsakensystemplayersguide.txt"
+      ],
+      "expected_contains": ["Inquisitor", "Ordos"]
+    },
+    {
+      "query": "Carcharodon Astra",
+      "type": "faction",
+      "expected_doc_keys": [
+        "[PDF] Abundant Apocryphal Adversaries - The Orks v1.txt",
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\05_rag_integration.md"
+      ],
+      "expected_contains": ["Carcharodon", "Space Marine"]
+    },
+    {
+      "query": "pilot test",
+      "type": "rules",
+      "expected_doc_keys": [
+        "[PDF] warhammer40000_wrathandglory_forsakensystemplayersguide.txt",
+        "[PDF] warhammer40000_wrathandglory_redactedrecords.txt"
+      ],
+      "expected_contains": ["pilot", "vehicle", "DN"]
+    },
+    {
+      "query": "Mars Adeptus Mechanicus",
+      "type": "location_faction",
+      "expected_doc_keys": [
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\00_overview.md",
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\01_factions.md",
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\03_npcs.md"
+      ],
+      "expected_contains": ["Mars", "Mechanicus", "Adeptus"]
+    },
+    {
+      "query": "power sword",
+      "type": "item",
+      "expected_doc_keys": [
+        "[PDF] Abundant Apocryphal Adversaries - The Orks v1.txt",
+        "[PDF] Combat Modifiers Summary v2.1.txt"
+      ],
+      "expected_contains": ["power sword", "melee"]
+    },
+    {
+      "query": "adventure hook",
+      "type": "narrative",
+      "expected_doc_keys": [
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\00_overview.md",
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\01_factions.md",
+        "D:\\Arc_Forge\\campaign_kb\\campaign\\04_missions.md"
+      ],
+      "expected_contains": ["hook", "scene", "story"]
+    },
+    {
+      "query": "Shift",
+      "type": "rules",
+      "expected_doc_keys": [
+        "[PDF] warhammer40000_wrathandglory_forsakensystemplayersguide.txt",
+        "[PDF] warhammer40000_wrathandglory_redactedrecords.txt"
+      ],
+      "expected_contains": ["Shift", "mechanic"]
+    }
+  ]
+}

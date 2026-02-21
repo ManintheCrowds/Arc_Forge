@@ -44,7 +44,7 @@ except ImportError:
     logger.warning("Entity extraction not available. Install dependencies to enable patterns.")
 
 try:
-    from ai_summarizer import summarize_text, _call_openai_api, _call_anthropic_api, _call_ollama_api, chunk_text
+    from ai_summarizer import summarize_text, _call_openai_api, _call_anthropic_api, _call_ollama_api, chunk_text, chunk_by_sections
     SUMMARIZATION_AVAILABLE = True
     CHUNKING_AVAILABLE = True
 except ImportError:
@@ -613,6 +613,7 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
             "max_chunk_size": 8000,
             "max_chunks_per_pdf": 50,
             "max_total_text_chars": 2000000,
+            "chunk_by_sections": False,
         },
         "cache": {
             "enabled": True,
@@ -715,6 +716,7 @@ def read_pdf_texts(
     max_chunk_size: int = 8000,
     max_chunks_per_pdf: int = 50,
     max_total_text_chars: int = 2000000,
+    use_chunk_by_sections: bool = False,
 ) -> Dict[str, str]:
     """
     Incrementally ingest PDF texts with chunking to prevent memory/performance issues.
@@ -772,7 +774,10 @@ def read_pdf_texts(
             
             # Chunk large PDFs incrementally
             if CHUNKING_AVAILABLE and text_length > max_chunk_size:
-                chunks = chunk_text(text, max_chunk_size=max_chunk_size, overlap=200)
+                if use_chunk_by_sections:
+                    chunks = chunk_by_sections(text, max_chunk_size=max_chunk_size, overlap=200)
+                else:
+                    chunks = chunk_text(text, max_chunk_size=max_chunk_size, overlap=200)
                 # Limit chunks per PDF
                 chunks = chunks[:max_chunks_per_pdf]
                 logger.info(
@@ -1379,6 +1384,7 @@ def retrieve_context(
                 max_chunk_size=pdf_config.get("max_chunk_size", 8000),
                 max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 50),
                 max_total_text_chars=pdf_config.get("max_total_text_chars", 2000000),
+                use_chunk_by_sections=pdf_config.get("chunk_by_sections", False),
             ))
         return tm
 
@@ -1669,6 +1675,7 @@ def stage_ingest(rag_config: Dict[str, Any]) -> Dict[str, str]:
             max_chunk_size=pdf_config.get("max_chunk_size", 8000),
             max_chunks_per_pdf=pdf_config.get("max_chunks_per_pdf", 50),
             max_total_text_chars=pdf_config.get("max_total_text_chars", 2000000),
+            use_chunk_by_sections=pdf_config.get("chunk_by_sections", False),
         )
         text_map.update(pdf_text_map)
     return text_map

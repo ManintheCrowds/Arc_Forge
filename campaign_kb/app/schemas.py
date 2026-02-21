@@ -120,10 +120,12 @@ class DaggrRunCompleteRequest(BaseModel):
 class ErrorReportRequest(BaseModel):
     # PURPOSE: WatchTower /api/errors payload from log_structured_error.
     # DEPENDENCIES: Pydantic
-    # MODIFICATION NOTES: T4 - structured error reporting.
+    # MODIFICATION NOTES: T4 - structured error reporting; error_id, severity optional.
 
     project: str = "unknown"
     error_type: str
     message: str
     traceback: str = ""
     context: dict | None = None
+    error_id: str | None = None
+    severity: str | None = None

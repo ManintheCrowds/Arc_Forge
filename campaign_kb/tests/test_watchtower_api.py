@@ -26,6 +26,21 @@ def test_errors_204(client: TestClient) -> None:
         "message": "test error",
         "traceback": "Traceback...",
         "context": {"entry": "test"},
+        "error_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "severity": "error",
+    }
+    response = client.post("/api/errors", json=payload)
+    assert response.status_code == 204
+
+
+def test_errors_204_backward_compat(client: TestClient) -> None:
+    """POST /api/errors without error_id/severity still returns 204 (backward compat)."""
+    payload = {
+        "project": "rag_pipeline",
+        "error_type": "ValueError",
+        "message": "test error",
+        "traceback": "Traceback...",
+        "context": {"entry": "test"},
     }
     response = client.post("/api/errors", json=payload)
     assert response.status_code == 204

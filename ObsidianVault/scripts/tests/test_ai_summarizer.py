@@ -10,6 +10,7 @@ import hashlib
 from ai_summarizer import (
     summarize_text,
     chunk_text,
+    chunk_by_sections,
     get_cached_summary,
     save_summary_cache,
     _call_openai_api,
@@ -67,6 +68,42 @@ class TestChunkText:
         """Test that empty text returns empty list."""
         chunks = chunk_text("", max_chunk_size=100)
         assert chunks == [""]
+
+
+class TestChunkBySections:
+    """Tests for structural chunk_by_sections (Phase 2)."""
+
+    def test_chunk_by_sections_respects_section_boundaries(self):
+        """Sections split on ## Combat and ## Movement should not be merged."""
+        # Use text long enough to trigger splitting (exceeds max_chunk_size)
+        intro = "Intro text. " * 30
+        combat = "Combat rules here. Wrath dice. " * 30
+        movement = "Movement rules. " * 20
+        text = f"{intro}\n\n## Combat\n{combat}\n\n## Movement\n{movement}"
+        chunks = chunk_by_sections(text, max_chunk_size=200, overlap=0)
+        # Should have at least 2 chunks (Combat and Movement as separate sections)
+        combat_chunks = [c for c in chunks if "## Combat" in c or "Combat rules" in c]
+        movement_chunks = [c for c in chunks if "## Movement" in c or "Movement rules" in c]
+        assert len(combat_chunks) >= 1, "Combat section should be in its own chunk"
+        assert len(movement_chunks) >= 1, "Movement section should be in its own chunk"
+        # No chunk should contain both section headers
+        for c in chunks:
+            assert not ("## Combat" in c and "## Movement" in c), "Sections should not be merged"
+
+    def test_chunk_by_sections_falls_back_for_large_sections(self):
+        """Section > max_chunk_size gets sentence-chunked via chunk_text."""
+        # One large section with no internal section boundaries
+        long_section = ". ".join([f"Sentence {i}." for i in range(200)])
+        text = f"## BigSection\n{long_section}"
+        chunks = chunk_by_sections(text, max_chunk_size=500, overlap=20)
+        assert len(chunks) >= 2, "Large section should be split by sentence chunking"
+        assert all(len(c) <= 500 + 50 for c in chunks), "Chunks should respect max size"
+
+    def test_chunk_by_sections_short_text_unchanged(self):
+        """Text under max_chunk_size returns single chunk."""
+        text = "Short text with no sections."
+        chunks = chunk_by_sections(text, max_chunk_size=1000)
+        assert chunks == [text]
 
 
 class TestCaching:

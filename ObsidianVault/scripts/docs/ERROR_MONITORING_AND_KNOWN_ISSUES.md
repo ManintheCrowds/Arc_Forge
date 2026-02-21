@@ -5,6 +5,7 @@ First place to look for RAG pipeline error monitoring, traceback handling, and t
 ## Table of contents
 
 - [Quick reference](#quick-reference)
+- [Environment variables](#environment-variables)
 - [Known issue: KeyError 'source'](#known-issue-keyerror-source)
 - [Current state](#current-state)
 - [What cannot be resolved (yet)](#what-cannot-be-resolved-yet)
@@ -28,6 +29,17 @@ First place to look for RAG pipeline error monitoring, traceback handling, and t
 | **TROUBLESHOOTING.md** | Per-repo playbooks | N/A |
 
 **Key gap:** `KeyError 'source'` — `retrieve_context()` has two return schemas (KB vs DocumentIndex); `run_pipeline()` assumes `item["source"]` for all. See [rag_pipeline.py](D:\Arc_Forge\ObsidianVault\scripts\rag_pipeline.py) lines 1196–1205 vs 1231–1234 and lines 1410–1412.
+
+---
+
+## Environment variables
+
+| Variable | Used by | Default | Description |
+|----------|---------|---------|-------------|
+| **RAG_ERROR_LOG_PATH** | `log_structured_error` (client) | `Campaigns/_rag_cache/errors.log` | Path for structured error JSONL when writing locally. Relative to cwd if not absolute. |
+| **WATCHTOWER_ERRORS_LOG** | campaign_kb `POST /api/errors` (receiver) | `Campaigns/_rag_cache/errors.log` | Path where received errors are appended. Used when campaign_kb serves as WatchTower. |
+| **WATCHTOWER_ERRORS_URL** | `log_structured_error` (client) | (none) | Base URL for WatchTower; errors are POSTed to `{url}/api/errors`. Falls back to WATCHTOWER_METRICS_URL if unset. |
+| **WATCHTOWER_METRICS_URL** | `log_structured_error`, `report_run` | (none) | Base URL for WatchTower (run-complete and errors). If WATCHTOWER_ERRORS_URL is unset, errors POST uses this. |
 
 ---
 

@@ -220,7 +220,7 @@ class TestLogStructuredError:
     """T5.4 – test log_structured_error writes JSON with expected keys."""
 
     def test_log_structured_error_writes_file(self, tmp_path):
-        """log_structured_error must write JSON line with error_type, message, traceback, timestamp, context."""
+        """log_structured_error must write JSON line with error_type, message, traceback, timestamp, context, error_id, severity."""
         log_file = tmp_path / "errors.log"
         log_structured_error(
             "KeyError",
@@ -238,6 +238,9 @@ class TestLogStructuredError:
         assert "Traceback" in data["traceback"]
         assert "timestamp" in data
         assert data["context"] == {"entry": "run_pipeline"}
+        assert "error_id" in data
+        assert "severity" in data
+        assert data["severity"] == "error"
 
     def test_log_structured_error_appends(self, tmp_path):
         """log_structured_error must append to existing file."""

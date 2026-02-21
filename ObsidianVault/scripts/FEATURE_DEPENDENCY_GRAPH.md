@@ -8,7 +8,7 @@ Visual representation of feature dependencies, critical paths, and implementatio
 ## Dependency Graph
 
 ```mermaid
-graph TD
+flowchart TD
     subgraph Phase1["Phase 1: Foundation"]
         OCR[OCR Integration]
         RESTAPI[REST API]

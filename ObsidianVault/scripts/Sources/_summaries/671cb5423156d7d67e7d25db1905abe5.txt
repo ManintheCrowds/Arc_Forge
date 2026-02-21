@@ -1,5 +1,3 @@
-# RAG Context Summary
-
 As a Game Master, you can use this summary to quickly reference important information related to the Orks, their activities in the Reach, and notable items and locations. Here are some key points:
 
 * The Orks are a major threat across the galaxy, with no place they cannot be found.

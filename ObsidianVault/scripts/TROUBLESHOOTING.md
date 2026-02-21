@@ -173,6 +173,12 @@ schtasks /Change /TN "ObsidianVault-Ingest-Watcher" /DISABLE
 schtasks /Change /TN "ObsidianVault-Ingest-Watcher" /ENABLE
 ```
 
+## RAG Pipeline Notes
+
+### campaign_docs vs campaign_kb DB (two sources of truth)
+
+**RAG pipeline** reads campaign docs from disk (`rag_pipeline.campaign_kb_root` + `rag_pipeline.campaign_docs` in ingest_config.json). **campaign_kb** search uses a SQLite DB populated by a separate ingest workflow (Daggr ingest, or campaign_kb app.ingest). These are two sources of truth. If `use_kb_search` is true and the campaign_kb DB is empty, retrieval falls through to DocumentIndex or full-text scan. To align: either run campaign_kb ingest for the same content, or rely on DocumentIndex/ChromaDB (set `use_kb_search: false`).
+
 ## System Components
 
 - **watch_ingest.ps1** - Watcher script with diagnostic mode

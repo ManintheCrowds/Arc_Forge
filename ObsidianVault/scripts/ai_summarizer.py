@@ -439,6 +439,46 @@ def chunk_text(text: str, max_chunk_size: int = 12000, overlap: int = 200) -> Li
     return chunks if chunks else [text]
 
 
+# PURPOSE: Split text on section boundaries first; fall back to sentence chunking for large sections.
+# DEPENDENCIES: chunk_text.
+# MODIFICATION NOTES: Phase 2 structural chunking per pdf_chunking_rag_strategy plan.
+def chunk_by_sections(
+    text: str,
+    max_chunk_size: int = 8000,
+    overlap: int = 200,
+) -> List[str]:
+    """
+    Split text on section boundaries (headings, Chapter/Section markers), then by sentences
+    for sections that exceed max_chunk_size.
+
+    Args:
+        text: Text to chunk.
+        max_chunk_size: Maximum characters per chunk.
+        overlap: Overlap between chunks when falling back to sentence chunking.
+
+    Returns:
+        List of text chunks.
+    """
+    if len(text) <= max_chunk_size:
+        return [text]
+
+    # Conservative: markdown headers, Chapter N, Section N
+    section_pattern = re.compile(r'\n(?=#{1,3}\s|Chapter\s|Section\s)', re.MULTILINE)
+    raw_sections = section_pattern.split(text)
+
+    chunks: List[str] = []
+    for sec in raw_sections:
+        sec = sec.strip()
+        if not sec:
+            continue
+        if len(sec) <= max_chunk_size:
+            chunks.append(sec)
+        else:
+            chunks.extend(chunk_text(sec, max_chunk_size=max_chunk_size, overlap=overlap))
+
+    return chunks if chunks else [text]
+
+
 def get_cached_summary(text_hash: str, cache_dir: Path) -> Optional[Tuple[str, Dict]]:
     """
     Get cached summary if available.
