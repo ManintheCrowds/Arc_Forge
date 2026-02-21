@@ -36,6 +36,7 @@ class ChromaRetriever:
     """
     Semantic retriever using ChromaDB and sentence-transformers.
     Supports Strict/Loose/Inspired By canon modes via metadata filtering.
+    AI namespace: collection_name isolates AI embeddings from sync data (see AI_DATA_NAMESPACES.md).
     """
 
     def __init__(

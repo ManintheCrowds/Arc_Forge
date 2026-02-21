@@ -1,6 +1,6 @@
 # PURPOSE: AI-powered document summarization (Phase 2).
 # DEPENDENCIES: openai, anthropic, or ollama.
-# MODIFICATION NOTES: Phase 2 - Complete implementation with caching, chunking, cost tracking, and retry logic.
+# MODIFICATION NOTES: Phase 2 - Complete implementation. AI security P0: credential vault for API keys.
 
 from __future__ import annotations
 
@@ -138,7 +138,29 @@ def _call_openai_api(
     if not OPENAI_AVAILABLE:
         logger.error("OpenAI library not available")
         return None, None
-    
+
+    try:
+        from audit_ai import log_ai_action
+        log_ai_action(prompt[:500], model, "summarize_openai")
+    except ImportError:
+        pass
+
+    if api_key is None:
+        try:
+            from credential_vault import get_secret
+            api_key = get_secret("OPENAI_API_KEY")
+        except ImportError:
+            api_key = os.environ.get("OPENAI_API_KEY")
+
+    if api_key:
+        try:
+            from cloud_ai_consent import has_cloud_ai_consent
+            if not has_cloud_ai_consent():
+                logger.error("Cloud AI (OpenAI) consent required. Set CLOUD_AI_CONSENT=1 or create ~/.config/arc_forge/cloud_ai_consent")
+                return None, None
+        except ImportError:
+            pass
+
     client = openai.OpenAI(api_key=api_key) if api_key else openai.OpenAI()
     
     for attempt in range(max_retries):
@@ -217,7 +239,29 @@ def _call_anthropic_api(
     if not ANTHROPIC_AVAILABLE:
         logger.error("Anthropic library not available")
         return None, None
-    
+
+    try:
+        from audit_ai import log_ai_action
+        log_ai_action(prompt[:500], model, "summarize_anthropic")
+    except ImportError:
+        pass
+
+    if api_key is None:
+        try:
+            from credential_vault import get_secret
+            api_key = get_secret("ANTHROPIC_API_KEY")
+        except ImportError:
+            api_key = os.environ.get("ANTHROPIC_API_KEY")
+
+    if api_key:
+        try:
+            from cloud_ai_consent import has_cloud_ai_consent
+            if not has_cloud_ai_consent():
+                logger.error("Cloud AI (Anthropic) consent required. Set CLOUD_AI_CONSENT=1 or create ~/.config/arc_forge/cloud_ai_consent")
+                return None, None
+        except ImportError:
+            pass
+
     client = anthropic.Anthropic(api_key=api_key) if api_key else anthropic.Anthropic()
     
     for attempt in range(max_retries):
@@ -296,7 +340,13 @@ def _call_ollama_api(
     if not OLLAMA_AVAILABLE:
         logger.error("Ollama library not available")
         return None, None
-    
+
+    try:
+        from audit_ai import log_ai_action
+        log_ai_action(prompt[:500], model, "summarize_ollama")
+    except ImportError:
+        pass
+
     # Get endpoint from parameter, environment variable, or default
     if endpoint is None:
         endpoint = os.getenv("OLLAMA_HOST", "http://localhost:11434")

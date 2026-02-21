@@ -64,6 +64,12 @@ except ImportError:
         pass
 
 try:
+    from tool_registry import ensure_tool_allowed
+except ImportError:
+    def ensure_tool_allowed(_):
+        pass
+
+try:
     from rag_evaluation import evaluate_content_pack
     EVALUATION_AVAILABLE = True
 except ImportError:
@@ -923,7 +929,8 @@ def extract_entities_from_docs(
                 entities[category].extend(cached.get(category, []))
             return entities
     
-    # Extract entities
+    # Extract entities (tool registry: AI security P6)
+    ensure_tool_allowed("entity_extractor.extract_entities_from_text")
     extracted = extract_entities_from_text(
         combined_text,
         use_llm=rag_config.get("entity_extraction", {}).get("use_llm", False),
@@ -1005,6 +1012,7 @@ def build_pattern_report(text_map: Dict[str, str], rag_config: Dict[str, Any]) -
         # #endregion
 
     if ENTITY_EXTRACTION_AVAILABLE and text_for_extraction.strip():
+        ensure_tool_allowed("entity_extractor.extract_entities_from_text")
         extracted = extract_entities_from_text(
             text_for_extraction,
             use_llm=rag_config.get("entity_extraction", {}).get("use_llm", False),
@@ -1041,6 +1049,7 @@ def build_pattern_report(text_map: Dict[str, str], rag_config: Dict[str, Any]) -
 def summarize_context(text: str, rag_config: Dict[str, Any]) -> Optional[str]:
     if not SUMMARIZATION_AVAILABLE or not text.strip():
         return None
+    ensure_tool_allowed("ai_summarizer.summarize_text")
     summary_cfg = rag_config.get("summarization", {})
     start_time = time.time()
     result = summarize_text(

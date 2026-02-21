@@ -14,6 +14,8 @@ pdf2image>=1.16.3
 watchdog>=3.0.0
 
 # AI/LLM Support
+# Credential vault: keyring for API keys (fallback to .env)
+keyring>=24.0.0
 # OpenAI API for GPT models
 openai>=1.0.0
 

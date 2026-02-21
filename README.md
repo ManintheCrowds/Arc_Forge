@@ -86,6 +86,9 @@ cd ObsidianVault && pytest workflow_ui/tests/ -v
 
 # ObsidianVault scripts
 cd ObsidianVault && pytest scripts/tests/ -v
+
+# AI security unit tests only (fast, no LLM)
+cd ObsidianVault/scripts && pytest tests/test_ai_security.py -v
 ```
 
 Unified runner (all three from repo root):
@@ -100,6 +103,16 @@ Unified runner (all three from repo root):
 See [scripts/run_tests.sh](scripts/run_tests.sh) (or run_tests.ps1) for exact paths and env notes. For browser I/O validation, see [ObsidianVault/workflow_ui/docs/manual_io_checklist.md](ObsidianVault/workflow_ui/docs/manual_io_checklist.md). workflow_ui exposes OpenAPI at **http://127.0.0.1:5050/docs** when running. Real runs of S2/S4 need RAG/LLM and storyboard under `Campaigns/_rag_outputs/` (or path passed to Stage 1) and `ingest_config.json` for Stage 2/4.
 
 **RAG semantic retrieval (optional):** For ChromaDB-based semantic search, install `pip install -r ObsidianVault/scripts/requirements-rag.txt` and set `use_chroma: true` in `ingest_config.json` → `rag_pipeline`. See [campaign_kb/campaign/05_rag_integration.md](campaign_kb/campaign/05_rag_integration.md) for setup and config.
+
+## Credentials and AI Security
+
+**No keys in code.** Use OS keychain (keyring) for production, or `.env` for development.
+
+- **Development:** Set `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY` in `.env` or environment
+- **Production:** `pip install keyring` (in requirements-enhancements.txt) then store keys via keyring
+- `ObsidianVault/scripts/credential_vault.py` tries keyring first, falls back to `os.environ`
+
+**AI security (MVP):** Credential vault, HITL consent (`cloud_ai_consent.py`), append-only audit log (`audit_ai.py`), kill switch in workflow_ui chat, tool registry for RAG pipeline. See [D:\local-first\AI_SECURITY.md](D:\local-first\AI_SECURITY.md). Unit tests: `pytest ObsidianVault/scripts/tests/test_ai_security.py -v`
 
 ## Local-first alignment
 

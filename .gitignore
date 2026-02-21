@@ -12,3 +12,6 @@ ObsidianVault/Sources/_extracted_text/
 
 # Pytest ChromaDB test temp (scripts/tests/test_chroma_retriever.py)
 ObsidianVault/scripts/.pytest-chroma/
+
+# AI audit log (traceability)
+ObsidianVault/scripts/logs/

@@ -8,6 +8,7 @@ This directory contains comprehensive tests for the PDF ingestion system, includ
 
 - `test_utils.py` - Unit tests for shared utility functions
 - `test_security.py` - Security tests for path traversal, malicious config, etc.
+- `test_ai_security.py` - AI security unit tests (credential vault, HITL consent, audit log, tool registry)
 - `test_ingest_pdfs.py` - Integration tests for the PDF ingestion pipeline
 - `conftest.py` - Shared pytest fixtures
 
@@ -62,7 +63,13 @@ The test suite covers:
    - Symlink handling
    - Input sanitization
 
-3. **Integration** (`test_ingest_pdfs.py`)
+3. **AI Security** (`test_ai_security.py`)
+   - Credential vault (env, default)
+   - Cloud AI consent (env, file, require)
+   - Audit log (append-only JSONL)
+   - Tool registry (allowlist, ensure_tool_allowed)
+
+4. **Integration** (`test_ingest_pdfs.py`)
    - PDF discovery and listing
    - Text extraction (PDF++ cache and fallbacks)
    - Entity parsing

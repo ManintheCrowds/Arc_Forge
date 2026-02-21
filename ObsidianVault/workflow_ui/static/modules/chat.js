@@ -1,6 +1,6 @@
 // PURPOSE: Workbench Chat — POST to /api/workbench/chat, append messages.
 // DEPENDENCIES: api.js, utils.js
-// MODIFICATION NOTES: Phase 3 Chat.
+// MODIFICATION NOTES: Phase 3 Chat. AI security P2: kill switch (Stop button).
 
 import { post } from "./api.js";
 import { formatErr } from "./utils.js";
@@ -23,9 +23,12 @@ function appendMessage(history, role, text, isErr) {
 
 export function initChat() {
   const sendBtn = document.getElementById("chat-send");
+  const stopBtn = document.getElementById("chat-stop");
   const input = document.getElementById("chat-input");
   const history = document.getElementById("chat-history");
   if (!sendBtn || !history) return;
+
+  let abortController = null;
 
   sendBtn.addEventListener("click", () => {
     const text = (input && input.value || "").trim();
@@ -34,12 +37,32 @@ export function initChat() {
     if (input) input.value = "";
     appendMessage(history, "user", text);
     sendBtn.disabled = true;
-    post("/api/workbench/chat", { message: text, context_path: contextPath || undefined })
+    if (stopBtn) stopBtn.disabled = false;
+    abortController = new AbortController();
+    post("/api/workbench/chat", { message: text, context_path: contextPath || undefined }, { signal: abortController.signal })
       .then((d) => {
         const reply = (d && d.reply) || (d && d.error) || "No response.";
         appendMessage(history, "assistant", reply, !!d.error);
       })
-      .catch((e) => appendMessage(history, "assistant", formatErr(e), true))
-      .finally(() => { sendBtn.disabled = false; });
+      .catch((e) => {
+        if (e && e.name === "AbortError") {
+          appendMessage(history, "assistant", "Stopped.", true);
+        } else {
+          appendMessage(history, "assistant", formatErr(e), true);
+        }
+      })
+      .finally(() => {
+        sendBtn.disabled = false;
+        if (stopBtn) stopBtn.disabled = true;
+        abortController = null;
+      });
   });
+
+  if (stopBtn) {
+    stopBtn.addEventListener("click", () => {
+      if (abortController) {
+        abortController.abort();
+      }
+    });
+  }
 }

@@ -931,6 +931,14 @@ def api_workbench_chat():
                 pass
     prompt = (context_text[:4000] + "\n\n---\n\n" + message) if context_text else message
     try:
+        _SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
+        if str(_SCRIPTS) not in sys.path:
+            sys.path.insert(0, str(_SCRIPTS))
+        try:
+            from audit_ai import log_ai_action
+            log_ai_action(prompt[:500], OLLAMA_MODEL, "workbench_chat")
+        except ImportError:
+            pass
         req = urllib.request.Request(
             OLLAMA_URL + "/api/generate",
             data=json.dumps({"model": OLLAMA_MODEL, "prompt": prompt, "stream": False}).encode(),
