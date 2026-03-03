@@ -5,6 +5,9 @@
 """
 Tool registry: allowlist of AI-invoked tools. Vet before adding.
 See D:/local-first/AI_SECURITY.md (Tool registry, JIT access).
+
+Note: The observability layer (audit logging) is NOT in this registry — the AI
+never invokes it. See local-proto/docs/OBSERVABILITY_LAYER.md.
 """
 
 ALLOWED_TOOLS = frozenset({
