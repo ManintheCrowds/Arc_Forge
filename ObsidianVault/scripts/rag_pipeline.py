@@ -1363,6 +1363,21 @@ def _merge_rrf(
     return merged
 
 
+def _ensure_source(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Ensure item has 'source' key; map document_id/section_title when missing. Prevents KeyError in consumers."""
+    if item.get("source"):
+        return item
+    out = dict(item)
+    doc_id, sec_id = item.get("document_id"), item.get("section_id")
+    out["source"] = (
+        (f"doc_{doc_id}:sec_{sec_id}" if doc_id is not None and sec_id is not None else None)
+        or str(doc_id) if doc_id is not None else None
+        or item.get("section_title")
+        or "unknown"
+    )
+    return out
+
+
 # PURPOSE: Retrieve relevant context for a query.
 # DEPENDENCIES: campaign_kb search service (optional), DocumentIndex.
 # MODIFICATION NOTES: Uses DocumentIndex when available; B3: accepts retrieval_mode and tag_filters.
@@ -1423,14 +1438,14 @@ def retrieve_context(
             # Check if KB search returned results; if not, fall back to text scanning
             if results:
                 return [
-                    {
+                    _ensure_source({
                         "source": f"doc_{section.document_id}:sec_{section.id}",
                         "section_id": section.id,
                         "document_id": section.document_id,
                         "section_title": section.section_title,
                         "text": section.raw_text,
                         "score": rank,
-                    }
+                    })
                     for section, rank in results
                 ]
             else:
@@ -1829,10 +1844,13 @@ def _run_pipeline_impl(
             query, rag_config, doc_index, text_map, retrieval_mode, tag_filters,
         )
         for item in query_context:
-            src = item.get("source")
+            src = item.get("source") or item.get("document_id") or item.get("section_title") or "unknown"
             if src and src not in text_map:
                 text_map[src] = item.get("text", "")
-        relevant_doc_keys = [item["source"] for item in query_context]
+        relevant_doc_keys = [
+            item.get("source") or item.get("document_id") or item.get("section_title") or "unknown"
+            for item in query_context
+        ]
         
         if not relevant_doc_keys:
             logger.warning("No relevant documents found for query")
