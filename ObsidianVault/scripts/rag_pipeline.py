@@ -18,7 +18,7 @@ from utils import load_config, validate_vault_path
 # #region agent log
 def _debug_log(location: str, message: str, data: dict, hypothesis_id: str = "A"):
     import os
-    log_path = Path(os.environ.get("RAG_DEBUG_LOG_PATH", "d:\\CodeRepositories\\.cursor\\debug.log"))
+    log_path = Path(os.environ.get("RAG_DEBUG_LOG_PATH", "d:\\portfolio-harness\\.cursor\\debug.log"))
     try:
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(json.dumps({

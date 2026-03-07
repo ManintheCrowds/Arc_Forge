@@ -32,7 +32,7 @@ pip install -r requirements-daggr.txt
 
 Uses the same DB as the FastAPI app (`data/kb.sqlite3`). Run workflows with the API stopped or alongside it.
 
-Gradio UIs follow the shared framework: see `.cursor/docs/GRADIO_FRAMEWORK.md` (in the CodeRepositories workspace).
+Gradio UIs follow the shared framework: see `.cursor/docs/GRADIO_FRAMEWORK.md` (in the portfolio-harness workspace).
 
 ## Environment variables
 

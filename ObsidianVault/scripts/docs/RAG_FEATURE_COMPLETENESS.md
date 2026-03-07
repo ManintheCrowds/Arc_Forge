@@ -1,6 +1,6 @@
 # RAG Pipeline Feature-Completeness Findings
 
-**Source:** Comparison of [05_rag_integration.md](../../campaign_kb/campaign/05_rag_integration.md) and implementation in [rag_pipeline.py](../rag_pipeline.py). See also [rag_fully_developed_review_fa0144ea.plan.md](D:\CodeRepositories\.cursor\plans\rag_fully_developed_review_fa0144ea.plan.md).
+**Source:** Comparison of [05_rag_integration.md](../../campaign_kb/campaign/05_rag_integration.md) and implementation in [rag_pipeline.py](../rag_pipeline.py). See also [rag_fully_developed_review_fa0144ea.plan.md](D:\portfolio-harness\.cursor\plans\rag_fully_developed_review_fa0144ea.plan.md).
 
 ## Summary
 

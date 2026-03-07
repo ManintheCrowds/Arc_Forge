@@ -97,7 +97,7 @@
 
 **Automated (optional):** Run `python local-proto/scripts/vehicle_recovery_marketplace_scrape.py` to search Craigslist for "2008 Santa Fe", "Santa Fe blue". Output: `vehicle_recovery_marketplace_*.json`; diff shows new listings.
 
-**Scheduled runs:** See [SCHEDULE_VEHICLE_RECOVERY.md](D:\CodeRepositories\local-proto\docs\SCHEDULE_VEHICLE_RECOVERY.md). Use `run_vehicle_recovery_scheduled.ps1` for both NICB + marketplace; Task Scheduler setup included.
+**Scheduled runs:** See [SCHEDULE_VEHICLE_RECOVERY.md](D:\portfolio-harness\local-proto\docs\SCHEDULE_VEHICLE_RECOVERY.md). Use `run_vehicle_recovery_scheduled.ps1` for both NICB + marketplace; Task Scheduler setup included.
 
 ### Stolen jacket (NEO4IC ZYPHR 2 BLACK)
 
@@ -113,7 +113,7 @@
 
 **Geography:** Minneapolis / Twin Cities / Minnesota — suspects left vehicle at 1515 Park Ave; may sell locally.
 
-**Last searched:** 2026-03-02 — see [vehicle_recovery_jacket_marketplace_20260302.md](D:\CodeRepositories\.cursor\state\adhoc\vehicle_recovery_jacket_marketplace_20260302.md). No ZYPHR 2 mantle on Craigslist; Mercari has NEO4IC items (manual review); Poshmark NEO4IC items not mantle; FB Marketplace requires login.
+**Last searched:** 2026-03-02 — see [vehicle_recovery_jacket_marketplace_20260302.md](D:\portfolio-harness\.cursor\state\adhoc\vehicle_recovery_jacket_marketplace_20260302.md). No ZYPHR 2 mantle on Craigslist; Mercari has NEO4IC items (manual review); Poshmark NEO4IC items not mantle; FB Marketplace requires login.
 
 ---
 

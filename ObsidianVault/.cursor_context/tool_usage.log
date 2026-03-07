@@ -12,3 +12,4 @@
 {"ts": 1772650699.1864967, "tool": "vault_search", "args": {"tag": "tag1"}}
 {"ts": 1772653847.6218572, "tool": "vault_search", "args": {"tag": "tag1"}}
 {"ts": 1772661071.413883, "tool": "session_save", "args": {"summary": "Empowering Agency plan implemented; handoff written for closeout", "notes_touched": "", "decisions": ""}}
+{"ts": 1772843870.6928518, "tool": "note_context", "args": {"path": "local-proto", "depth": 1}}

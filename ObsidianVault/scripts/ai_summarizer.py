@@ -17,7 +17,7 @@ from typing import Optional, Dict, List, Tuple
 logger = logging.getLogger(__name__)
 
 # #region agent log
-DEBUG_LOG_PATH = Path("d:\\CodeRepositories\\.cursor\\debug.log")
+DEBUG_LOG_PATH = Path("d:\\portfolio-harness\\.cursor\\debug.log")
 def _debug_log(location: str, message: str, data: dict, hypothesis_id: str = "C"):
     try:
         with open(DEBUG_LOG_PATH, "a", encoding="utf-8") as f:

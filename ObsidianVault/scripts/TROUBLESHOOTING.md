@@ -109,7 +109,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "watch_ingest.ps1"
 
 `run_pipeline()` expects `item["source"]` for all results. When `use_kb_search` is True and the campaign_kb DB has matching sections, the KB path is used and the consumer fails.
 
-**Fix:** Normalize `retrieve_context()` so all return paths include a `source` key (e.g. derive from `document_id` or document path for KB results). See [known-issues.md](D:\CodeRepositories\.cursor\state\known-issues.md) for details. For architecture and improvement roadmap: [docs/ERROR_MONITORING_AND_KNOWN_ISSUES.md](docs/ERROR_MONITORING_AND_KNOWN_ISSUES.md).
+**Fix:** Normalize `retrieve_context()` so all return paths include a `source` key (e.g. derive from `document_id` or document path for KB results). See [known-issues.md](D:\portfolio-harness\.cursor\state\known-issues.md) for details. For architecture and improvement roadmap: [docs/ERROR_MONITORING_AND_KNOWN_ISSUES.md](docs/ERROR_MONITORING_AND_KNOWN_ISSUES.md).
 
 ### Issue: ChromaDB tests fail (PermissionError at teardown, Strict Canon assertion)
 **Symptom:** `test_chroma_retriever_build_and_retrieve` fails with `AssertionError: assert 'doc_dnd' in ('doc_wg_1', 'doc_wg_2')` and/or `PermissionError: [WinError 32]` when deleting temp dir.
@@ -118,7 +118,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "watch_ingest.ps1"
 
 **Cause (teardown):** ChromaDB holds file locks on `data_level0.bin`; Windows cannot delete files in use.
 
-**Fix:** See [known-issues.md](D:\CodeRepositories\.cursor\state\known-issues.md) (Arc_Forge / ChromaDB tests). Use doc key like `d&d_rules` for D&D content; use `chroma_tmp_path` fixture under `.pytest-tmp` to avoid teardown cleanup.
+**Fix:** See [known-issues.md](D:\portfolio-harness\.cursor\state\known-issues.md) (Arc_Forge / ChromaDB tests). Use doc key like `d&d_rules` for D&D content; use `chroma_tmp_path` fixture under `.pytest-tmp` to avoid teardown cleanup.
 
 ### Issue: Index Not Updating
 **Symptom:** Source_Index.md is outdated
