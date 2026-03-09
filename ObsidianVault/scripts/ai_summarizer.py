@@ -17,9 +17,21 @@ from typing import Optional, Dict, List, Tuple
 logger = logging.getLogger(__name__)
 
 # #region agent log
-DEBUG_LOG_PATH = Path("d:\\portfolio-harness\\.cursor\\debug.log")
+def _debug_log_path() -> Path:
+    """Portable debug log path; avoid hardcoded machine paths."""
+    env_path = os.environ.get("CURSOR_DEBUG_LOG")
+    if env_path:
+        return Path(env_path)
+    if os.name == "nt":
+        base = os.environ.get("LOCALAPPDATA", os.path.expanduser("~"))
+        return Path(base) / "cursor" / "debug.log"
+    return Path.home() / ".cursor" / "debug.log"
+
+
+DEBUG_LOG_PATH = _debug_log_path()
 def _debug_log(location: str, message: str, data: dict, hypothesis_id: str = "C"):
     try:
+        DEBUG_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
             f.write(json.dumps({
                 "sessionId": "debug-session",

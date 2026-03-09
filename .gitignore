@@ -10,8 +10,9 @@ Sources/_extracted_text/
 ObsidianVault/Sources/_summaries/
 ObsidianVault/Sources/_extracted_text/
 
-# Pytest ChromaDB test temp (scripts/tests/test_chroma_retriever.py)
+# Pytest temp dirs (scripts/tests)
 ObsidianVault/scripts/.pytest-chroma/
+ObsidianVault/scripts/.pytest-tmp/
 
 # AI audit log (traceability)
 ObsidianVault/scripts/logs/
