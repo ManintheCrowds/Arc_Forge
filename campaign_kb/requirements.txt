@@ -4,7 +4,7 @@
 
 fastapi
 uvicorn
-sqlalchemy
+sqlalchemy>=2.0.29
 psycopg[binary]
 alembic
 pydantic

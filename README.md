@@ -1,6 +1,8 @@
 # Arc Forge — campaign workbench for Wrath & Glory
 
-RAG-backed campaign workbench so GMs can plan Wrath & Glory arcs with AI assistance while keeping human authority.
+> RAG-backed campaign workbench so GMs can plan Wrath & Glory arcs with AI assistance while keeping human authority.
+
+*Programmer first. Cyberpunk. Bitcoin. Glitch. Goth.*
 
 **Arc Forge** is a RAG-backed campaign workbench for the **Wrath & Glory** (Warhammer 40K) TTRPG. It helps GMs and players create and track campaigns by synthesizing adventure arcs, representing stories visually and textually (pipeline, arc tree, storyboards), showing branching narrative (encounters and opportunities), and using AI to assist in rendering the universe during and asynchronously from sessions — with the human as final authority ("AI proposes, human disposes").
 

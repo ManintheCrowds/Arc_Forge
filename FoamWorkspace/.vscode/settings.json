@@ -1,0 +1,10 @@
+{
+  "foam.files.ignore": [".git", "node_modules"],
+  "foam.openDailyNote.directory": "daily",
+  "foam.openDailyNote.titleFormat": "yyyy-MM-dd",
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  }
+}

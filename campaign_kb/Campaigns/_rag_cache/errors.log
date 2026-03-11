@@ -3,3 +3,5 @@
 {"project": "rag_pipeline", "error_type": "ValueError", "message": "test error", "traceback": "Traceback...", "context": {"entry": "test"}, "timestamp": "2026-02-14T17:32:24Z"}
 {"project": "rag_pipeline", "error_type": "ValueError", "message": "test error", "traceback": "Traceback...", "context": {"entry": "test"}, "timestamp": "2026-02-14T23:18:31Z", "error_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", "severity": "error"}
 {"project": "rag_pipeline", "error_type": "ValueError", "message": "test error", "traceback": "Traceback...", "context": {"entry": "test"}, "timestamp": "2026-02-14T23:18:31Z"}
+{"project": "rag_pipeline", "error_type": "ValueError", "message": "test error", "traceback": "Traceback...", "context": {"entry": "test"}, "timestamp": "2026-03-11T06:11:54Z", "error_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", "severity": "error"}
+{"project": "rag_pipeline", "error_type": "ValueError", "message": "test error", "traceback": "Traceback...", "context": {"entry": "test"}, "timestamp": "2026-03-11T06:11:54Z"}

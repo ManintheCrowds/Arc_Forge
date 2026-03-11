@@ -1,17 +1,25 @@
 # PURPOSE: Pytest fixtures for campaign_kb API tests (test DB override).
 # DEPENDENCIES: pytest, FastAPI, SQLAlchemy, app.database, app.main
 # MODIFICATION NOTES: In-memory SQLite and get_db override for isolated tests.
+# H3: DATABASE_URL=sqlite:///:memory: for Daggr workflow tests (search, merge, ingest).
 
+import os
 import tempfile
 from pathlib import Path
 from collections.abc import Generator
+
+# Set in-memory DB for Daggr workflows before app.database is imported
+os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from app.database import get_db, Base
+from app.database import ENGINE, get_db, Base
 from app.main import app
+
+# Ensure in-memory DB has schema for Daggr workflows (search, merge, ingest)
+Base.metadata.create_all(ENGINE)
 
 
 @pytest.fixture(scope="function")
