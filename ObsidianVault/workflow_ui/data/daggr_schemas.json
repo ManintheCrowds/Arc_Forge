@@ -1,0 +1,105 @@
+{
+  "harness": {
+    "scp": {
+      "name": "SCP Content Safety Pipeline",
+      "nodes": [{"id": "scp_node", "type": "FnNode"}],
+      "edges": []
+    },
+    "blue_hat_privacy": {
+      "name": "Blue Hat Privacy Review",
+      "nodes": [{"id": "privacy_node", "type": "FnNode"}],
+      "edges": []
+    }
+  },
+  "WatchTower": {
+    "simple": {
+      "name": "Simple Math Test",
+      "nodes": [
+        {"id": "add_node", "type": "FnNode"},
+        {"id": "multiply_node", "type": "FnNode"}
+      ],
+      "edges": [
+        {"source": "add_node", "sourceOutput": "result", "target": "multiply_node", "targetInput": "result"}
+      ]
+    },
+    "rag": {
+      "name": "RAG Query Pipeline",
+      "nodes": [
+        {"id": "embed_node", "type": "FnNode"},
+        {"id": "search_node", "type": "FnNode"},
+        {"id": "rerank_node", "type": "FnNode"},
+        {"id": "generate_node", "type": "FnNode"},
+        {"id": "confidence_node", "type": "FnNode"}
+      ],
+      "edges": [
+        {"source": "embed_node", "sourceOutput": "result", "target": "search_node", "targetInput": "embedding"},
+        {"source": "search_node", "sourceOutput": "results", "target": "rerank_node", "targetInput": "results"},
+        {"source": "rerank_node", "sourceOutput": "reranked", "target": "generate_node", "targetInput": "reranked"},
+        {"source": "rerank_node", "sourceOutput": "reranked", "target": "confidence_node", "targetInput": "reranked"}
+      ]
+    },
+    "ingest": {
+      "name": "Document Ingestion Pipeline",
+      "nodes": [
+        {"id": "extract_node", "type": "FnNode"},
+        {"id": "chunk_node", "type": "FnNode"},
+        {"id": "embed_node", "type": "FnNode"},
+        {"id": "prepare_node", "type": "FnNode"},
+        {"id": "store_node", "type": "FnNode"},
+        {"id": "index_node", "type": "FnNode"}
+      ],
+      "edges": [
+        {"source": "extract_node", "sourceOutput": "text", "target": "chunk_node", "targetInput": "text"},
+        {"source": "chunk_node", "sourceOutput": "chunks", "target": "embed_node", "targetInput": "chunks"},
+        {"source": "embed_node", "sourceOutput": "chunks", "target": "prepare_node", "targetInput": "chunks"},
+        {"source": "prepare_node", "sourceOutput": "texts", "target": "store_node", "targetInput": "texts"},
+        {"source": "embed_node", "sourceOutput": "embeddings", "target": "store_node", "targetInput": "embeddings"},
+        {"source": "prepare_node", "sourceOutput": "texts", "target": "index_node", "targetInput": "texts"}
+      ]
+    },
+    "error-analysis": {
+      "name": "Error Analysis",
+      "nodes": [
+        {"id": "pattern_node", "type": "FnNode"},
+        {"id": "full_node", "type": "FnNode"}
+      ],
+      "edges": []
+    },
+    "metrics": {
+      "name": "Metrics Summary",
+      "nodes": [{"id": "metrics_node", "type": "FnNode"}],
+      "edges": []
+    }
+  },
+  "campaign_kb": {
+    "ingest": {
+      "name": "Campaign KB Ingest",
+      "nodes": [
+        {"id": "pdf_node", "type": "FnNode"},
+        {"id": "seed_node", "type": "FnNode"},
+        {"id": "dod_node", "type": "FnNode"},
+        {"id": "docs_node", "type": "FnNode"},
+        {"id": "repos_node", "type": "FnNode"}
+      ],
+      "edges": []
+    },
+    "search": {
+      "name": "Campaign KB Search",
+      "nodes": [{"id": "search_node", "type": "FnNode"}],
+      "edges": []
+    },
+    "merge": {
+      "name": "Campaign KB Merge",
+      "nodes": [
+        {"id": "keywords_node", "type": "FnNode"},
+        {"id": "merge_node", "type": "FnNode"}
+      ],
+      "edges": []
+    },
+    "rag": {
+      "name": "RAG Pipeline",
+      "nodes": [{"id": "rag_node", "type": "FnNode"}],
+      "edges": []
+    }
+  }
+}

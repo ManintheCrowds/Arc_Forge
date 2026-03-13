@@ -80,6 +80,16 @@ def ratelimit_exceeded(e):
     return _error_response("rate limit exceeded", 429)
 
 
+@app.route("/metrics")
+def metrics():
+    """Prometheus metrics endpoint for DAGGR monitoring pipeline."""
+    try:
+        from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, REGISTRY
+        return generate_latest(REGISTRY), 200, {"Content-Type": CONTENT_TYPE_LATEST}
+    except ImportError:
+        return "# prometheus_client not installed\n", 200, {"Content-Type": "text/plain"}
+
+
 SCRIPTS = _VAULT / "scripts"
 CAMPAIGNS = Path(os.environ.get("WORKFLOW_UI_CAMPAIGNS_PATH", str(_VAULT / "Campaigns")))
 _CONFIG_ENV = (
@@ -94,6 +104,23 @@ CAMPAIGN_KB_URL = os.environ.get("CAMPAIGN_KB_URL", "http://127.0.0.1:8000").rst
 CAMPAIGN_KB_DAGGR_URL = os.environ.get("CAMPAIGN_KB_DAGGR_URL", "http://localhost:7860").rstrip("/")
 # Workflow_ui Gradio app (run: python -m workflow_ui.gradio_app from ObsidianVault; default port 7861)
 GRADIO_APP_URL = os.environ.get("GRADIO_APP_URL", "http://localhost:7861").rstrip("/")
+# DAGGR schemas for workflow graph visualization (workflow_ui/data/daggr_schemas.json)
+_DAGGR_SCHEMAS_PATH = _UI_DIR / "data" / "daggr_schemas.json"
+_DAGGR_SCHEMAS: Dict[str, Any] = {}
+
+
+def _load_daggr_schemas() -> Dict[str, Any]:
+    """Load DAGGR workflow schemas from JSON. Cached after first load."""
+    global _DAGGR_SCHEMAS
+    if _DAGGR_SCHEMAS:
+        return _DAGGR_SCHEMAS
+    if _DAGGR_SCHEMAS_PATH.exists():
+        try:
+            with open(_DAGGR_SCHEMAS_PATH, encoding="utf-8") as f:
+                _DAGGR_SCHEMAS = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            pass
+    return _DAGGR_SCHEMAS
 
 
 def _validate_startup_paths() -> List[str]:
@@ -1130,6 +1157,30 @@ def tools_kb_daggr():
 def tools_gradio():
     """Redirect to workflow_ui Gradio app (KB search demo). Run: python -m workflow_ui.gradio_app from ObsidianVault."""
     return redirect(GRADIO_APP_URL, code=302)
+
+
+@app.route("/tools/daggr-graphs")
+def tools_daggr_graphs():
+    """DAGGR workflow graph visualization page. Renders WorkflowGraphViewer with schemas from data/daggr_schemas.json."""
+    schemas = _load_daggr_schemas()
+    return render_template("daggr_graphs.html", workflows_json=json.dumps(schemas))
+
+
+@app.route("/api/daggr/graph/<stack>/<workflow_name>")
+def api_daggr_graph(stack: str, workflow_name: str):
+    """Get graph schema for a workflow. stack: harness | WatchTower | campaign_kb. workflow_name: e.g. scp, simple."""
+    stack_safe = secure_filename(stack) or ""
+    workflow_safe = secure_filename(workflow_name) or ""
+    if not stack_safe or not workflow_safe:
+        return _error_response("invalid stack or workflow", 400)
+    schemas = _load_daggr_schemas()
+    stack_data = schemas.get(stack_safe)
+    if not stack_data:
+        return _error_response("stack not found", 404)
+    workflow_schema = stack_data.get(workflow_safe)
+    if not workflow_schema:
+        return _error_response("workflow not found", 404)
+    return jsonify(workflow_schema)
 
 
 @app.route("/api/diagrams/pipeline")

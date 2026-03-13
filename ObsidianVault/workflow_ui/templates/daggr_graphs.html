@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DAGGR Workflow Graphs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/design-tokens.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <header class="top">
+      <h1>DAGGR Workflow Graphs</h1>
+      <a href="/" class="header-link">Home</a>
+      <a href="/tools/kb-daggr" target="_blank" rel="noopener noreferrer" class="header-link">KB Workflows</a>
+      <a href="/tools/gradio" target="_blank" rel="noopener noreferrer" class="header-link">Gradio demo</a>
+    </header>
+    <main class="daggr-main">
+      <aside class="daggr-sidebar">
+        <h2>Workflows by stack</h2>
+        <div class="workflow-list" id="workflow-list"></div>
+      </aside>
+      <section class="daggr-viewer" aria-label="Workflow graph viewer">
+        <div id="graph-placeholder" class="graph-placeholder">
+          <p>Select a workflow from the list to view its graph.</p>
+        </div>
+        <div id="workflow-graph-viewer" class="workflow-graph-viewer" role="img" aria-label="Workflow topology diagram" style="display: none;">
+          <h3 id="graph-title"></h3>
+          <div id="mermaid-container" class="mermaid-container"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    mermaid.initialize({ startOnLoad: false });
+    (function() {
+      const WORKFLOWS = {{ workflows_json | safe }};
+      const listEl = document.getElementById('workflow-list');
+      const placeholder = document.getElementById('graph-placeholder');
+      const viewer = document.getElementById('workflow-graph-viewer');
+      const titleEl = document.getElementById('graph-title');
+      const mermaidEl = document.getElementById('mermaid-container');
+
+      function renderList() {
+        listEl.innerHTML = '';
+        for (const [stack, workflows] of Object.entries(WORKFLOWS)) {
+          const stackDiv = document.createElement('div');
+          stackDiv.className = 'workflow-stack';
+          const h3 = document.createElement('h3');
+          h3.textContent = stack;
+          stackDiv.appendChild(h3);
+          const ul = document.createElement('ul');
+          for (const [name, schema] of Object.entries(workflows)) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = 'workflow-graph-card';
+            a.dataset.stack = stack;
+            a.dataset.workflow = name;
+            const nodeCount = (schema.nodes || []).length;
+            a.innerHTML = '<span class="workflow-graph-card__name">' + name + '</span>' +
+              '<span class="workflow-graph-card__meta">' + stack + ' · ' + nodeCount + ' nodes</span>';
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              loadGraph(stack, name);
+            });
+            li.appendChild(a);
+            ul.appendChild(li);
+          }
+          stackDiv.appendChild(ul);
+          listEl.appendChild(stackDiv);
+        }
+      }
+
+      async function loadGraph(stack, workflow) {
+        const schema = WORKFLOWS[stack] && WORKFLOWS[stack][workflow];
+        if (!schema) return;
+        placeholder.style.display = 'none';
+        viewer.style.display = 'block';
+        titleEl.textContent = schema.name || workflow;
+        const mermaid = schemaToMermaid(schema);
+        const id = 'daggr-' + stack + '-' + workflow;
+        try {
+          const { svg, bindFunctions } = await mermaid.render(id, mermaid);
+          mermaidEl.innerHTML = svg;
+          if (bindFunctions) bindFunctions(mermaidEl);
+        } catch (err) {
+          mermaidEl.innerHTML = '<p class="graph-error">Failed to render graph: ' + (err.message || err) + '</p>';
+        }
+      }
+
+      function schemaToMermaid(schema) {
+        const nodes = schema.nodes || [];
+        const edges = schema.edges || [];
+        const nodeIds = new Set();
+        nodes.forEach(n => nodeIds.add(n.id));
+        edges.forEach(e => { nodeIds.add(e.source); nodeIds.add(e.target); });
+        let lines = ['flowchart LR'];
+        edges.forEach(e => {
+          lines.push(`  ${e.source} --> ${e.target}`);
+        });
+        nodeIds.forEach(id => {
+          if (!edges.some(e => e.source === id || e.target === id)) {
+            lines.push(`  ${id}`);
+          }
+        });
+        return lines.join('\n');
+      }
+
+      renderList();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+/* PURPOSE: A2UI design tokens for workflow_ui. Per A2UI_FRONTEND_DESIGN_GUIDANCE. */
+/* DEPENDENCIES: None. Import from templates. */
+
+:root {
+  /* Colors */
+  --color-primary: #6b9bd1;
+  --color-primary-hover: #5a8ac0;
+  --color-secondary: #8b929a;
+  --color-background: #1a1d23;
+  --color-surface: #22262e;
+  --color-border: #3d4452;
+  --color-text: #e4e6eb;
+  --color-muted: #8b929a;
+  --color-success: #6bcf7a;
+  --color-danger: #e07878;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Typography */
+  --font-body: system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --line-height: 1.4;
+}
+
+/* Daggr graph page layout */
+.daggr-main {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.daggr-sidebar {
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--spacing-md);
+  overflow-y: auto;
+}
+
+.daggr-sidebar h2 {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+}
+
+.workflow-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.workflow-stack h3 {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+}
+
+.workflow-stack ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.workflow-stack li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.workflow-stack a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.workflow-stack a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.daggr-viewer {
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+}
+
+.graph-placeholder {
+  color: var(--color-muted);
+  padding: var(--spacing-xl);
+}
+
+.workflow-graph-viewer h3 {
+  margin: 0 0 var(--spacing-md);
+  font-size: var(--font-size-lg);
+}
+
+.mermaid-container {
+  min-height: 200px;
+}
+
+.graph-error {
+  color: var(--color-danger);
+}
+
+/* WorkflowGraphCard — A2UI component catalog */
+.workflow-graph-card {
+  display: block;
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--spacing-sm);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.workflow-graph-card:hover {
+  border-color: var(--color-primary);
+  background: rgba(107, 155, 209, 0.08);
+}
+
+.workflow-graph-card__name {
+  display: block;
+  font-weight: 600;
+  font-size: var(--font-size-md);
+}
+
+.workflow-graph-card__meta {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+  margin-top: var(--spacing-xs);
+}
+
+/* DaggrNodeCard — A2UI component catalog */
+.daggr-node-card {
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--spacing-sm);
+}
+
+.daggr-node-card__label {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-md);
+}
+
+.daggr-node-card__io {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.daggr-node-card__io dt {
+  color: var(--color-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.daggr-node-card__io dd {
+  margin-left: var(--spacing-md);
+}
