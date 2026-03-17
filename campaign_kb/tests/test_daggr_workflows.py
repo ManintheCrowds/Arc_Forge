@@ -42,3 +42,20 @@ def test_search_workflow_defines_graph():
     except Exception as e:
         pytest.skip(f"search_workflow load failed (app/DB may be required): {e}")
     assert "graph" in globals_, "search_workflow must define 'graph'"
+
+
+def test_search_workflow_returns_empty_when_no_data():
+    """Search workflow returns 'No sections matched' when DB has no data (uses in_memory_db from conftest)."""
+    import runpy
+    root = Path(__file__).resolve().parent.parent
+    script = root / "daggr_workflows" / "search_workflow.py"
+    if not script.exists():
+        pytest.skip("search_workflow.py not found")
+    try:
+        globals_ = runpy.run_path(str(script), run_name="__load__")
+    except Exception as e:
+        pytest.skip(f"search_workflow load failed: {e}")
+    search_step = globals_.get("search_step")
+    assert search_step is not None, "search_workflow must define search_step"
+    result = search_step(query="nonexistent_term_xyz", limit=20, source_name="")
+    assert "No sections matched" in result or "no sections" in result.lower()

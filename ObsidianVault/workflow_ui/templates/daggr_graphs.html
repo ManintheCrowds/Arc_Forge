@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DAGGR Workflow Graphs</title>
+  <title>Daggr Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Manrope:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/design-tokens.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -11,12 +14,16 @@
 <body>
   <div class="layout">
     <header class="top">
-      <h1>DAGGR Workflow Graphs</h1>
+      <h1>Daggr Hub</h1>
       <a href="/" class="header-link">Home</a>
       <a href="/tools/kb-daggr" target="_blank" rel="noopener noreferrer" class="header-link">KB Workflows</a>
       <a href="/tools/gradio" target="_blank" rel="noopener noreferrer" class="header-link">Gradio demo</a>
     </header>
     <main class="daggr-main">
+      <div class="daggr-hub-hero" style="grid-column: 1 / -1; margin-bottom: var(--spacing-md, 1rem); padding: var(--spacing-md, 1rem); background: var(--color-surface, #f5f5f5); border-radius: 4px;">
+        <p class="daggr-hub-summary">Visual workflow graphs for harness, WatchTower, and campaign_kb. Select a workflow to view its topology.</p>
+        <p class="daggr-hub-stack-summary" id="stack-summary" aria-live="polite"></p>
+      </div>
       <aside class="daggr-sidebar">
         <h2>Workflows by stack</h2>
         <div class="workflow-list" id="workflow-list"></div>
@@ -27,7 +34,13 @@
         </div>
         <div id="workflow-graph-viewer" class="workflow-graph-viewer" role="img" aria-label="Workflow topology diagram" style="display: none;">
           <h3 id="graph-title"></h3>
-          <div id="mermaid-container" class="mermaid-container"></div>
+          <div class="daggr-viewer-row">
+            <div id="mermaid-container" class="mermaid-container"></div>
+            <aside id="node-detail-panel" class="node-detail-panel" aria-label="Node details" aria-live="polite" style="display: none;">
+              <h4>Node details</h4>
+              <div id="daggr-node-card" class="daggr-node-card"></div>
+            </aside>
+          </div>
         </div>
       </section>
     </main>
@@ -37,10 +50,59 @@
     (function() {
       const WORKFLOWS = {{ workflows_json | safe }};
       const listEl = document.getElementById('workflow-list');
+      const stackSummaryEl = document.getElementById('stack-summary');
+      if (stackSummaryEl) {
+        const parts = Object.entries(WORKFLOWS).map(([stack, wfs]) => stack + ': ' + Object.keys(wfs).length + ' workflows');
+        stackSummaryEl.textContent = parts.join(' · ');
+      }
       const placeholder = document.getElementById('graph-placeholder');
       const viewer = document.getElementById('workflow-graph-viewer');
       const titleEl = document.getElementById('graph-title');
       const mermaidEl = document.getElementById('mermaid-container');
+      const nodePanel = document.getElementById('node-detail-panel');
+      const nodeCardEl = document.getElementById('daggr-node-card');
+      let currentSchema = null;
+
+      function getNodeIO(schema, nodeId) {
+        const edges = schema.edges || [];
+        const node = (schema.nodes || []).find(n => n.id === nodeId);
+        let inputs = [...new Set(edges.filter(e => e.target === nodeId).map(e => e.targetInput || '').filter(Boolean))];
+        let outputs = [...new Set(edges.filter(e => e.source === nodeId).map(e => e.sourceOutput || '').filter(Boolean))];
+        if (inputs.length === 0 && node && node.inputs) inputs = node.inputs;
+        if (outputs.length === 0 && node && node.outputs) outputs = node.outputs;
+        return { inputs, outputs };
+      }
+
+      function showNodeCard(schema, nodeId) {
+        const node = (schema.nodes || []).find(n => n.id === nodeId);
+        const label = node ? (node.label || nodeId) : nodeId;
+        const { inputs, outputs } = getNodeIO(schema, nodeId);
+        nodeCardEl.dataset.nodeId = nodeId;
+        nodeCardEl.setAttribute('role', 'region');
+        nodeCardEl.setAttribute('aria-label', 'Selected node: ' + label);
+        nodeCardEl.setAttribute('tabindex', '-1');
+        nodeCardEl.innerHTML = '<h4 class="daggr-node-card__label" id="daggr-node-card-label">' + escapeHtml(label) + '</h4>' +
+          '<dl class="daggr-node-card__io" aria-labelledby="daggr-node-card-label">' +
+          '<dt>Inputs</dt><dd>' + (inputs.length ? escapeHtml(inputs.join(', ')) : '—') + '</dd>' +
+          '<dt>Outputs</dt><dd>' + (outputs.length ? escapeHtml(outputs.join(', ')) : '—') + '</dd>' +
+          '</dl>';
+        nodePanel.style.display = 'block';
+        nodeCardEl.focus({ preventScroll: true });
+      }
+
+      function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function resolveNodeIdFromElement(elementId, schema) {
+        const nodeIds = (schema.nodes || []).map(n => n.id);
+        if (!elementId) return null;
+        if (nodeIds.includes(elementId)) return elementId;
+        const sorted = [...nodeIds].sort((a, b) => b.length - a.length);
+        return sorted.find(id => elementId.endsWith('-' + id) || elementId.endsWith(id) || elementId.includes('-' + id + '-')) || null;
+      }
 
       function renderList() {
         listEl.innerHTML = '';
@@ -76,6 +138,8 @@
       async function loadGraph(stack, workflow) {
         const schema = WORKFLOWS[stack] && WORKFLOWS[stack][workflow];
         if (!schema) return;
+        currentSchema = schema;
+        nodePanel.style.display = 'none';
         placeholder.style.display = 'none';
         viewer.style.display = 'block';
         titleEl.textContent = schema.name || workflow;
@@ -85,10 +149,28 @@
           const { svg, bindFunctions } = await mermaid.render(id, mermaid);
           mermaidEl.innerHTML = svg;
           if (bindFunctions) bindFunctions(mermaidEl);
+          mermaidEl.querySelectorAll('[id]').forEach(el => {
+            el.style.cursor = 'pointer';
+          });
         } catch (err) {
-          mermaidEl.innerHTML = '<p class="graph-error">Failed to render graph: ' + (err.message || err) + '</p>';
+          mermaidEl.innerHTML = '<p class="graph-error" role="alert">Failed to render graph: ' + escapeHtml(String(err.message || err)) + '</p>';
         }
       }
+
+      mermaidEl.addEventListener('click', (e) => {
+        if (!currentSchema) return;
+        const el = e.target.closest('[id]');
+        if (!el || !el.id) return;
+        const nodeId = resolveNodeIdFromElement(el.id, currentSchema);
+        if (nodeId) showNodeCard(currentSchema, nodeId);
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && nodePanel.style.display !== 'none') {
+          nodePanel.style.display = 'none';
+          placeholder.style.display = 'block';
+        }
+      });
 
       function schemaToMermaid(schema) {
         const nodes = schema.nodes || [];
@@ -96,13 +178,14 @@
         const nodeIds = new Set();
         nodes.forEach(n => nodeIds.add(n.id));
         edges.forEach(e => { nodeIds.add(e.source); nodeIds.add(e.target); });
+        const safeId = (id) => String(id).replace(/[^a-zA-Z0-9_]/g, '_');
         let lines = ['flowchart LR'];
         edges.forEach(e => {
-          lines.push(`  ${e.source} --> ${e.target}`);
+          lines.push(`  ${safeId(e.source)} --> ${safeId(e.target)}`);
         });
         nodeIds.forEach(id => {
           if (!edges.some(e => e.source === id || e.target === id)) {
-            lines.push(`  ${id}`);
+            lines.push(`  ${safeId(id)}`);
           }
         });
         return lines.join('\n');

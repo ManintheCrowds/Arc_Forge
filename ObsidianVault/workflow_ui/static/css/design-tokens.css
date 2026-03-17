@@ -23,10 +23,23 @@
 
   /* Typography */
   --font-body: system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-display: 'Manrope', var(--font-body);
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
   --font-size-lg: 1.125rem;
   --line-height: 1.4;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* Transitions */
+  --transition-default: 0.15s ease;
+
+  /* Focus (accessibility) */
+  --focus-outline: 2px solid var(--color-primary);
+  --focus-outline-offset: 2px;
 }
 
 /* Daggr graph page layout */
@@ -45,9 +58,17 @@
   overflow-y: auto;
 }
 
+/* Daggr Hub: distinctive heading (design-tokens scope) */
+.layout .top h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
 .daggr-sidebar h2 {
   margin: 0 0 var(--spacing-md);
   font-size: var(--font-size-lg);
+  font-family: var(--font-display);
   color: var(--color-text);
 }
 
@@ -98,12 +119,63 @@
   font-size: var(--font-size-lg);
 }
 
+.daggr-viewer-row {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: flex-start;
+}
+
 .mermaid-container {
   min-height: 200px;
+  flex: 1;
+  min-width: 0;
+}
+
+.node-detail-panel {
+  width: 240px;
+  flex-shrink: 0;
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  animation: node-panel-in 0.2s ease-out;
+}
+
+@keyframes node-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.daggr-hub-stack-summary {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+}
+
+.node-detail-panel h4 {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-muted);
+}
+
+.mermaid-container [id] {
+  cursor: pointer;
 }
 
 .graph-error {
   color: var(--color-danger);
+  padding: var(--spacing-md);
+  margin: 0;
+  background: rgba(224, 120, 120, 0.1);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
 }
 
 /* WorkflowGraphCard — A2UI component catalog */
@@ -112,15 +184,20 @@
   padding: var(--spacing-md);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--spacing-sm);
+  border-radius: var(--radius-sm);
   color: var(--color-text);
   text-decoration: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color var(--transition-default), background var(--transition-default);
 }
 
 .workflow-graph-card:hover {
   border-color: var(--color-primary);
   background: rgba(107, 155, 209, 0.08);
+}
+
+.workflow-graph-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 .workflow-graph-card__name {
@@ -141,7 +218,7 @@
   padding: var(--spacing-md);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--spacing-sm);
+  border-radius: var(--radius-sm);
 }
 
 .daggr-node-card__label {
@@ -161,4 +238,14 @@
 
 .daggr-node-card__io dd {
   margin-left: var(--spacing-md);
+}
+
+.daggr-node-card:focus {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Ensure sufficient contrast for node card text (WCAG AA) */
+.daggr-node-card__label {
+  color: var(--color-text);
 }

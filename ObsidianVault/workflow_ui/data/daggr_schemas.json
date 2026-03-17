@@ -69,6 +69,11 @@
       "name": "Metrics Summary",
       "nodes": [{"id": "metrics_node", "type": "FnNode"}],
       "edges": []
+    },
+    "stack_overview": {
+      "name": "Stack Overview",
+      "nodes": [{"id": "stack_node", "type": "FnNode"}],
+      "edges": []
     }
   },
   "campaign_kb": {
@@ -91,8 +96,8 @@
     "merge": {
       "name": "Campaign KB Merge",
       "nodes": [
-        {"id": "keywords_node", "type": "FnNode"},
-        {"id": "merge_node", "type": "FnNode"}
+        {"id": "keywords_node", "type": "FnNode", "label": "load_and_keywords", "inputs": ["seed_paths_str", "max_terms"], "outputs": ["result"]},
+        {"id": "merge_node", "type": "FnNode", "label": "merge_step", "inputs": ["seed_paths_str", "output_path_str", "max_citations", "max_terms"], "outputs": ["result"]}
       ],
       "edges": []
     },
