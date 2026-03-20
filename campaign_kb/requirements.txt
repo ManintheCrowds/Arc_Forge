@@ -12,4 +12,5 @@ pydantic-settings
 httpx
 beautifulsoup4
 pdfplumber
+# Optional: opendataloader-pdf (JDK 11+ on PATH) when PDF_BACKEND=opendataloader — hybrid: pip install "opendataloader-pdf[hybrid]"
 prometheus_client

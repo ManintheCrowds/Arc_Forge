@@ -1,3 +1,24 @@
+# Environment and secrets (never commit)
+.env
+.env.*
+!.env.example
+
+# Keys and local secrets
+*.pem
+id_rsa
+id_ed25519
+*.p12
+
+# Local SQLite / KB data (regenerate from ingest)
+*.db
+*.sqlite
+*.sqlite3
+campaign_kb/data/
+
+# Cursor bridge local state (personal session DB and tool logs — not for the repo)
+ObsidianVault/.cursor_context/sessions.db
+ObsidianVault/.cursor_context/tool_usage.log
+
 # Wrath & Glory IP: rulebook/supplement/character PDFs — do not commit
 *.pdf
 PCs/

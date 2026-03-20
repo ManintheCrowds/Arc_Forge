@@ -2,8 +2,15 @@
 # DEPENDENCIES: SQLAlchemy, ingest modules
 # MODIFICATION NOTES: MVP ingest orchestration for PDFs, seeds, and web.
 
+from __future__ import annotations
+
+import importlib.metadata
 from pathlib import Path
+from typing import Any
+
 from sqlalchemy.orm import Session
+
+from app.config import settings
 from app.models import Source, Document, Section
 from app.utils.files import list_pdf_files, list_text_files
 from app.ingest.pdf_ingest import extract_pdf_sections
@@ -11,6 +18,27 @@ from app.ingest.seed_ingest import extract_seed_sections
 from app.ingest.dod_crawl import crawl_doctors_of_doom
 from app.ingest.docs_ingest import extract_doc_section
 from app.ingest.repo_ingest import extract_repo_documents
+
+
+def _metadata_json_for_pdf_backend(payloads: list[dict[str, Any]]) -> dict[str, Any] | None:
+    # PURPOSE: Provenance + per-section citation hints when using OpenDataLoader.
+    if settings.pdf_backend != "opendataloader" or not payloads:
+        return None
+    ver: str | None = None
+    try:
+        ver = importlib.metadata.version("opendataloader-pdf")
+    except importlib.metadata.PackageNotFoundError:
+        pass
+    return {
+        "parser": "opendataloader-pdf",
+        "parser_version": ver,
+        "hybrid": settings.pdf_hybrid,
+        "hybrid_url": settings.pdf_hybrid_url,
+        "citations": [
+            {"page": p.get("page_number"), "bbox": p.get("bounding_box")}
+            for p in payloads
+        ],
+    }
 
 
 def _get_or_create_source(
@@ -34,25 +62,26 @@ def _get_or_create_source(
 
 def ingest_pdfs(db: Session, pdf_root: Path, source_name: str = "local_pdfs") -> tuple[int, int]:
     # PURPOSE: Ingest all PDFs under a directory into the database.
-    # DEPENDENCIES: SQLAlchemy, pdfplumber
+    # DEPENDENCIES: SQLAlchemy, pdf_ingest (pdfplumber or opendataloader)
     # MODIFICATION NOTES: MVP PDF ingestion with page sections.
     source = _get_or_create_source(db, source_name, "pdf", None)
     documents_ingested = 0
     sections_ingested = 0
 
     for pdf_path in list_pdf_files(pdf_root):
+        payloads = list(extract_pdf_sections(pdf_path))
         document = Document(
             source_id=source.id,
             title=pdf_path.stem,
             doc_type="pdf",
             path=str(pdf_path),
             url=None,
-            metadata_json=None,
+            metadata_json=_metadata_json_for_pdf_backend(payloads),
         )
         db.add(document)
         db.flush()
         position = 0
-        for section_payload in extract_pdf_sections(pdf_path):
+        for section_payload in payloads:
             section = Section(
                 document_id=document.id,
                 section_title=section_payload["section_title"],
@@ -109,18 +138,19 @@ def ingest_reference_docs(
         sections_ingested += 1
 
     for pdf_path in list_pdf_files(docs_root, recursive=True):
+        payloads = list(extract_pdf_sections(pdf_path))
         document = Document(
             source_id=source.id,
             title=pdf_path.stem,
             doc_type="doc_pdf",
             path=str(pdf_path),
             url=None,
-            metadata_json=None,
+            metadata_json=_metadata_json_for_pdf_backend(payloads),
         )
         db.add(document)
         db.flush()
         position = 0
-        for section_payload in extract_pdf_sections(pdf_path):
+        for section_payload in payloads:
             section = Section(
                 document_id=document.id,
                 section_title=section_payload["section_title"],

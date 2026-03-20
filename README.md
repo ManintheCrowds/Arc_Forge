@@ -106,10 +106,19 @@ See [scripts/run_tests.sh](scripts/run_tests.sh) (or run_tests.ps1) for exact pa
 
 **RAG semantic retrieval (optional):** For ChromaDB-based semantic search, install `pip install -r ObsidianVault/scripts/requirements-rag.txt` and set `use_chroma: true` in `ingest_config.json` → `rag_pipeline`. See [campaign_kb/campaign/05_rag_integration.md](campaign_kb/campaign/05_rag_integration.md) for setup and config.
 
+### CI (GitHub Actions)
+
+| Workflow | Scope | Command (same as README above) |
+|----------|-------|-------------------------------|
+| [`.github/workflows/campaign_kb_tests.yml`](.github/workflows/campaign_kb_tests.yml) | `campaign_kb/**` | `cd campaign_kb && python -m pytest tests/ -v --tb=short` |
+| [`.github/workflows/workflow_ui_tests.yml`](.github/workflows/workflow_ui_tests.yml) | `ObsidianVault/workflow_ui/**` | `cd ObsidianVault && pytest workflow_ui/tests/ -v` |
+| [`.github/workflows/scripts_tests.yml`](.github/workflows/scripts_tests.yml) | `ObsidianVault/scripts/**` | `cd ObsidianVault && pytest scripts/tests/ -v` |
+
 ## Credentials and AI Security
 
-**No keys in code.** Use OS keychain (keyring) for production, or `.env` for development.
+**No keys in code.** Use OS keychain (keyring) for production, or `.env` for development (`.env` is gitignored; never commit keys).
 
+- **ObsidianVault `.cursor_context/`:** `sessions.db` and `tool_usage.log` are local Cursor integration artifacts—gitignored. Do not commit personal session telemetry.
 - **Development:** Set `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY` in `.env` or environment
 - **Production:** `pip install keyring` (in requirements-enhancements.txt) then store keys via keyring
 - `ObsidianVault/scripts/credential_vault.py` tries keyring first, falls back to `os.environ`

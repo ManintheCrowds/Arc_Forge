@@ -3,6 +3,8 @@
 # MODIFICATION NOTES: Initial settings for MVP ingest/search service.
 
 from pathlib import Path
+from typing import Literal
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -37,6 +39,15 @@ class Settings(BaseSettings):
     dod_max_pages: int = 100
     dod_request_timeout_seconds: float = 15.0
     dod_user_agent: str = "WrathAndGloryKB/1.0 (+https://www.doctors-of-doom.com/)"
+
+    # PDF extraction: pdfplumber (default, no JVM) or opendataloader (JDK 11+, pip install opendataloader-pdf).
+    pdf_backend: Literal["pdfplumber", "opendataloader"] = "pdfplumber"
+    pdf_sanitize: bool = False
+    pdf_hybrid: str | None = None
+    pdf_hybrid_mode: str | None = None
+    pdf_hybrid_url: str | None = None
+    pdf_hybrid_timeout: str | None = None
+    pdf_hybrid_fallback: bool = False
 
 
 settings = Settings()
