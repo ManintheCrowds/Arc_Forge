@@ -1,10 +1,20 @@
-# Arc Forge — campaign workbench for Wrath & Glory
+# Arc Forge — RAG-backed campaign workbench for Wrath & Glory
 
-> RAG-backed campaign workbench so GMs can plan Wrath & Glory arcs with AI assistance while keeping human authority.
+Human-in-the-loop narrative authority; adventure arcs, pipeline UI, session memory; local-first vault and optional RAG/campaign_kb.
 
 *Programmer first. Cyberpunk. Bitcoin. Glitch. Goth.*
 
 **Arc Forge** is a RAG-backed campaign workbench for the **Wrath & Glory** (Warhammer 40K) TTRPG. It helps GMs and players create and track campaigns by synthesizing adventure arcs, representing stories visually and textually (pipeline, arc tree, storyboards), showing branching narrative (encounters and opportunities), and using AI to assist in rendering the universe during and asynchronously from sessions — with the human as final authority ("AI proposes, human disposes").
+
+## Key Concepts
+
+| Concept | Description |
+|---------|-------------|
+| **RAG** | Retrieval-augmented generation over rules/lore and campaign content (NPCs, locations, missions) |
+| **Narrative workbench** | Modular components for adventure arcs, pipeline (S1–S5), task decomposition, and feedback |
+| **Human authority** | GM remains final arbiter; AI suggests, GM edits and approves |
+| **Pipeline S1–S5** | Storyboard → encounter pipeline: task decomposition, encounter drafts, human feedback, refinement, export |
+| **Session Archivist/Foreshadow** | Temporal continuity via session summaries, Archivist, and Foreshadow threads |
 
 The repository folder is intended to be named **Arc_Forge** (paths in config and docs use `D:\Arc_Forge` or the folder name). If your folder is still `wrath_and_glory`, rename it on disk (e.g. `D:\wrath_and_glory` → `D:\Arc_Forge`) and reopen the workspace.
 
