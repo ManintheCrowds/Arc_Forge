@@ -3,3 +3,6 @@ docs/_audit_raw_output.md
 
 # Pytest temp dir (project-local)
 .pytest-tmp/
+
+# Editor / backup templates (never ship)
+templates/*.bak
