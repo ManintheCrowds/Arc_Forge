@@ -146,7 +146,7 @@ Optional: per-encounter **lifecycle** (draft_v1 → feedback → draft_v2 → �
 
 **Scope:** Per-note (active note as context) or per-folder. Optional `context_path` sends note content to the LLM.
 
-**API:** `POST /api/workbench/chat` body: `{ message, context_path?, rag_query? }`. Proxies to Ollama (default) when available.
+**API:** `POST /api/workbench/chat` body: `{ message, context_path?, campaign?, module?, arc_id?, recent_files? }` (optional structured fields are prepended to the user message; `recent_files` are paths under Campaigns, read safely). Proxies to Ollama (default) when available.
 
 ---
 

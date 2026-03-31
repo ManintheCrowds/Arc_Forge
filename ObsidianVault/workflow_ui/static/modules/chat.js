@@ -39,7 +39,20 @@ export function initChat() {
     sendBtn.disabled = true;
     if (stopBtn) stopBtn.disabled = false;
     abortController = new AbortController();
-    post("/api/workbench/chat", { message: text, context_path: contextPath || undefined }, { signal: abortController.signal })
+    const campaignEl = document.getElementById("module-campaign");
+    const moduleEl = document.getElementById("module-select");
+    const campaign = campaignEl && campaignEl.value ? campaignEl.value : undefined;
+    const module = moduleEl && moduleEl.value ? moduleEl.value : undefined;
+    post(
+      "/api/workbench/chat",
+      {
+        message: text,
+        context_path: contextPath || undefined,
+        campaign,
+        module,
+      },
+      { signal: abortController.signal }
+    )
       .then((d) => {
         const reply = (d && d.reply) || (d && d.error) || "No response.";
         appendMessage(history, "assistant", reply, !!d.error);

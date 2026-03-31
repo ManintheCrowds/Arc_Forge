@@ -63,11 +63,18 @@ except ImportError:
     def log_structured_error(*args, **kwargs):
         pass
 
+def _ensure_tool_allowed_missing_registry(tool_name: str) -> None:
+    """Fail closed: never allow AI tool calls if tool_registry did not import."""
+    raise RuntimeError(
+        "tool_registry could not be imported; refusing to invoke AI tools. "
+        "Fix the import path (run from ObsidianVault with scripts on PYTHONPATH) or install deps."
+    )
+
+
 try:
     from tool_registry import ensure_tool_allowed
 except ImportError:
-    def ensure_tool_allowed(_):
-        pass
+    ensure_tool_allowed = _ensure_tool_allowed_missing_registry  # type: ignore[assignment]
 
 try:
     from rag_evaluation import evaluate_content_pack

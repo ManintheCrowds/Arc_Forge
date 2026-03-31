@@ -125,6 +125,10 @@ def run_stage_1(
     lines.append("")
     for c in constraints:
         lines.append(f"- {c}")
+    _stage1_prompt = Path(__file__).resolve().parent.parent / "workflow_ui" / "prompts" / "stage1_task_decomposition.md"
+    if _stage1_prompt.is_file():
+        lines.extend(["", "## Stage guidance (from prompt file)", ""])
+        lines.append(_stage1_prompt.read_text(encoding="utf-8")[:6000])
     md_path.write_text("\n".join(lines), encoding="utf-8")
 
     # Write YAML or JSON mirror

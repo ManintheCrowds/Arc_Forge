@@ -756,3 +756,98 @@ def test_workbench_create_module_path_containment(client, tmp_campaigns):
     assert r.status_code == 200
     mod_dir = tmp_campaigns / "safe" / "mod"
     assert mod_dir.exists()
+
+
+def test_safe_read_file_under_campaigns_ok_and_rejects(tmp_campaigns):
+    """_safe_read_file_under_campaigns reads only under CAMPAIGNS."""
+    arc = tmp_campaigns / "a1"
+    arc.mkdir()
+    note = arc / "note.md"
+    note.write_text("INSIDE", encoding="utf-8")
+    outside = tmp_campaigns.parent / "secret.txt"
+    outside.write_text("OUT", encoding="utf-8")
+
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        assert app_module._safe_read_file_under_campaigns("a1/note.md") == "INSIDE"
+        assert app_module._safe_read_file_under_campaigns("../secret.txt") == ""
+        assert app_module._safe_read_file_under_campaigns("a1/../secret.txt") == ""
+        assert app_module._safe_read_file_under_campaigns("/etc/passwd") == ""
+
+
+def test_workbench_chat_structured_fields_in_prompt(client, tmp_campaigns):
+    """POST /api/workbench/chat prepends campaign/module to message sent to Ollama."""
+    captured = []
+
+    def capturing_urlopen(req, **kwargs):
+        captured.append(json.loads(req.data.decode()))
+        mock = MagicMock()
+        mock.read.return_value = b'{"response": "ok"}'
+        mock.__enter__ = MagicMock(return_value=mock)
+        mock.__exit__ = MagicMock(return_value=False)
+        return mock
+
+    with patch("urllib.request.urlopen", side_effect=capturing_urlopen):
+        r = client.post(
+            "/api/workbench/chat",
+            json={
+                "message": "Hello",
+                "campaign": "first_arc",
+                "module": "mod_a",
+                "arc_id": "arc99",
+            },
+            content_type="application/json",
+        )
+    assert r.status_code == 200
+    assert len(captured) == 1
+    prompt = captured[0]["prompt"]
+    assert "campaign: first_arc" in prompt
+    assert "module: mod_a" in prompt
+    assert "arc_id: arc99" in prompt
+    assert "Hello" in prompt
+
+
+@pytest.fixture
+def client_keyed(tmp_campaigns):
+    """Same as client; use environ_overrides REMOTE_ADDR on requests to test API key."""
+    with patch.object(app_module, "CAMPAIGNS", tmp_campaigns):
+        app_module.app.config["TESTING"] = True
+        app_module.app.config["RATELIMIT_ENABLED"] = False
+        with app_module.app.test_client() as c:
+            yield c
+
+
+def test_mutating_api_requires_bearer_when_key_required(client_keyed, monkeypatch):
+    """When WORKFLOW_UI_REQUIRE_API_KEY is set, mutating /api/* needs Authorization."""
+    monkeypatch.setenv("WORKFLOW_UI_REQUIRE_API_KEY", "1")
+    monkeypatch.setenv("WORKFLOW_UI_API_KEY", "secret-key-xyz")
+    monkeypatch.setenv("WORKFLOW_UI_API_KEY_EXEMPT_LOCAL", "0")
+    remote = {"REMOTE_ADDR": "198.51.100.2"}
+
+    r = client_keyed.post(
+        "/api/workbench/create-module",
+        json={"campaign": "c", "module": "m"},
+        content_type="application/json",
+        environ_overrides=remote,
+    )
+    assert r.status_code == 401
+    data = r.get_json()
+    assert data.get("error") == "unauthorized"
+
+    r_ok = client_keyed.post(
+        "/api/workbench/create-module",
+        json={"campaign": "c", "module": "m2"},
+        content_type="application/json",
+        headers={"Authorization": "Bearer secret-key-xyz"},
+        environ_overrides=remote,
+    )
+    assert r_ok.status_code == 200
+
+
+def test_get_api_unauthorized_not_enforced(client_keyed, monkeypatch):
+    """GET /api/* is not blocked by WORKFLOW_UI_API_KEY."""
+    monkeypatch.setenv("WORKFLOW_UI_REQUIRE_API_KEY", "1")
+    monkeypatch.setenv("WORKFLOW_UI_API_KEY", "secret-key-xyz")
+    monkeypatch.setenv("WORKFLOW_UI_API_KEY_EXEMPT_LOCAL", "0")
+
+    r = client_keyed.get("/api/arcs", environ_overrides={"REMOTE_ADDR": "198.51.100.2"})
+    assert r.status_code == 200

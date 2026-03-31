@@ -52,6 +52,66 @@ app.config.setdefault("RATELIMIT_HEADERS_ENABLED", True)
 limiter = Limiter(key_func=get_remote_address, app=app)
 
 
+def _workflow_ui_require_api_key() -> bool:
+    return os.environ.get("WORKFLOW_UI_REQUIRE_API_KEY", "").strip().lower() in ("1", "true", "yes")
+
+
+def _workflow_ui_api_key_exempt_localhost() -> bool:
+    return os.environ.get("WORKFLOW_UI_API_KEY_EXEMPT_LOCAL", "1").strip().lower() in ("1", "true", "yes")
+
+
+def _workflow_ui_api_key_configured() -> str:
+    return os.environ.get("WORKFLOW_UI_API_KEY", "").strip()
+
+
+def _request_api_key_ok() -> bool:
+    """Return True if request may perform mutating /api/* actions."""
+    if not _workflow_ui_require_api_key():
+        return True
+    ra = getattr(request, "remote_addr", None) or ""
+    if _workflow_ui_api_key_exempt_localhost() and ra in ("127.0.0.1", "::1", ""):
+        return True
+    key = _workflow_ui_api_key_configured()
+    if not key:
+        return False
+    auth = request.headers.get("Authorization", "")
+    return auth == f"Bearer {key}"
+
+
+@app.before_request
+def _optional_workflow_ui_api_key() -> Any:
+    if request.method not in ("POST", "PUT", "PATCH"):
+        return None
+    if not request.path.startswith("/api/"):
+        return None
+    if _request_api_key_ok():
+        return None
+    return jsonify({"error": "unauthorized", "reason": "WORKFLOW_UI_API_KEY required"}), 401
+
+
+def _safe_read_file_under_campaigns(relative_path: str) -> str:
+    """Resolve a path under CAMPAIGNS and return file text, or empty string if unsafe or missing."""
+    if not relative_path or not isinstance(relative_path, str):
+        return ""
+    if ".." in relative_path:
+        return ""
+    norm = relative_path.replace("\\", "/").lstrip("/")
+    try:
+        base_res = CAMPAIGNS.resolve()
+        full = (base_res / norm).resolve()
+        if not full.is_file():
+            return ""
+        if hasattr(full, "is_relative_to"):
+            if not full.is_relative_to(base_res):
+                return ""
+        else:
+            if base_res not in full.parents and full != base_res:
+                return ""
+        return full.read_text(encoding="utf-8", errors="replace")
+    except (OSError, ValueError):
+        return ""
+
+
 def _error_payload(message: str, detail: str | None = None) -> Dict[str, Any]:
     payload: Dict[str, Any] = {"status": "error", "error": message, "reason": message}
     if detail:
@@ -358,7 +418,7 @@ def index():
 
 
 _DOCS_DIR = _UI_DIR / "docs"
-_ALLOWED_DOCS = {"manual_io_checklist.md", "WORKBENCH_NOT_IMPLEMENTED.md"}  # allowlist for path traversal safety
+_ALLOWED_DOCS = {"manual_io_checklist.md", "WORKBENCH_NOT_IMPLEMENTED.md", "AGENT_CAPABILITY_HINT.md"}  # allowlist for path traversal safety
 
 
 @app.route("/guide/<path:filename>", methods=["GET"])
@@ -937,7 +997,7 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama2")
 @app.route("/api/workbench/chat", methods=["POST"])
 @limiter.limit("30/minute")
 def api_workbench_chat():
-    """Chat with LLM (Ollama). Body: { message, context_path?, rag_query? }."""
+    """Chat with LLM (Ollama). Body: message; optional context_path; campaign, module, arc_id; recent_files (list of paths under CAMPAIGNS)."""
     body = request.get_json(force=True, silent=True) or {}
     message = (body.get("message") or "").strip()
     if not message:
@@ -945,18 +1005,26 @@ def api_workbench_chat():
     context_path = body.get("context_path")
     context_text = ""
     if context_path and isinstance(context_path, str):
-        if ".." in context_path or context_path.startswith("/") or "\\" in context_path:
-            pass
-        else:
-            try:
-                base_res = CAMPAIGNS.resolve()
-                full = (base_res / context_path.replace("\\", "/")).resolve()
-                if base_res in full.parents or full == base_res:
-                    if full.is_file():
-                        context_text = full.read_text(encoding="utf-8", errors="replace")
-            except (OSError, ValueError):
-                pass
-    prompt = (context_text[:4000] + "\n\n---\n\n" + message) if context_text else message
+        context_text = _safe_read_file_under_campaigns(context_path)[:4000]
+
+    structured_parts: list[str] = []
+    for key in ("campaign", "module", "arc_id"):
+        val = body.get(key)
+        if val is not None and isinstance(val, str) and val.strip():
+            structured_parts.append(f"{key}: {val.strip()}")
+    recent = body.get("recent_files")
+    if isinstance(recent, list):
+        for rf in recent[:5]:
+            if not isinstance(rf, str):
+                continue
+            chunk = _safe_read_file_under_campaigns(rf)
+            if chunk:
+                structured_parts.append(f"--- excerpt {rf} ---\n{chunk[:2000]}")
+
+    structured = "\n".join(structured_parts).strip()
+    if structured:
+        message = f"{structured}\n\n---\n\n{message}"
+    prompt = (context_text + "\n\n---\n\n" + message) if context_text else message
     try:
         _SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
         if str(_SCRIPTS) not in sys.path:
