@@ -139,6 +139,15 @@ See [scripts/run_tests.sh](scripts/run_tests.sh) (or run_tests.ps1) for exact pa
 
 Arc Forge aligns with [local-first principles](https://www.inkandswitch.com/local-first): vault and campaign markdown live on disk (you own your data); workflow_ui and scripts run locally. RAG/campaign_kb is optional—ingest and search can run fully offline with local embeddings. Community: [LoFi](https://lofi.so), [Local-First News](https://www.localfirstnews.com/).
 
+## Agent harness (Cursor workspace)
+
+Sibling-repo docs for OpenGrimoire + MiscRepos harness work:
+
+- [docs/WORKSPACE_MCP_REGISTRY.md](docs/WORKSPACE_MCP_REGISTRY.md) — MCP registry stub and link to [`MiscRepos` MCP capability map](../MiscRepos/.cursor/docs/MCP_CAPABILITY_MAP.md)
+- [docs/CURSOR_PLANS_TASK_STATE.md](docs/CURSOR_PLANS_TASK_STATE.md) — `.cursor/plans` as task state vs chat transcript
+- [docs/USER_RULES_VS_POLICY_ENGINE.md](docs/USER_RULES_VS_POLICY_ENGINE.md) — user rules vs automated policy / CI
+- Canonical **GitHub repo naming** and merge vs sibling policy: [OpenGrimoire `docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md`](../OpenGrimoire/docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md)
+
 ## License and Credits
 
 Per project conventions. **Wrath & Glory** is a trademark of its respective owners. Rulebook and supplement PDFs are used locally only and are not distributed with this repo; place your own PDFs in the paths configured in `ObsidianVault/scripts/ingest_config.json` (e.g. `ObsidianVault/pdf/`). See this repo's root `.gitignore` for excluded paths (PDFs and optional derived caches).
