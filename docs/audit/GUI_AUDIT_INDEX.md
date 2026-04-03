@@ -9,7 +9,7 @@ This index links each repository’s primary GUI audit artifact. Full methodolog
 
 | Repository | Scope | Artifact |
 |------------|--------|----------|
-| OpenAtlas | Next.js app (OpenGrimoire) | [gui-2026-03-26.md](../../../OpenAtlas/docs/audit/gui-2026-03-26.md) |
+| OpenGrimoire | Next.js app (OpenGrimoire) | [gui-2026-03-26.md](../../../OpenGrimoire/docs/audit/gui-2026-03-26.md) |
 | Arc_Forge | `ObsidianVault/workflow_ui` (Flask + JS + Gradio) | [gui-workflow_ui-2026-03-26.md](./gui-workflow_ui-2026-03-26.md) |
 | moltbook_watchtower | Generated static dashboard | [gui-2026-03-26.md](../../../moltbook_watchtower/docs/audit/gui-2026-03-26.md) |
 | OpenHarness | No product GUI | [gui-2026-03-26.md](../../../OpenHarness/docs/audit/gui-2026-03-26.md) |
@@ -27,8 +27,8 @@ Priority is **P0 = do next** for shipped surfaces; **P3 = backlog / optional**.
 
 | P | Repository | Next action | Notes |
 |---|------------|-------------|--------|
-| P0 | **OpenAtlas** | Keep `npm run test:e2e` green in CI | Smoke nav flake fixed (2026-03-26): `waitForURL` + `click` in parallel in `e2e/smoke.spec.ts`. |
-| P1 | **OpenAtlas** | Security follow-ups from [agent_native_review Appendix B](../../../OpenAtlas/docs/audit/agent_native_review_2026-03-26.md) | Split alignment vs survey-read keys; review `NEXT_PUBLIC_BRAIN_MAP_SECRET`. |
+| P0 | **OpenGrimoire** | Keep `npm run test:e2e` green in CI | Smoke nav flake fixed (2026-03-26): `waitForURL` + `click` in parallel in `e2e/smoke.spec.ts`. |
+| P1 | **OpenGrimoire** | Security follow-ups from [agent_native_review Appendix B](../../../OpenGrimoire/docs/audit/agent_native_review_2026-03-26.md) | Split alignment vs survey-read keys; review `NEXT_PUBLIC_BRAIN_MAP_SECRET`. |
 | P1 | **Arc_Forge** | Run `ObsidianVault/workflow_ui` Playwright from vault root with env | `tests/e2e/test_workflow_ui_playwright_smoke.py`; Gradio/KB redirects need services. |
 | P2 | **moltbook_watchtower** | One manual open of generated `exports/dashboard.html` + console check | No E2E yet; generator is `scripts/generate_dashboard_html.py`. |
 | P2 | **MiscRepos** | Optional deep GUI audit: `WatchTower_main/WatchTower_main/app/templates/` or `docs/demo/*.html` | See [MiscRepos gui audit](../../../MiscRepos/docs/audit/gui-2026-03-26.md). |
@@ -36,9 +36,9 @@ Priority is **P0 = do next** for shipped surfaces; **P3 = backlog / optional**.
 | P3 | **SCP** | README/tool ergonomics when MCP schema changes | N/A for browser. |
 | P3 | **VibeLedger / Planswithinplans / software** | No app tree; skip until a subfolder app exists | Point future audits at sibling repos with `package.json` / Flask. |
 
-**Agent-native / harness:** OpenAtlas report [agent_native_review_2026-03-26.md](../../../OpenAtlas/docs/audit/agent_native_review_2026-03-26.md) — lead with **Axis A** scorecard when asking “are agents unblocked?”
+**Agent-native / harness:** OpenGrimoire report [agent_native_review_2026-03-26.md](../../../OpenGrimoire/docs/audit/agent_native_review_2026-03-26.md) — lead with **Axis A** scorecard when asking “are agents unblocked?”
 
 ## Optional follow-ups
 
-- Run full OpenAtlas `npm run test:e2e` after substantive routing or layout changes.
+- Run full OpenGrimoire `npm run test:e2e` after substantive routing or layout changes.
 - Run Arc_Forge `workflow_ui` Playwright tests with a live Flask fixture when the vault path and env are configured.

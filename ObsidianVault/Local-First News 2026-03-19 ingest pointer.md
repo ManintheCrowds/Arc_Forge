@@ -17,7 +17,7 @@ tags: [local-first, ai-trends, scp, powersync]
 
 1. **PowerSync + SQLite agent plane** — short ADR-style note + link to `POWERSYNC_AI_HACKATHON_PLAN.md` in local-proto.
 2. **CRDT vs authority** — design note for any future collaborative editor in this vault.
-3. **OpenJarvis vs our stack** — comparison checklist (link WatchTower / OpenAtlas docs).
+3. **OpenJarvis vs our stack** — comparison checklist (link WatchTower / OpenGrimoire docs).
 
 ## Related
 

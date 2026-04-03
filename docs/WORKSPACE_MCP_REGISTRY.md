@@ -12,7 +12,7 @@ This file is **not** a generated inventory of your live Cursor `mcp.json`. Updat
 | MCP tools × harness scripts | [`../../MiscRepos/.cursor/docs/MCP_CAPABILITY_MAP.md`](../../MiscRepos/.cursor/docs/MCP_CAPABILITY_MAP.md) |
 | OpenGrimoire HTTP + MCP tiers (unified manifest) | [`../../OpenGrimoire/docs/AGENT_TOOL_MANIFEST.md`](../../OpenGrimoire/docs/AGENT_TOOL_MANIFEST.md) |
 
-If **MiscRepos** or **OpenGrimoire** are not cloned next to Arc_Forge, clone them or adjust paths in your editor; links above assume `Documents/GitHub/{Arc_Forge,MiscRepos,OpenGrimoire}` (legacy folder name `OpenAtlas` still works until you rename).
+If **MiscRepos** or **OpenGrimoire** are not cloned next to Arc_Forge, clone them or adjust paths in your editor; links above assume `Documents/GitHub/{Arc_Forge,MiscRepos,OpenGrimoire}` (legacy folder name `OpenGrimoire` still works until you rename).
 
 ## Enabled servers (example set)
 

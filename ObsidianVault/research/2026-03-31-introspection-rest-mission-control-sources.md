@@ -1,11 +1,11 @@
 ---
-tags: [research, openatlas, opengrimoire, rest, interpretability, workflow-ui, agent-native]
+tags: [research, opengrimoire, opengrimoire, rest, interpretability, workflow-ui, agent-native]
 date: 2026-03-31
 ---
 
 # Introspection article, REST map, Mission Control videos (archive)
 
-Vault-friendly archive of four sources: interpretability article (VGEL), REST API design mind map (image), and two YouTube references (Mission Control / OpenClaw). Includes integration notes against OpenGrimoire (OpenAtlas), Arc_Forge workflow tooling, and harness safety — **not** an executable runbook.
+Vault-friendly archive of four sources: interpretability article (VGEL), REST API design mind map (image), and two YouTube references (Mission Control / OpenClaw). Includes integration notes against OpenGrimoire, Arc_Forge workflow tooling, and harness safety — **not** an executable runbook.
 
 ---
 
@@ -42,12 +42,12 @@ Vault-friendly archive of four sources: interpretability article (VGEL), REST AP
 
 **Topics covered (from diagram):** REST constraints (cacheable, stateless, layered system, uniform interface including HATEOAS with example `links` for pagination); HTTP methods with example URLs; implementation practices (pagination first/last/next/prev, filtering, naming, versioning); security (CORS, idempotence, auth, logging, validation, TLS, rate limiting); monitoring and caching.
 
-**Mapping to OpenGrimoire (OpenAtlas):**
+**Mapping to OpenGrimoire:**
 
-- Normative contract: [`../../../OpenAtlas/docs/ARCHITECTURE_REST_CONTRACT.md`](../../../OpenAtlas/docs/ARCHITECTURE_REST_CONTRACT.md) (strict public REST, entity × HTTP × auth matrix).
-- Discovery: [`GET /api/capabilities`](../../../OpenAtlas/src/app/api/capabilities/route.ts) — machine/human index; backlog includes partial OpenAPI (`GET /api/openapi.json` or static manifest) — see Arc_Forge plan `.cursor/plans/agent-native_follow-up_backlog_b3578a98.plan.md`.
+- Normative contract: [`../../../OpenGrimoire/docs/ARCHITECTURE_REST_CONTRACT.md`](../../../OpenGrimoire/docs/ARCHITECTURE_REST_CONTRACT.md) (strict public REST, entity × HTTP × auth matrix).
+- Discovery: [`GET /api/capabilities`](../../../OpenGrimoire/src/app/api/capabilities/route.ts) — machine/human index; backlog includes partial OpenAPI (`GET /api/openapi.json` or static manifest) — see Arc_Forge plan `.cursor/plans/agent-native_follow-up_backlog_b3578a98.plan.md`.
 - **HATEOAS / `links`:** Diagram shows `rel` + `href` for next page — **stretch** alignment if list endpoints gain cursor/offset pagination; today prioritize honest method/path/auth docs over hypermedia if not yet product-prioritized.
-- **Monitoring / caching / rate limits:** Operational framing in [`../../../OpenAtlas/docs/engineering/OPERATIONAL_TRADEOFFS.md`](../../../OpenAtlas/docs/engineering/OPERATIONAL_TRADEOFFS.md); survey/login rate limits in app middleware — scale-out → shared store (e.g. Redis) per contract notes.
+- **Monitoring / caching / rate limits:** Operational framing in [`../../../OpenGrimoire/docs/engineering/OPERATIONAL_TRADEOFFS.md`](../../../OpenGrimoire/docs/engineering/OPERATIONAL_TRADEOFFS.md); survey/login rate limits in app middleware — scale-out → shared store (e.g. Redis) per contract notes.
 
 ---
 
@@ -105,5 +105,5 @@ Interpretability results support **skepticism** toward claims like “I know whe
 
 - OpenHarness bridge (clarification polling): `OpenHarness/docs/OPENGRIMOIRE_CLARIFICATION_BRIDGE.md` (sibling repo).
 - Arc_Forge workflow UI: `ObsidianVault/workflow_ui/`.
-- Agent-native backlog (OpenAtlas): `.cursor/plans/agent-native_follow-up_backlog_b3578a98.plan.md` in this repo.
-- **Phase A discovery gate (implemented):** OpenAtlas [`docs/engineering/DISCOVERY_STABILITY_GATE.md`](../../../OpenAtlas/docs/engineering/DISCOVERY_STABILITY_GATE.md) — `npm run verify:openapi` + capabilities + route index; admin **API discovery (mirror)** on `/admin`.
+- Agent-native backlog : `.cursor/plans/agent-native_follow-up_backlog_b3578a98.plan.md` in this repo.
+- **Phase A discovery gate (implemented):** OpenGrimoire [`docs/engineering/DISCOVERY_STABILITY_GATE.md`](../../../OpenGrimoire/docs/engineering/DISCOVERY_STABILITY_GATE.md) — `npm run verify:openapi` + capabilities + route index; admin **API discovery (mirror)** on `/admin`.

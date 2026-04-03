@@ -1,5 +1,5 @@
 ---
-tags: [research, openatlas, openharness, scp, trustgraph, eval]
+tags: [research, opengrimoire, openharness, scp, trustgraph, eval]
 date: 2026-03-23
 ---
 
@@ -31,13 +31,13 @@ This note summarizes sources, SCP, and vault-friendly excerpts so you are not de
 
 | Source | Core idea | Fits your intent | Contrast / risk |
 |--------|-----------|------------------|-----------------|
-| [TrustGraph](https://github.com/trustgraph-ai/trustgraph) | Full “context platform”: Cassandra, Qdrant, Pulsar, RAG flows, **Workbench** (~8888), **Context Cores**, MCP | Context + retrieval + agents; Context Core = pin/version/rollback; workbench surfaces → OpenAtlas GUI (operator clarity, inspectable graphs) | Not a drop-in: OpenAtlas is **API/contract-first**; TrustGraph is **full infra**. Prefer **patterns/UX**, not fork-the-stack. |
+| [TrustGraph](https://github.com/trustgraph-ai/trustgraph) | Full “context platform”: Cassandra, Qdrant, Pulsar, RAG flows, **Workbench** (~8888), **Context Cores**, MCP | Context + retrieval + agents; Context Core = pin/version/rollback; workbench surfaces → OpenGrimoire GUI (operator clarity, inspectable graphs) | Not a drop-in: OpenGrimoire is **API/contract-first**; TrustGraph is **full infra**. Prefer **patterns/UX**, not fork-the-stack. |
 | YouTube (`sWc7mkhITIo`) | *(Plan: unknown before transcript.)* | Tie to Workbench / context-graph UX after transcript | Captions + SCP + vault |
 | [CyberGym](https://github.com/sunblaze-ucb/cybergym) | Agent security eval (vulns, PoC server, Docker) | Verifiable agent + security; complements **promptfoo**-style evals | ~240GB assets; **optional CI** or benchmark reference, not full vendoring |
 | [get-shit-done](https://github.com/gsd-build/get-shit-done) | Spec-driven loop; `.planning/`; XML tasks | Matches OpenHarness phases, HANDOFF_FLOW, planning/qa-verifier, critic gates | Claude Code–centric vs repo **skills**; **bridge** via skill, not 40k-line duplicate |
 | [learn-claude-code](https://github.com/shareAI-lab/learn-claude-code) | Teaching harness (loops, tools, subagents, skills) | Aligns with agent-native-architecture / “harness not intelligence” | Thin skill → s01–s12 + your patterns |
 | [MoneyPrinterV2](https://github.com/FujiwaraChoki/MoneyPrinterV2) | Social/automation (Shorts, affiliate, etc.) | Low alignment unless you build growth automation | **AGPL-3.0**; ToS/ethics; **contrast only** |
-| [Maestro](https://github.com/mobile-dev-inc/Maestro) | YAML mobile/web E2E | Already in OpenAtlas: Playwright = CI truth; Maestro optional | More Maestro only where Playwright does not cover mobile |
+| [Maestro](https://github.com/mobile-dev-inc/Maestro) | YAML mobile/web E2E | Already in OpenGrimoire: Playwright = CI truth; Maestro optional | More Maestro only where Playwright does not cover mobile |
 
 ---
 
@@ -45,7 +45,7 @@ This note summarizes sources, SCP, and vault-friendly excerpts so you are not de
 
 ```mermaid
 flowchart LR
-  subgraph openAtlas [OpenAtlas]
+  subgraph openGrimoire [OpenGrimoire]
     REST[REST_API_CLI]
     Brain[Brain_map_viewer]
     Align[Alignment_context]
@@ -59,15 +59,15 @@ flowchart LR
     PF[promptfoo_reports]
     CG[CyberGym_optional]
   end
-  trustGraph -.->|"UX_and_portable_context_ideas"| openAtlas
-  eval -->|"metrics_and_security_bench"| openAtlas
+  trustGraph -.->|"UX_and_portable_context_ideas"| openGrimoire
+  eval -->|"metrics_and_security_bench"| openGrimoire
 ```
 
 ---
 
 ## Design insight (YouTube, post-transcript)
 
-The video demonstrates a **context graph** built from **London-area pubs, restaurants, and event spaces**, with **explanability**: show which graph relationships and source data support an answer to natural-language questions (e.g. where to drink craft beer, how broadening the question changes the subgraph). This supports the **TrustGraph Workbench** metaphor: inspectable graphs, grounding, and operator-visible sourcing — mapped to OpenAtlas principles (read-only projections from API data, not a second truth store). See `GUI_WORKBENCH_PRINCIPLES.md` in OpenAtlas docs.
+The video demonstrates a **context graph** built from **London-area pubs, restaurants, and event spaces**, with **explanability**: show which graph relationships and source data support an answer to natural-language questions (e.g. where to drink craft beer, how broadening the question changes the subgraph). This supports the **TrustGraph Workbench** metaphor: inspectable graphs, grounding, and operator-visible sourcing — mapped to OpenGrimoire principles (read-only projections from API data, not a second truth store). See `GUI_WORKBENCH_PRINCIPLES.md` in OpenGrimoire docs.
 
 ---
 
@@ -83,7 +83,7 @@ The video demonstrates a **context graph** built from **London-area pubs, restau
 
 ## Assimilation (headline list; full bullets in brainstorm)
 
-1. TrustGraph → OpenAtlas GUI patterns (IA, Context Core metaphor) — **GUI_WORKBENCH_PRINCIPLES.md**
+1. TrustGraph → OpenGrimoire GUI patterns (IA, Context Core metaphor) — **GUI_WORKBENCH_PRINCIPLES.md**
 2. CyberGym + promptfoo — separate lanes; **EVAL_PROMPTFOO_CYBERGYM.md**; DECIDE-SIM plan in `software/.cursor/plans/`
 3. GSD + learn-claude-code → **openharness** skills + **local-proto** README pointer
 4. MoneyPrinterV2 — brief contrast only; AGPL boundary
@@ -103,5 +103,5 @@ The video demonstrates a **context graph** built from **London-area pubs, restau
 ## Downstream docs
 
 - Brainstorm (full matrix, critic JSON, transparency, actionable paths): `D:/software/docs/brainstorms/2026-03-23-external-repos-landscape-brainstorm.md`
-- OpenAtlas: `GUI_WORKBENCH_PRINCIPLES.md`, `EVAL_PROMPTFOO_CYBERGYM.md` under `OpenAtlas/docs/`
+- OpenGrimoire: `GUI_WORKBENCH_PRINCIPLES.md`, `EVAL_PROMPTFOO_CYBERGYM.md` under `OpenGrimoire/docs/`
 - Skills: `openharness/.cursor/skills/gsd-workflow/`, `learn-claude-code-harness/`
