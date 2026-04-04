@@ -21,3 +21,4 @@ For operator and harness handoff conventions (separate from Cursor UI), see sibl
 ## Related
 
 - Idempotency and agent retries (OpenGrimoire): [`../../OpenGrimoire/docs/agent/ADR_IDEMPOTENCY_AND_RETRY.md`](../../OpenGrimoire/docs/agent/ADR_IDEMPOTENCY_AND_RETRY.md)
+- Plans that change **OpenGrimoire** code or contracts: run **`npm run verify`** from the **OpenGrimoire** sibling clone (see [Arc_Forge README](../README.md) — *Agent harness (Cursor workspace)* / *OpenGrimoire + harness verify*).

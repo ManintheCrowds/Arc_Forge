@@ -27,5 +27,7 @@ Replace with your actual `mcp.json` names. Typical families in this workspace:
 
 ## Related
 
+- **Agent-native audit:** Keep **OpenHarness** as a workspace root so `.cursor/commands/agent-native-audit` loads; canonical checklist is [OpenHarness `docs/AGENT_NATIVE_CHECKLIST.md`](../../OpenHarness/docs/AGENT_NATIVE_CHECKLIST.md) with MiscRepos addendum [`.cursor/docs/AGENT_NATIVE_CHECKLIST_MISCOPS.md`](../../MiscRepos/.cursor/docs/AGENT_NATIVE_CHECKLIST_MISCOPS.md). Do not fork duplicate `agent-native-audit.md` per repo.
+- **Minimal MCP profile for OpenGrimoire-focused work:** [`./MCP_PROFILE_OPENGRIMOIRE.md`](./MCP_PROFILE_OPENGRIMOIRE.md)
 - OpenGrimoire integration entry: [`../../OpenGrimoire/docs/AGENT_INTEGRATION.md`](../../OpenGrimoire/docs/AGENT_INTEGRATION.md)
 - Canonical naming: [OpenGrimoire `docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md`](../../OpenGrimoire/docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md)

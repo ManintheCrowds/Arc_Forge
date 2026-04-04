@@ -148,6 +148,15 @@ Sibling-repo docs for OpenGrimoire + MiscRepos harness work:
 - [docs/USER_RULES_VS_POLICY_ENGINE.md](docs/USER_RULES_VS_POLICY_ENGINE.md) — user rules vs automated policy / CI
 - Canonical **GitHub repo naming** and merge vs sibling policy: [OpenGrimoire `docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md`](../OpenGrimoire/docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md)
 
+**OpenGrimoire + harness verify (sibling repos):** Arc_Forge does **not** substitute for OpenGrimoire’s merge bar. With `OpenGrimoire` and `MiscRepos` cloned next to this repo (e.g. `Documents/GitHub/{Arc_Forge,OpenGrimoire,MiscRepos}`):
+
+```bash
+cd ../OpenGrimoire && npm run verify
+cd ../MiscRepos && python .cursor/scripts/checksum_integrity.py --verify --strict
+```
+
+Use the first when plans or tasks change **OpenGrimoire** application code or API docs; use the second when changing **rules, skills, or `.cursor` policy** in MiscRepos. See [OpenGrimoire CONTRIBUTING.md](../OpenGrimoire/CONTRIBUTING.md) § Pre-push / local verification.
+
 ## License and Credits
 
 Per project conventions. **Wrath & Glory** is a trademark of its respective owners. Rulebook and supplement PDFs are used locally only and are not distributed with this repo; place your own PDFs in the paths configured in `ObsidianVault/scripts/ingest_config.json` (e.g. `ObsidianVault/pdf/`). See this repo's root `.gitignore` for excluded paths (PDFs and optional derived caches).
