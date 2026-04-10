@@ -1,3 +1,8 @@
+---
+title: "Session Summary Template (for Archivist)"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Session Summary Template (for Archivist)
 
 Post-session input (human-facing). Do not ask DMs to write essays; use this structured capture. The Archivist role converts it into canonical timeline entries, flagged future consequences, and retrieval anchors.

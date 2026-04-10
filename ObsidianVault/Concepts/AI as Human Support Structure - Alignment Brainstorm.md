@@ -1,3 +1,8 @@
+---
+title: "AI as Human Support Structure - Alignment Brainstorm"
+tags: ["type/concept", "status/draft", "campaign/redacted_records"]
+---
+
 # AI as Human Support Structure - Alignment Brainstorm
 
 #brainstorm #alignment #ACE #therapy #self-authorship #local-first #harness

@@ -6,13 +6,7 @@
 
 ---
 title: "Abundant Apocryphal Adversaries - The Orks v1"
-source_file: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/Abundant Apocryphal Adversaries - The Orks v1.pdf"
-source_path: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/Abundant Apocryphal Adversaries - The Orks v1.pdf"
-source_link: "file:///D%3A/wrath_and_glory/ObsidianVault/pdf/dod_docs/Abundant%20Apocryphal%20Adversaries%20-%20The%20Orks%20v1.pdf"
-source_pages: "unknown (PDF++ extraction pending)"
-doc_type: "unverified"
-created: "2026-01-16"
-tags: ["type/source", "status/draft"]
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

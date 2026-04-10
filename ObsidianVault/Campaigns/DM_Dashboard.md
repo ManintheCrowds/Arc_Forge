@@ -4,6 +4,11 @@
 # MODIFICATION NOTES: Initial DM dashboard with core views.
 -->
 
+---
+title: "DM Dashboard"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # DM Dashboard
 
 **Narrative workbench (sections as panels):** [[Workbench]]

@@ -1,5 +1,6 @@
 ---
-tags: [research, opengrimoire, opengrimoire, rest, interpretability, workflow-ui, agent-native]
+title: "Introspection article, REST map, Mission Control videos (archive)"
+tags: ["type/research", "status/draft", "domain/research"]
 date: 2026-03-31
 ---
 

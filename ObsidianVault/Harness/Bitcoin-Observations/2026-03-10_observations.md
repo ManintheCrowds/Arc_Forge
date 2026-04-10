@@ -1,3 +1,8 @@
+---
+title: "Observations 2026-03-10"
+tags: ["type/harness-bitcoin-obs", "status/mirror", "domain/bitcoin"]
+---
+
 # Observations 2026-03-10
 
 ### 2026-03-10T12:00:00Z | Spiral (Matt Corallo) | community_norm

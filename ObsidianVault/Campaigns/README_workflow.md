@@ -1,8 +1,15 @@
+---
+title: "Storyboard-to-Encounter Workflow"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Storyboard-to-Encounter Workflow
 
 Workflow for turning storyboards into task decomposition, encounter drafts, human review, refined encounters, and final specs. Designed for human-guided prompts at each stage and future GUI/text UI integration.
 
 ## Overview
+
+**Pipeline outputs (Markdown in vault):** [[Campaigns/_rag_outputs/MOC_RAG_Outputs]] — storyboard, frame, and RAG-generated drafts under `Campaigns/_rag_outputs/`.
 
 See [workflow_diagrams.md](docs/workflow_diagrams.md) for pipeline and file-tree diagrams.
 

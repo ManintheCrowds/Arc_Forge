@@ -1,3 +1,8 @@
+---
+title: "Arc_Forge / Obsidian Vault Preferences"
+tags: ["type/harness-state", "status/draft", "domain/harness"]
+---
+
 # Arc_Forge / Obsidian Vault Preferences
 
 User and project preferences for AI agents. Refine as needed.

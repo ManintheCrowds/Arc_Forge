@@ -1,3 +1,8 @@
+---
+title: "Frame Output Format (Story Architect)"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Frame Output Format (Story Architect)
 
 **Source:** [narrative_workbench_spec](narrative_workbench_spec.md) § V — Step 1: Frame. Role: Story Architect. Output of `run_story_architect` must match this structure so downstream (Select+Expand → Stage 1) can consume it.

@@ -6,12 +6,7 @@
 
 ---
 title: "- Rules Mechanics"
-entity_type: "item"
-aliases: []
-campaigns: []
-created: "2026-01-16"
-tags: ["type/npc", "status/draft"]
-source_refs: ["[[warhammer40000wrathandglory_threatassessment_xenospdf]]"]
+tags: ["type/item", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

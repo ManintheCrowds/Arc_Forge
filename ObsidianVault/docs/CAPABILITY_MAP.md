@@ -1,3 +1,8 @@
+---
+title: "Capability map (Arc_Forge / ObsidianVault)"
+tags: ["type/research", "status/draft", "domain/harness"]
+---
+
 # Capability map (Arc_Forge / ObsidianVault)
 
 This document ties together **user-facing surfaces**, **HTTP APIs**, and **auth** for agent parity and discovery.

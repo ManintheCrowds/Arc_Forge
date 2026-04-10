@@ -1,3 +1,8 @@
+---
+title: "BitDevs MPLS Socratic Seminar 36 — Notes"
+tags: ["type/harness-bitcoin-obs", "status/mirror", "domain/bitcoin"]
+---
+
 # BitDevs MPLS Socratic Seminar 36 — Notes
 
 **Date:** 2026-03-10  

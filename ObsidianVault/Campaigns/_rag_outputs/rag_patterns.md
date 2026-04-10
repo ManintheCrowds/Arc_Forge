@@ -1,3 +1,8 @@
+---
+title: "RAG Pattern Report"
+tags: ["type/pipeline-output", "status/draft", "campaign/redacted_records"]
+---
+
 # RAG Pattern Report
 
 Sources: [PDF] Abundant Apocryphal Adversaries - The Orks v1.txt [chunk 3/24], [PDF] warhammer40000_wrathandglory_redactedrecords.txt [chunk 12/37], [PDF] Abundant Apocryphal Adversaries - The Orks v1.txt [chunk 2/24], [PDF] warhammer40000wrathandglory_gutshivaskommandospdf.txt [chunk 1/8], [PDF] warhammer40000_wrathandglory_redactedrecords.txt [chunk 1/37], [PDF] Abundant Apocryphal Adversaries - The Orks v1.txt [chunk 10/24], [PDF] Abundant Apocryphal Adversaries - The Orks v1.txt [chunk 21/24], [PDF] warhammer40000wrathandglory_gutshivaskommandospdf.txt [chunk 3/8]

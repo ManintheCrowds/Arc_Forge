@@ -4,6 +4,11 @@
 # MODIFICATION NOTES: Initial campaign index.
 -->
 
+---
+title: "Campaign Index"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Campaign Index
 
 ## Campaigns
@@ -20,3 +25,5 @@ SORT file.name ASC
 ## Quick Links
 
 - [[DM_Dashboard]]
+- [[Campaigns/README_workflow]] — storyboard → encounter pipeline (RAG output dir: `_rag_outputs/`)
+- [[Campaigns/_rag_outputs/MOC_RAG_Outputs]] — index of frame/RAG generated notes (staging)

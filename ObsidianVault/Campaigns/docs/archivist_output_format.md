@@ -1,3 +1,8 @@
+---
+title: "Archivist Output Format"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Archivist Output Format
 
 **Source:** [narrative_workbench_spec.md](narrative_workbench_spec.md) § IV.A. Defines the structure of Archivist LLM output so scripts can parse or append it.

@@ -1,3 +1,8 @@
+---
+title: "One Sentence Can Hijack Your AI - Enterprise AI Security"
+tags: ["type/ingest-pointer", "status/draft", "domain/scp"]
+---
+
 # One Sentence Can Hijack Your AI - Enterprise AI Security
 
 #ai-security #prompt-injection #enterprise #harness #zero-trust #dmz #compartmentalization #observability

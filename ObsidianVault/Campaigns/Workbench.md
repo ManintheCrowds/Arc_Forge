@@ -4,6 +4,11 @@
 # MODIFICATION NOTES: Phase 2 — panel-style headers per spec VI.A.
 -->
 
+---
+title: "Narrative Workbench"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Narrative Workbench
 
 Short lines. Bullet-dense. Minimal adjectives. See [narrative_workbench_spec](docs/narrative_workbench_spec.md).

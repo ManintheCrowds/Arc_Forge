@@ -1,3 +1,8 @@
+---
+title: "Playlist wisdom 2026-03-20"
+tags: ["type/ingest-pointer", "status/draft", "domain/scp"]
+---
+
 # Playlist wisdom 2026-03-20
 
 #ai-trends #youtube-playlist #scp-wisdom

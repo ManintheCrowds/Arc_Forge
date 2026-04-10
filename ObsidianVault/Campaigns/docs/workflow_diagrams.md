@@ -1,3 +1,8 @@
+---
+title: "Workflow Diagrams"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Workflow Diagrams
 
 Pipeline, data flow, and file layout for the Storyboard-to-Encounter workflow. Source of truth for docs and future GUI.

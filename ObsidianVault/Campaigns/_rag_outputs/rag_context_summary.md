@@ -1,3 +1,8 @@
+---
+title: "RAG Context Summary"
+tags: ["type/pipeline-output", "status/draft", "campaign/redacted_records"]
+---
+
 # RAG Context Summary
 
 As a Game Master, you can use this summary to quickly reference important information related to the Orks, their activities in the Reach, and notable items and locations. Here are some key points:

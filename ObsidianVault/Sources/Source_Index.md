@@ -1,6 +1,6 @@
 ---
 title: Source Index
-tags: ["type/index", "meta/source-catalog"]
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 created: "2026-01-16"
 last_updated: "2026-01-16 13:10:04"
 ---

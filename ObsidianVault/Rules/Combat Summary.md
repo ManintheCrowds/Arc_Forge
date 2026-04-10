@@ -6,10 +6,7 @@
 
 ---
 title: "Combat Summary"
-rule_type: "combat"
-created: "2026-01-15"
-tags: ["type/rule", "status/draft"]
-source_refs: ["[[Wrath & Glory Combat Summary]]"]
+tags: ["type/rule", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

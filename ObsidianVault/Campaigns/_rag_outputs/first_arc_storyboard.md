@@ -1,4 +1,9 @@
 ---
+title: "first arc storyboard"
+tags: ["type/pipeline-output", "status/draft", "campaign/redacted_records"]
+---
+
+---
 
 Storyboard: Chase Scene - Train Hijacking Sequence - Vehicle Combat - Boarding Action
 

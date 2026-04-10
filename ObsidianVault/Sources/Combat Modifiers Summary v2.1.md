@@ -6,13 +6,7 @@
 
 ---
 title: "Combat Modifiers Summary v2.1"
-source_file: "D:/Arc_Forge/ObsidianVault/pdf/dod_docs/Combat Modifiers Summary v2.1.pdf"
-source_path: "D:/Arc_Forge/ObsidianVault/pdf/dod_docs/Combat Modifiers Summary v2.1.pdf"
-source_link: "file:///D%3A/Arc_Forge/ObsidianVault/pdf/dod_docs/Combat%20Modifiers%20Summary%20v2.1.pdf"
-source_pages: "unknown (PDF++ extraction pending)"
-doc_type: "unverified"
-created: "2026-01-16"
-tags: ["type/source", "status/draft"]
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

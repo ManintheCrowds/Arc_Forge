@@ -1,3 +1,8 @@
+---
+title: "TTRPG DM Module System (Hybrid Obsidian + Web UI)"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # TTRPG DM Module System (Hybrid Obsidian + Web UI)
 
 ## Intent

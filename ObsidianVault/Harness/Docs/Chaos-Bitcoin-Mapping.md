@@ -1,6 +1,13 @@
+---
+title: "Chaos-to-Bitcoin Mapping"
+tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+---
+
 # Chaos-to-Bitcoin Mapping
 
 Side-by-side analysis of Agents of Chaos failures, Bitcoin design patterns, agent mitigations, and Fedimint/ACE/PentAGI implementation.
+
+**Source:** [Agents of Chaos](https://arxiv.org/abs/2602.20021) — red-teaming study of autonomous AI agents (Northeastern, MIT, Harvard, Bau Lab). [Project site](https://agentsofchaos.baulab.info/).
 
 **See also:** [bitcoin_chaos_convergence plan](D:\software\plans\bitcoin_chaos_convergence_a219e7b9.plan.md), [PENTAGI_FEDIMINT_ACE_ROADMAP.md](D:\portfolio-harness\docs\PENTAGI_FEDIMINT_ACE_ROADMAP.md), [AUTHORITY_MODEL_TAXONOMY.md](AUTHORITY_MODEL_TAXONOMY.md), [2026-03-10-bitdevs-mpls-seminar-36.md](bitcoin_observations/2026-03-10-bitdevs-mpls-seminar-36.md).
 

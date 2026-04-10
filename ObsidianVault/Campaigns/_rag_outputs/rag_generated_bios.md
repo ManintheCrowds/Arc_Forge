@@ -1,3 +1,8 @@
+---
+title: "RAG Generated: bios"
+tags: ["type/pipeline-output", "status/draft", "campaign/redacted_records"]
+---
+
 # RAG Generated: bios
 
 Here are three bios for NPCs in Wrath & Glory based on the provided context:

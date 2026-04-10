@@ -5,14 +5,8 @@
 -->
 
 ---
-title: "warhammer40000wrathandglory_redactedrecords2"
-source_file: "D:/wrath_and_glory/ObsidianVault/pdf/warhammer40000wrathandglory_redactedrecords2.pdf"
-source_path: "D:/wrath_and_glory/ObsidianVault/pdf/warhammer40000wrathandglory_redactedrecords2.pdf"
-source_link: "file:///D%3A/wrath_and_glory/ObsidianVault/pdf/warhammer40000wrathandglory_redactedrecords2.pdf"
-source_pages: "unknown (PDF++ extraction pending)"
-doc_type: "unverified"
-created: "2026-01-16"
-tags: ["type/source", "status/draft"]
+title: "warhammer40000wrathandglory redactedrecords2"
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

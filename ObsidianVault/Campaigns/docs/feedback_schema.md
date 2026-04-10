@@ -1,3 +1,8 @@
+---
+title: "Structured Feedback Schema (Stage 3 → Stage 4)"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Structured Feedback Schema (Stage 3 → Stage 4)
 
 Stage 3 is human-only: you review encounter drafts and produce **structured feedback**. Stage 4 reads that feedback and produces a new draft.

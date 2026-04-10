@@ -1,6 +1,7 @@
 ---
 date: 2026-03-20
-tags: [local-first, ai-trends, scp, powersync]
+title: "Local-First News — 2026-03-19 ingest pointer"
+tags: ["type/ingest-pointer", "status/draft", "domain/scp"]
 ---
 
 # Local-First News — 2026-03-19 ingest pointer

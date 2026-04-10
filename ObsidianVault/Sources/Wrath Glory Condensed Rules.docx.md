@@ -6,13 +6,7 @@
 
 ---
 title: "Wrath Glory Condensed Rules.docx"
-source_file: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/Wrath Glory Condensed Rules.docx.pdf"
-source_path: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/Wrath Glory Condensed Rules.docx.pdf"
-source_link: "file:///D%3A/wrath_and_glory/ObsidianVault/pdf/dod_docs/Wrath%20Glory%20Condensed%20Rules.docx.pdf"
-source_pages: "unknown (PDF++ extraction pending)"
-doc_type: "unverified"
-created: "2026-01-16"
-tags: ["type/source", "status/draft"]
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

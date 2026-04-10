@@ -6,10 +6,7 @@
 
 ---
 title: "Combat Modifiers"
-rule_type: "combat_modifiers"
-created: "2026-01-15"
-tags: ["type/rule", "status/draft"]
-source_refs: ["[[Combat Modifiers Summary v2.1]]"]
+tags: ["type/rule", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

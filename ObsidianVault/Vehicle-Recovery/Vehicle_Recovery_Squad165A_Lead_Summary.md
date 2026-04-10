@@ -1,3 +1,8 @@
+---
+title: "Lead Summary for Squad 165A — Case 26-049682"
+tags: ["type/concept", "status/draft", "campaign/redacted_records"]
+---
+
 # Lead Summary for Squad 165A — Case 26-049682
 
 **Date:** 2026-03-02  

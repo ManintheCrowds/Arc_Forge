@@ -1,6 +1,11 @@
+---
+title: "Task Decomposition: first_arc"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Task Decomposition: first_arc
 
-**Storyboard:** Campaigns\_rag_outputs\first_arc_storyboard.md
+**Storyboard:** [[Campaigns/_rag_outputs/first_arc_storyboard]] · **RAG staging MOC:** [[Campaigns/_rag_outputs/MOC_RAG_Outputs]]
 
 ## Encounters
 

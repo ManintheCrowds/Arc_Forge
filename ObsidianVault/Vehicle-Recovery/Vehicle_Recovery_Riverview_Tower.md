@@ -1,3 +1,8 @@
+---
+title: "Vehicle Recovery — Riverview Tower Case"
+tags: ["type/concept", "status/draft", "campaign/redacted_records"]
+---
+
 # Vehicle Recovery — Riverview Tower Case
 
 **Case:** Squad 165A, Control 26-049682 | **Precinct:** P1

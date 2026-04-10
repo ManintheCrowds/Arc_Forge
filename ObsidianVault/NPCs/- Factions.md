@@ -6,12 +6,7 @@
 
 ---
 title: "- Factions"
-entity_type: "npc"
-aliases: []
-campaigns: []
-created: "2026-01-16"
-tags: ["type/npc", "status/draft"]
-source_refs: ["[[warhammer40000wrathandglory_threatassessment_xenospdf]]"]
+tags: ["type/npc", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

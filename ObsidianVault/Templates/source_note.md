@@ -10,7 +10,7 @@ source_file: "{{source_file}}"
 source_pages: "{{source_pages}}"
 doc_type: "{{doc_type}}"
 created: "{{date}}"
-tags: ["type/source", "status/draft"]
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

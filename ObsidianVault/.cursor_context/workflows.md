@@ -1,3 +1,8 @@
+---
+title: "Workflow Write Contract"
+tags: ["type/harness-state", "status/draft", "domain/harness"]
+---
+
 # Workflow Write Contract
 
 This document defines write targets and templates for workflow automations.

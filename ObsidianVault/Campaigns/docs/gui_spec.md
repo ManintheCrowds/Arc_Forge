@@ -1,3 +1,8 @@
+---
+title: "GUI Spec: Storyboard-to-Encounter Workflow"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # GUI Spec: Storyboard-to-Encounter Workflow
 
 Spec for a thin UI that orchestrates the workflow. One primary view per stage; structured I/O as forms; human-gated; GUI only calls existing Python entry points.

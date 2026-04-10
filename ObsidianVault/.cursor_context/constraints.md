@@ -1,3 +1,8 @@
+---
+title: "Arc_Forge / Obsidian Vault Constraints"
+tags: ["type/harness-state", "status/draft", "domain/harness"]
+---
+
 # Arc_Forge / Obsidian Vault Constraints
 
 Claw.md-style constraint document for AI agents working in this vault. Every line should earn its place.

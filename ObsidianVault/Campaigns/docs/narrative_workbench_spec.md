@@ -1,3 +1,8 @@
+---
+title: "Narrative Workbench Spec (Canonical Architecture)"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Narrative Workbench Spec (Canonical Architecture)
 
 **Source:** ChatGPT conversation (collaborative narrative workbench). This doc is the normative architecture for the Arc Forge campaign workbench.

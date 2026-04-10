@@ -1,3 +1,8 @@
+---
+title: "Task Decomposition Output Format (Stage 1)"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Task Decomposition Output Format (Stage 1)
 
 Stage 1 produces a task decomposition from a storyboard. Human decides granularity (one beat = one encounter vs multiple sub-encounters).

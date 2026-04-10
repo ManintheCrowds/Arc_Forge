@@ -1,3 +1,8 @@
+---
+title: "Bitcoin Observations Log"
+tags: ["type/harness-bitcoin-obs", "status/mirror", "domain/bitcoin"]
+---
+
 # Bitcoin Observations Log
 
 Structured observation logs for Bitcoin-Chaos convergence. One file per day: `YYYY-MM-DD_observations.md`.

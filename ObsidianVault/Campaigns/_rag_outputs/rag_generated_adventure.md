@@ -1,3 +1,8 @@
+---
+title: "RAG Generated: adventure"
+tags: ["type/pipeline-output", "status/draft", "campaign/redacted_records"]
+---
+
 # RAG Generated: adventure
 
 Title: "The Heart of the Hive"

@@ -1,3 +1,8 @@
+---
+title: "Primitives vs workflows (workflow_ui)"
+tags: ["type/research", "status/draft", "domain/harness"]
+---
+
 # Primitives vs workflows (workflow_ui)
 
 | Kind | Examples | Notes |

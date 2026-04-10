@@ -1,3 +1,8 @@
+---
+title: "Session Memory"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Session Memory
 
 Output directory for Phase 4 Session Memory.

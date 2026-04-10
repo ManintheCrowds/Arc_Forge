@@ -5,14 +5,8 @@
 -->
 
 ---
-title: "W&G_Character_Sheet_Form_Fillable"
-source_file: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/W&G_Character_Sheet_Form_Fillable.pdf"
-source_path: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/W&G_Character_Sheet_Form_Fillable.pdf"
-source_link: "file:///D%3A/wrath_and_glory/ObsidianVault/pdf/dod_docs/W%26G_Character_Sheet_Form_Fillable.pdf"
-source_pages: "unknown (PDF++ extraction pending)"
-doc_type: "unverified"
-created: "2026-01-16"
-tags: ["type/source", "status/draft"]
+title: "W&G Character Sheet Form Fillable"
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

@@ -10,7 +10,7 @@ entity_type: "{{entity_type}}"
 aliases: []
 campaigns: []
 created: "{{date}}"
-tags: ["type/npc", "status/draft"]
+tags: ["type/npc", "status/draft", "campaign/redacted_records"]
 source_refs: []
 ---
 

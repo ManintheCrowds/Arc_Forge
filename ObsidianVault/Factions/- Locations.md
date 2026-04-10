@@ -6,12 +6,7 @@
 
 ---
 title: "- Locations"
-entity_type: "faction"
-aliases: []
-campaigns: []
-created: "2026-01-16"
-tags: ["type/npc", "status/draft"]
-source_refs: ["[[warhammer40000wrathandglory_threatassessment_xenospdf]]"]
+tags: ["type/faction", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

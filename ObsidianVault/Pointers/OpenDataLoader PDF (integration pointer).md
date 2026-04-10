@@ -1,3 +1,8 @@
+---
+title: "OpenDataLoader PDF (integration pointer)"
+tags: ["type/ingest-pointer", "status/draft", "domain/scp"]
+---
+
 # OpenDataLoader PDF (integration pointer)
 
 #pdf #rag #integration #scp

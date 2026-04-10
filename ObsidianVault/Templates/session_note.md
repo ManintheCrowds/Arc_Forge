@@ -9,7 +9,7 @@ title: "{{title}}"
 campaign: "{{campaign}}"
 session_date: "{{date}}"
 created: "{{date}}"
-tags: ["type/session", "status/draft"]
+tags: ["type/session", "status/draft", "campaign/redacted_records"]
 source_refs: []
 ---
 

@@ -1,3 +1,8 @@
+---
+title: "Arc_Forge / Obsidian Vault System Context"
+tags: ["type/harness-state", "status/draft", "domain/harness"]
+---
+
 # Arc_Forge / Obsidian Vault System Context
 
 System context for AI agents working in this vault. Loaded by the context loader with workflows.md, constraints.md, preferences.md.

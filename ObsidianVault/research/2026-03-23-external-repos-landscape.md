@@ -1,5 +1,6 @@
 ---
-tags: [research, opengrimoire, openharness, scp, trustgraph, eval]
+title: "External repos landscape (SCP-gated archive)"
+tags: ["type/research", "status/draft", "domain/research"]
 date: 2026-03-23
 ---
 

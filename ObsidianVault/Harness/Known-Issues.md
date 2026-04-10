@@ -1,6 +1,15 @@
+---
+title: "Known issues"
+tags: ["type/harness-state", "status/mirror", "domain/harness"]
+---
+
 # Known issues
 
 Append entries below using the schema in [README.md](README.md).
+
+## Agent behavior (Cursor / AI)
+
+- **Symptom:** Agent switches to Korean unexpectedly when user sends a short prompt (e.g. "do it", "and do it") after previous English context. **Location:** Cursor AI responses. **Issue:** Response language drifts to Korean without explicit user request. **Status:** open. **Note:** Investigate: .cursorrules "Always respond in Korean" rule, workspace rules, or model context. User preference: English unless explicitly requested otherwise. Mitigation: Added language preference to AGENTS.md, preferences.json, and .cursorrules per Korean Output Audit plan.
 
 ## OSINT Tools (osint-tools/)
 
@@ -22,6 +31,7 @@ Append entries below using the schema in [README.md](README.md).
 ## PowerShell / Cursor runner
 
 - **Symptom:** `Get-ChildItem Env:` duplicate-key error when running some PowerShell scripts via Cursor. **Location:** Cursor temp script wrapper. **Note:** Cosmetic; main script logic (e.g. audit_context_engineering.ps1) completes and exits 0 before the error. No fix needed in project scripts.
+- **Symptom (FIXED 2026-03-20):** `local-proto/scripts/check_intent_checksum.ps1` fails with `Set-Content` / mangled temp path (e.g. `check_intent_hash_D`, alternate data stream errors). **Cause:** Bash-style `$$` in a double-quoted path is not a PID in PowerShell and breaks the temp filename. **Fix:** Temp helper uses `[Guid]::NewGuid()` (see script). **Reference:** [.cursor/docs/COMMANDS_README.md](../docs/COMMANDS_README.md) § Integrity and Handoff.
 
 ## Agent telemetry (agent_log.jsonl)
 
@@ -33,12 +43,37 @@ Append entries below using the schema in [README.md](README.md).
 - **Location:** audit_wrapper.py, Docker MCP. **Issue (FIXED 2026-03-04):** `FileNotFoundError` when spawning uvx — uvx from `pip install uv` is in Python Scripts, often not in PATH. **Fix:** audit_wrapper prepends Python Scripts (sys.executable parent, or APPDATA/Python/PythonXX/Scripts) to PATH when argv[0] is "uvx". Also use shell=True for uvx on Windows (like npx).
 - **Location:** test_mcp_and_audit.py `_precache_docker()`. **Issue (FIXED 2026-03-04):** `TypeError: a bytes-like object is required, not 'str'` when writing to proc.stdin. **Fix:** Add `text=True` to subprocess.Popen so stdin/stdout use text mode.
 
+## MCP (Windows / multi-machine)
+
+- **Location:** `.cursor/mcp.json` (MiscRepos; mirror under `portfolio-harness/.cursor/mcp.json` when possible). **Issue (2026-03-24):** Paths pointed at another laptop (`D:/portfolio-harness`, `D:/Arc_Forge`, `C:/Users/schum/...`). **Fix:** Use this machine’s harness and Arc roots, e.g. `C:/Users/Dell/Documents/GitHub/portfolio-harness`, `C:/Users/Dell/Documents/GitHub/Arc_Forge`, `C:/Users/Dell/.cursor/projects`. **Reference:** [.cursor/state/mcp_audit_matrix.md](mcp_audit_matrix.md).
+- **Location:** `portfolio-harness/local-proto/scripts/audit_wrapper.py`. **Issue (FIXED 2026-03-24):** Python 3.12 raised `TypeError` on `threading.Lock | None` annotations at import. **Fix:** `from __future__ import annotations` at top of file.
+- **Location:** `audit_wrapper.py` + `uvx` in mcp.json. **Issue (2026-03-24):** `pip install uv` on Windows may install `uv.exe` but not `uvx.exe`, so `uvx` subprocess fails. **Fix:** Wrapper rewrites `uvx` → `uv tool run` when `uvx.exe` is missing; ensure `PYTHONPATH` / Scripts on PATH for Cursor-spawned MCP.
+- **Location:** SCP MCP (`scp_mcp.py`). **Issue:** `scp_utils` re-exports `from scp.scp_utils import` — requires the **scp** package. **Fix:** `pip install -e` from the SCP repo (e.g. `C:/Users/Dell/Documents/GitHub/SCP`). **Reference:** mcp_audit_matrix.md.
+- **Location:** `mcp_server_git` (git MCP). **Issue:** `initialize` can exceed 30–180s on a very large `--repository` tree. **Mitigation:** Point git MCP at a smaller repo, or raise test timeout in `test_mcp_and_audit.py` / accept slow first start.
+- **Location:** `.cursor/scripts/start_openrag.ps1` and OpenRAG MCP on native Windows. **Issue (2026-03-24):** OpenRAG CLI reports `Native Windows Not Supported` and may fail with cp1252 UnicodeEncodeError before startup. **Mitigation:** Run OpenRAG in WSL/Linux (or containerized Linux path) and point `OPENRAG_URL` to that instance; do not rely on native Windows OpenRAG startup.
+
 ## Automation (generate_next_prompt, orchestrator)
 
 - **Ollama model not found (404):** `generate_next_prompt.ps1` defaults to `llama3.2`. If that model is not installed, Ollama returns 404. **Workaround:** Use `-Model llama3` or `-Model mistral` (or run `ollama list` to see installed models). See [TASK_PROMPT_TEMPLATES.md](../docs/TASK_PROMPT_TEMPLATES.md#generate-next-prompt-ollama).
 - **Ollama 400 Bad Request (FIXED 2026-03-03):** Was caused by PowerShell encoding. **Fix:** Use UTF-8 byte array and `application/json; charset=utf-8` in generate_next_prompt.ps1 and verify_ollama_llm.ps1. LLM generation now works for install complete.
 - **next_prompt.txt write denied:** In some sandboxed or restricted environments, writing to `.cursor/state/next_prompt.txt` may fail. **Workaround:** Run the script outside the sandbox, or use `-NoCopy` and copy from `continue_prompt.txt` manually.
 - **Orchestrator Ollama returns short/garbage prompt (FIXED 2026-03-04):** `orchestrator.py --once` calls Ollama with JSON schema (phase, prompt, launch_cloud_agent). llama3.2 sometimes returns valid JSON but with `prompt` = system-prompt fragment (e.g. "exact Cursor prompt for next session." ~37–40 chars). **Cause:** Model echoes instruction text instead of generating full prompt; JSON format may be harder for smaller models than plain-text (generate_next_prompt.ps1 uses plain-text). **Fix:** orchestrator validates prompt length (≥80 chars) and rejects known leak patterns; falls back to continue_prompt.txt. **Future options:** Try larger model (llama3.1:70b, mistral, qwen2.5); align orchestrator prompt format with generate_next_prompt (plain-text output); or accept fallback as primary path when Ollama quality is unreliable.
+
+## MCP audit gap (Cursor-provided MCPs)
+
+- **Location:** audit_wrapper, mcp_audit.jsonl. **Issue:** Cursor-provided MCPs (cursor-ide-browser, built-in Playwright) bypass audit_wrapper. Their tool invocations are not logged to mcp_audit.jsonl or intent_decisions.jsonl. **Mitigation:** Prefer mcp.json-configured equivalents (e.g. Playwright MCP in mcp.json) when audit coverage is required. **Reference:** [TOOL_SAFEGUARDS.md](../../local-proto/docs/TOOL_SAFEGUARDS.md) § Audit gaps. Per Security Audit SCP Testing Observability plan P2-8.
+
+## Path traversal (Filesystem MCP)
+
+- **Location:** @modelcontextprotocol/server-filesystem (mcp.json). **Issue:** CVE-2025-53110 — directory traversal via "../" and colliding prefixes in versions prior to 2025.7.1. **Mitigation:** Version pinned to @2025.7.1 in mcp.json (PT-2, 2026-03-16). **Reference:** [path_traversal_filesystem_mcp_report_2026-03-16.md](adhoc/path_traversal_filesystem_mcp_report_2026-03-16.md), [Snyk CVE](https://security.snyk.io/vuln/SNYK-JS-MODELCONTEXTPROTOCOLSERVERFILESYSTEM-10734144).
+
+## Local dev / port registry
+
+- **Location:** `demo_brain_map.ps1`, MCP_CAPABILITY_MAP. **Issue:** Demo script opens browser to `localhost:3000` but OpenGrimoire may run on 3001, 3002 when 3000 is in use (Next.js auto-increments). Agent cannot reliably navigate to Brain Map. **Workaround:** Use [port registry](../docs/PORT_REGISTRY.md) — read `.cursor/state/ports.json` for `services.opengrimoire.baseUrl` or `defaults.opengrimoire`; demo script writes discovered port after starting server. **Reference:** Local Port Registry plan.
+
+## NPM / OpenGrimoire dev
+
+- **Location:** OpenGrimoire, Cursor terminal (PowerShell). **Issue:** (1) PowerShell does not support `&&` — `cd X && npm run dev` fails. (2) Next.js dev can show `Cannot find module './XXX.js'` when `.next` cache is stale. (3) EADDRINUSE on port 3001 when restarting without killing previous process. **Workaround:** Use `Set-Location OpenGrimoire; npm run dev` (not `&&`). If chunk errors: `npm run clean` then `npm run dev`. If EADDRINUSE: kill process on port 3001 first. See [OpenGrimoire/TROUBLESHOOTING.md](../../OpenGrimoire/TROUBLESHOOTING.md).
 
 ## MCP fallback chain
 
@@ -56,8 +91,14 @@ Append entries below using the schema in [README.md](README.md).
 - **Git MCP missing --repository (FIXED 2026-03-03):** mcp.json git server needed `--repository D:/portfolio-harness` for pip install; without it, git_status could fail or use wrong repo. **Fix:** Added to mcp.json.
 - **SQLite DB path:** If `D:/Arc_Forge/campaign_kb/data/kb.sqlite3` does not exist, sqlite MCP server fails. **Workaround:** Create DB or point mcp.json to existing .sqlite3 file. test_mcp_and_audit.py skips sqlite when DB missing.
 - **SQLite MCP (FIXED 2026-03-04):** Switched from npx @pollinations/mcp-server-sqlite to uvx mcp-server-sqlite (Python). Eliminates npx/Node cold start; Python MCP starts in 1-5s. **Prereq:** `pip install uv`. SQLite is Tier 3.
-- **Scrapling MCP timeout:** scrapling MCP (`python -m scrapling mcp`) has heavy imports (Playwright, lxml, FastMCP) and can exceed 180s on first init. **Fix 2026-03-04:** Timeout increased to 240s. **Workaround:** Use `--skip scrapling` for quick MCP runs. Root cause: package design, not config.
+- **Scrapling MCP timeout:** scrapling MCP (invoked via `python -c "import sys; sys.argv=['scrapling','mcp']; from scrapling.cli import main; main()"` — package has no `__main__.py`, so `python -m scrapling mcp` fails) has heavy imports (Playwright, lxml, FastMCP) and can exceed 180s on first init. **Fix 2026-03-04:** Timeout increased to 240s. **Fix 2026-03-11:** mcp.json updated to use correct invocation. **Workaround:** Use `--skip scrapling` for quick MCP runs. Root cause: package design, not config.
 - **pre_install_check.ps1 Test-Path -and (FIXED 2026-03-04):** `Test-Path $kbPath -and $npxExe` failed with "parameter cannot be found that matches parameter name 'and'". **Fix:** Use `(Test-Path $kbPath) -and $npxExe` — parentheses required so -and is logical operator, not Test-Path param.
+- **Obsidian-vault MCP ModuleNotFoundError (FIXED 2026-03-11):** `ModuleNotFoundError: No module named 'mcp_server'` when obsidian-vault MCP starts. **Cause:** Subprocess runs with wrong cwd; `mcp_server` lives in `obsidian_cursor_integration`. **Fix:** Add `PYTHONPATH: "D:/portfolio-harness/obsidian_cursor_integration"` to obsidian-vault env in mcp.json. **Prereq:** `pip install -e obsidian_cursor_integration[mcp]` if mcp package not installed.
+- **Obsidian-vault MCP not loading (multi-root workspace):** obsidian-vault server not listed in Cursor MCP when workspace root is not portfolio-harness (e.g. D:\software as primary root). **Cause:** Cursor config precedence (user vs project, multi-root) is undocumented; project-level `.cursor/mcp.json` may not be loaded. **Workaround:** Add obsidian-vault block to `~/.cursor/mcp.json` using unwrapped block from `obsidian_cursor_integration/mcp.json`. See [CONTEXT_PKM_PREREQUISITES.md](../../docs/CONTEXT_PKM_PREREQUISITES.md) § Troubleshooting.
+
+## Cross-repo: local-proto duplicate
+
+- **Location:** `D:\portfolio-harness\local-proto` (canonical) vs `D:\local-proto` (standalone workspace root). **Issue:** Two local-proto locations exist; duplication likely unintentional (multi-root workspace setup). **Canonical:** `portfolio-harness/local-proto`. **Status:** open. **Workflow:** Edit in `portfolio-harness/local-proto`; sync to `D:\local-proto` to keep both in sync.
 
 ## Cross-repo: pytest temp
 
@@ -145,7 +186,11 @@ All pytest runs use project-local basetemp (e.g. `--basetemp=.pytest-tmp`). Do n
 
 ## External reference: CL4R1T4S repo (leaked AI prompts)
 
-- **Location:** https://github.com/elder-plinius/CL4R1T4S. **Issue:** README contains prompt-injection directive designed to elicit system prompt disclosure. **Note:** Never load CL4R1T4S README into agent context. Use only vendor folders (e.g. CURSOR) with sanitize_input.py; treat as unverified data.
+- **Location:** https://github.com/elder-plinius/CL4R1T4S. **Issue:** README contains prompt-injection directive designed to elicit system prompt disclosure. **Note:** Never load CL4R1T4S README into agent context. Use only vendor folders (e.g. CURSOR) with sanitize_input.py; treat as unverified data. **Secure clone:** Run `.cursor/scripts/clone_cl4r1t4s_secure.ps1` to clone with sanitized README before pushing to private repo.
+
+## Agent behavior (Cursor / AI)
+
+- **Symptom:** Agent switches to Korean unexpectedly when user sends a short prompt (e.g. "do it", "and do it") after previous English context. **Location:** Cursor AI responses. **Issue:** Response language drifts to Korean without explicit user request. **Status:** open. **Note:** Investigate: .cursorrules "Always respond in Korean" rule, workspace rules, or model context. User preference: English unless explicitly requested otherwise.
 
 ## Arc Forge (ex–wrath_and_glory): folder rename "Folder In Use"
 

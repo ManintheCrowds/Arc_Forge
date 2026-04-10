@@ -1,3 +1,8 @@
+---
+title: "System Prompt Spine + Role Definitions"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # System Prompt Spine + Role Definitions
 
 **Source:** [narrative_workbench_spec.md](../narrative_workbench_spec.md) § II. Write once. Rarely change. Scripts load this for system block when wiring exists.

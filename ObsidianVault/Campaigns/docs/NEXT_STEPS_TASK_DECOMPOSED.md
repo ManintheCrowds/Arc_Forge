@@ -1,3 +1,8 @@
+---
+title: "Next Steps — Fine-Grained Task Decomposition"
+tags: ["type/campaign", "status/draft", "campaign/redacted_records"]
+---
+
 # Next Steps — Fine-Grained Task Decomposition
 
 Sub-steps for each task ID from [NEXT_STEPS_ORCHESTRATION](NEXT_STEPS_ORCHESTRATION.md). Tick each sub-step when done; parent task is done when all its sub-steps are done.

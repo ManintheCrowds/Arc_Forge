@@ -1,3 +1,8 @@
+---
+title: "Bitcoin-Chaos Mapping Note"
+tags: ["type/stub", "status/draft", "domain/bitcoin"]
+---
+
 # Bitcoin-Chaos Mapping Note
 
 Brief note on the Bitcoin-Chaos mapping for agent mitigations and design patterns.

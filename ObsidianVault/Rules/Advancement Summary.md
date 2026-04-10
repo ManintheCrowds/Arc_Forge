@@ -6,10 +6,7 @@
 
 ---
 title: "Advancement Summary"
-rule_type: "advancement"
-created: "2026-01-15"
-tags: ["type/rule", "status/draft"]
-source_refs: ["[[Wrath & Glory Advancement Summary]]"]
+tags: ["type/rule", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

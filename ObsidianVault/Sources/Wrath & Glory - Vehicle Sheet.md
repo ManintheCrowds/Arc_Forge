@@ -6,13 +6,7 @@
 
 ---
 title: "Wrath & Glory - Vehicle Sheet"
-source_file: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/Wrath & Glory - Vehicle Sheet.pdf"
-source_path: "D:/wrath_and_glory/ObsidianVault/pdf/dod_docs/Wrath & Glory - Vehicle Sheet.pdf"
-source_link: "file:///D%3A/wrath_and_glory/ObsidianVault/pdf/dod_docs/Wrath%20%26%20Glory%20-%20Vehicle%20Sheet.pdf"
-source_pages: "unknown (PDF++ extraction pending)"
-doc_type: "unverified"
-created: "2026-01-16"
-tags: ["type/source", "status/draft"]
+tags: ["type/source", "status/draft", "campaign/redacted_records"]
 ---
 
 ## Summary

@@ -1,3 +1,8 @@
+---
+title: "RAG Generated: rules"
+tags: ["type/pipeline-output", "status/draft", "campaign/redacted_records"]
+---
+
 # RAG Generated: rules
 
 Here is a summary of rules for Wrath & Glory based on the provided context:

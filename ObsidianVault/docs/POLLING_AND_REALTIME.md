@@ -1,3 +1,8 @@
+---
+title: "Polling and realtime (workflow_ui)"
+tags: ["type/research", "status/draft", "domain/harness"]
+---
+
 # Polling and realtime (workflow_ui)
 
 ## Current behavior
