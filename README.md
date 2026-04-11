@@ -12,7 +12,7 @@ Three layers share one git clone. **Canonical harness automation** (orchestrator
 |-------|--------|-----------------|
 | **Harness / AI harness memory** | `ObsidianVault/Harness/` | **MiscRepos** — e.g. run `MiscRepos/local-proto/scripts/sync_harness_to_vault.ps1` from your MiscRepos checkout. Mirrored files are not the place to invent orchestrator policy, gates, or MCP wiring. |
 | **LLM-Wiki** | `ObsidianVault/LLM-Wiki/` · policy `ObsidianVault/Vault-meta/00_LLM_WIKI_VAULT.md` | Vault-local; keep compounding tech notes separate from campaign voice and from mirrored `Harness/`. |
-| **TTRPG** | Rules, campaigns, RAG outputs, **workflow_ui**, scripts under `ObsidianVault/`; **campaign_kb** at repo root | `ObsidianVault/Vault-meta/00_VAULT_RULES.md` — folders and tags (including how to keep **Wrath & Glory** vs **40k** material distinct). |
+| **TTRPG / 40k universe** | Rules, campaigns, RAG outputs, **workflow_ui**, scripts under `ObsidianVault/`; **campaign_kb** at repo root | `ObsidianVault/Vault-meta/00_VAULT_RULES.md` — W&G *is* the 40k RPG; the contract splits **universe/play** vs **harness & AI**, not two game lines. **campaign_kb** vs vault: [OBSIDIAN_GITHUB_GAP_ANALYSIS.md](../MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md) §5.1 *campaign_kb vs Obsidian vault campaigns (contract)*. |
 
 **Sibling documentation** (typical layout: `...\GitHub\{Arc_Forge,MiscRepos,OpenHarness}\`):
 
@@ -165,12 +165,9 @@ Use the first when plans or tasks change **OpenGrimoire** application code or AP
 
 ## Next steps (repo evolution)
 
-Rough priority after this README refresh:
-
-1. **Vault contract** — One authoritative `Vault-meta` page for folder + tag rules so **Wrath & Glory** vs **40k** vs **Harness** stay separated in search, graph, and RAG (extends `00_VAULT_RULES.md` / `00_HARNESS_VAULT_SCHEMA.md`).
-2. **Single canonical campaign tree** — Resolve `ObsidianVault` campaign notes vs `campaign_kb` overlap (see [OBSIDIAN_GITHUB_GAP_ANALYSIS.md](../MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md) § gaps) before any hard repo/vault split.
-3. **Optional path/tag linter** — Small script in MiscRepos (env-gated to `OBSIDIAN_VAULT_ROOT`) to validate frontmatter against the contract.
-4. **Phase-2 split only if needed** — Second vault or second repo for pure TTRPG if noise remains after 1–3.
+1. **Vault contract (done in vault-meta)** — `00_VAULT_RULES.md` / `00_HARNESS_VAULT_SCHEMA.md` / `GRAPH_VIEWS.md`: **TTRPG / 40k universe** vs **harness & AI** (including LLM-Wiki); optional env-gated linter in MiscRepos when you want automation on top of the docs.
+2. **campaign_kb vs vault** — **Contracted** in MiscRepos [OBSIDIAN_GITHUB_GAP_ANALYSIS.md](../MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md) (section *5.1 campaign_kb vs Obsidian vault campaigns*): vault = narrative SSOT; KB = index/service—re-ingest or link, no forked canon.
+3. **Phase-2 split only if needed** — Second vault or repo only if harness noise vs play still cannot be managed with graph filters + tags.
 
 ## License and credits
 

@@ -7,6 +7,8 @@ tags: ["type/moc", "status/verified", "domain/llm-wiki"]
 
 This vault implements a **Karpathy-style LLM Wiki**: a compounding, interlinked markdown layer **separate from** [[Vault-meta/00_HARNESS_VAULT_SCHEMA|Harness]] operational mirrors.
 
+**Vault contract:** LLM-Wiki is on the **harness & AI** side of the vault (compounding technical memory)—**not** in-universe TTRPG canon. See [[00_VAULT_RULES]] (*Vault contract: two domains*). Tags use **`domain/llm-wiki`** here; do not file wiki synthesis as `domain/ttrpg` unless it is explicitly in-character reference material (prefer keeping those in `Campaigns/` / `Sources/` instead).
+
 **MiscRepos reference (repo clone):** `MiscRepos/local-proto/docs/LLM_WIKI_VAULT.md` (operator guide); archived gist: `MiscRepos/local-proto/docs/references/karpathy-llm-wiki-snapshot.md`.
 
 ## Three layers (this vault)

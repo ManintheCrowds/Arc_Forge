@@ -5,11 +5,11 @@ tags: ["type/moc", "status/verified", "domain/ttrpg"]
 
 # Graph views (Karpathy-style separation)
 
-Obsidian’s **global graph** shows every note at once unless you **filter**. Use separate “mental workspaces” for **TTRPG**, **harness/work**, and **meta** so clusters are readable. Paste the **Search** string into the graph panel’s filter box (same syntax as search).
+Obsidian’s **global graph** shows every note at once unless you **filter**. Use separate “mental workspaces” for **TTRPG / 40k universe (W&G is the 40k RPG)**, **harness + AI + LLM-Wiki**, and **meta** so clusters are readable. Paste the **Search** string into the graph panel’s filter box (same syntax as search).
 
 ## Filter recipes (paste into graph search)
 
-### 1. TTRPG / campaign (Redacted Records, entities, rules)
+### 1. TTRPG / 40k universe (campaigns, entities, rules — not “W&G vs 40k”)
 
 **Include** (broad PKM, exclude automation trees):
 
@@ -27,18 +27,20 @@ Same as §1 but **omits** `Campaigns/_rag_outputs/` (frame/RAG machine outputs).
 (path:Campaigns OR path:Sources OR path:Rules OR path:NPCs OR path:Factions OR path:Locations OR path:Items OR path:Concepts OR path:Vehicle-Recovery OR path:Sessions OR path:Timeline OR path:Inbox) -path:_rag_outputs -path:Harness -path:workflow_ui -path:scripts -path:_meta -path:.cursor_context
 ```
 
-### 2. Harness / MiscRepos mirror (agent state, research, pointers)
+### 2. Harness + AI (MiscRepos mirror, research, LLM-Wiki, pointers)
+
+Includes **`LLM-Wiki/`** so compounding technical notes stay with harness-side work, not the in-universe graph.
 
 ```text
-(path:Harness OR path:Vault-meta OR path:Pointers OR path:research OR path:docs OR path:.cursor_context) -path:workflow_ui -path:scripts
+(path:Harness OR path:LLM-Wiki OR path:Vault-meta OR path:Pointers OR path:research OR path:docs OR path:.cursor_context) -path:workflow_ui -path:scripts
 ```
 
-### 2b. Harness without archived handoff blob
+### 2b. Harness + AI without archived handoff blob
 
 Same as §2 but **hides** `Harness/Handoff-archive/` (current handoff + dailies + decision index only). Use when the archive cluster is too dense on the graph.
 
 ```text
-(path:Harness OR path:Vault-meta OR path:Pointers OR path:research OR path:docs OR path:.cursor_context) -path:Handoff-archive -path:workflow_ui -path:scripts
+(path:Harness OR path:LLM-Wiki OR path:Vault-meta OR path:Pointers OR path:research OR path:docs OR path:.cursor_context) -path:Handoff-archive -path:workflow_ui -path:scripts
 ```
 
 ### 3. Meta only (policy + index hub)
@@ -66,6 +68,7 @@ In **Graph view → Groups**, add rules so clusters read at a glance. Suggested 
 | Group rule (Obsidian) | Role |
 |----------------------|------|
 | `path:Harness` | Mirrored harness / agent state |
+| `path:LLM-Wiki` | Compounding wiki (harness & AI side, not in-universe canon) |
 | `path:Vault-meta` | Schema and MOCs |
 | `path:Sources OR path:Rules` | TTRPG reference layer |
 | `path:Campaigns` | Campaign / arcs |

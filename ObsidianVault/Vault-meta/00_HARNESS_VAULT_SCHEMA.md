@@ -11,7 +11,9 @@ tags: ["type/moc", "status/verified", "domain/harness"]
 
 # Harness and cross-repo vault schema
 
-TTRPG/DM notes follow [[00_VAULT_RULES]]. This page covers **`Harness/`**, **`research/`**, **`Pointers/`** (ingest/stub notes), and **maps of content (MOCs)**.
+**Contract (read [[00_VAULT_RULES]] first):** The intentional split in this vault is **in-universe TTRPG (40k through Wrath & Glory)** vs **harness & AI work** (mirrored automation, research, **[[00_LLM_WIKI_VAULT]]**). W&G is *not* a separate “game line” from 40k for tagging—you separate **universe/play** from **tooling and agent memory**.
+
+TTRPG/universe notes follow [[00_VAULT_RULES]]. This page covers **`Harness/`**, **`LLM-Wiki/`** (policy on that page), **`research/`**, **`Pointers/`** (ingest/stub notes), and **maps of content (MOCs)**.
 
 ## Tag dimensions (YAML `tags` array)
 
@@ -20,8 +22,8 @@ Every note in scope must include **three dimensions** (same array):
 1. **Type** — one tag with prefix `type/`
 2. **Status** — one tag with prefix `status/`
 3. **Domain** — at least one of:
-   - `domain/<name>` (preferred for work notes), e.g. `domain/harness`, `domain/openclaw`, `domain/bitcoin`, `domain/infra`
-   - **TTRPG:** `campaign/<name>`, `faction/<name>`, `region/<name>`, or `timeline/<...>` (counts as domain per [[00_VAULT_RULES]])
+   - `domain/<name>` (preferred for work notes), e.g. `domain/harness`, `domain/llm-wiki`, `domain/openclaw`, `domain/bitcoin`, `domain/infra`
+   - **TTRPG / 40k universe:** `domain/ttrpg` and/or `campaign/<name>`, `faction/<name>`, `region/<name>`, or `timeline/<...>` (counts as domain per [[00_VAULT_RULES]])
 
 ## Type tags (`type/`)
 
@@ -100,7 +102,8 @@ tags: ["type/moc", "status/verified", "domain/miscrepos"]
 | Harness state + listed harness docs | MiscRepos paths in `sync_harness_to_vault.ps1` | `Harness/**` mirror (including `Handoff-archive/` + `Decision-Index.md`); **[[Harness/MOC_Harness_State]]** explains handoff vs daily logs and linear chains |
 | CHAOS Bitcoin mapping | `MiscRepos/docs/CHAOS_BITCOIN_MAPPING.md` | **Repo canonical**; vault `Harness/Docs/Chaos-Bitcoin-Mapping.md` + optional root stub note are mirrors—edit repo first, then re-sync |
 | Runbooks / ADRs near code | Repo | Link + optional summary |
-| TTRPG / campaign | Vault | Primary |
+| TTRPG / campaign (40k universe, W&G) | Vault (`Campaigns/`, entities, `Sources/`, etc.) | Primary narrative SSOT |
+| **campaign_kb** (FastAPI + SQLite under `Arc_Forge/campaign_kb/`) | Service + index | **Not** narrative canon—ingest, search, merge; see **campaign_kb vs vault** in MiscRepos `OBSIDIAN_GITHUB_GAP_ANALYSIS.md` |
 | Submodule docs (`plans`, etc.) | Submodule repo | MOC links only |
 
 See also: `local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md` in MiscRepos.
