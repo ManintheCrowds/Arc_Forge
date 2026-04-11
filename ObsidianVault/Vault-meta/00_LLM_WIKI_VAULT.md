@@ -41,6 +41,17 @@ Aligned with `Scan-ObsidianTagGaps.ps1`: every note needs `type/*`, `status/*`, 
 2. **Query:** Ask questions; file good answers back into the wiki (Karpathy: answers compound).
 3. **Lint:** Periodically scan for orphans, stale claims, contradictions; update pages in one pass.
 
+## Automation (MiscRepos scripts)
+
+Full session templates (ingest / compile / lint), lint bundle flags, and **search-layer brainstorm** live in the MiscRepos clone:
+
+- `local-proto/docs/LLM_WIKI_VAULT.md`
+- `local-proto/docs/LLM_WIKI_SEARCH.md`
+
+Mechanical lint only (no ingest/compile logic in scripts):
+
+- `local-proto/scripts/Lint-LlmWikiVault.ps1` — runs tag-gap + orphan scans; optional `-FailOnTagGaps`, `-FailOnStrictOrphans`.
+
 ## See also
 
 - [[LLM-Wiki/_index]] — catalog hub

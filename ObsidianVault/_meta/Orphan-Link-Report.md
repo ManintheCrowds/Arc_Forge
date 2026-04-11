@@ -1,12 +1,12 @@
 # Orphan / weak link report
 
-**Generated:** 2026-04-10 16:55  
+**Generated:** 2026-04-10 20:02  
 **Vault:** `C:\Users\Dell\Documents\GitHub\Arc_Forge\ObsidianVault`  
 **Excluded:** `.obsidian`, `.pytest-tmp`, `**/.pytest_cache/**`, `workflow_ui/**`, `scripts/**` (same as tag gap scan).
 
 **Resolution:** Outgoing/incoming counts use resolved \[[wikilinks]]\ to \.md\ paths (path links and unique basenames). Ambiguous basenames (duplicate note names) are not counted as resolved targets.
 
-**Notes with any flag:** 118
+**Notes with any flag:** 93
 
 | Path | Out | In | Flags |
 |------|-----|----|-------|
@@ -47,45 +47,19 @@
 | `Harness\Bitcoin-Observations\2026-03-11_observations.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Harness\Bitcoin-Observations\2026-03-11-matt-corallo-agentic-payments.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Harness\Bitcoin-Observations\README.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-10.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-11.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-12.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-13.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-14.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-15.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-16.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-17.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-18.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-19.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-20.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-22.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-24.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-27.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-28.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-02-29.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-02.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-03.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-04.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-05.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-06.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-07.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-08.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-09.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-10.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-24.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-03-30.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-04-03.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Daily\2026-04-09.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Decision-Log.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `Harness\Decision-Log.md` | 0 | 1 | no_outgoing;weak_both |
 | `Harness\Docs\AGA-GPU-Upgrade-Archive.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Harness\Docs\Chaos-Bitcoin-Mapping.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Docs\Commands-README.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `Harness\Docs\Commands-README.md` | 0 | 1 | no_outgoing;weak_both |
 | `Harness\Docs\MCP-Capability-Map.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Harness\Docs\Scheduled-Tasks.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Handoff-Latest.md` | 0 | 1 | no_outgoing;weak_both |
-| `Harness\Known-Issues.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
-| `Harness\Pending-Tasks.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `Harness\Known-Issues.md` | 0 | 1 | no_outgoing;weak_both |
+| `Harness\Pending-Tasks.md` | 0 | 1 | no_outgoing;weak_both |
 | `Items\- Rules Mechanics.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `LLM-Wiki\Entities\README.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `LLM-Wiki\Sources\README.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `LLM-Wiki\Synthesis\README.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `LLM-Wiki\Topics\README.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Locations\- Items.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `NPCs\- Factions.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Pointers\Bitcoin-Chaos-Mapping-Note.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
@@ -95,6 +69,7 @@
 | `Pointers\Playlist wisdom 2026-03-20.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `research\2026-03-23-external-repos-landscape.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `research\2026-03-31-introspection-rest-mission-control-sources.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
+| `research\2026-04-10-gemma-4-turboquant-openclaw-stack-brainstorm.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Rules\## Derived Notes.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Rules\Advancement Summary.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |
 | `Rules\Combat Modifiers.md` | 0 | 0 | no_outgoing;no_incoming;strict_orphan;weak_both |

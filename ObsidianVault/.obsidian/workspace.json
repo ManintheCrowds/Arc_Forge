@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Harness/Pending-Tasks.md",
+                "file": "Sources/Source_Index.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Pending-Tasks"
+              "title": "Source_Index"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Harness/Pending-Tasks.md",
+                "file": "Sources/Source_Index.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Pending-Tasks"
+              "title": "Backlinks for Source_Index"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Harness/Pending-Tasks.md",
+                "file": "Sources/Source_Index.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Pending-Tasks"
+              "title": "Outgoing links from Source_Index"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Harness/Pending-Tasks.md",
+                "file": "Sources/Source_Index.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Pending-Tasks"
+              "title": "Outline of Source_Index"
             }
           }
         ]
@@ -188,6 +188,8 @@
   },
   "active": "e3ed7a26c7014c40",
   "lastOpenFiles": [
+    "workflow_ui/docs/audit_tasks/T5_write_report.md",
+    "Harness/Pending-Tasks.md",
     "LLM-Wiki/Synthesis/README.md",
     "LLM-Wiki/Synthesis",
     "LLM-Wiki/Topics/README.md",
@@ -218,8 +220,6 @@
     "Vehicle-Recovery/Vehicle_Recovery_Squad165A_Lead_Summary.md",
     "Vehicle-Recovery/Vehicle_Recovery_Riverview_Tower.md",
     "Concepts/AI as Human Support Structure - Alignment Brainstorm.md",
-    "Pointers/One Sentence Can Hijack Your AI - Enterprise AI Security.md",
-    "Pointers/Playlist wisdom 2026-03-20.md",
     "Vehicle-Recovery",
     "Concepts",
     "Pointers",
