@@ -1,6 +1,6 @@
 # Arc Forge — Vault, campaign workbench, harness mirror
 
-**Arc Forge** is an Obsidian-first **Wrath & Glory** and **Warhammer 40,000** campaign workbench: local vault, optional **campaign_kb** search, **workflow_ui** for the S1–S5 pipeline, and human-in-the-loop authority over AI suggestions (“AI proposes, human disposes”). The same repository also holds a **downstream mirror** of harness notes under `ObsidianVault/Harness/` and a compounding **LLM-Wiki** tree for technical writing—so not everything here is TTRPG prose.
+**Arc Forge** is an Obsidian-first **Wrath & Glory** (Warhammer 40,000 RPG) campaign workbench: local vault, optional **campaign_kb** search, **workflow_ui** for the S1–S5 pipeline, and human-in-the-loop authority over AI suggestions (“AI proposes, human disposes”). The same repository also holds a **downstream mirror** of harness notes under `ObsidianVault/Harness/` and a compounding **LLM-Wiki** tree for technical writing—so not everything here is TTRPG prose.
 
 *Programmer first. Cyberpunk. Bitcoin. Glitch. Goth.*
 
