@@ -1,20 +1,27 @@
-# Arc Forge — RAG-backed campaign workbench for Wrath & Glory
+# Arc Forge — Vault, campaign workbench, harness mirror
 
-Human-in-the-loop narrative authority; adventure arcs, pipeline UI, session memory; local-first vault and optional RAG/campaign_kb.
+**Arc Forge** is an Obsidian-first **Wrath & Glory** and **Warhammer 40,000** campaign workbench: local vault, optional **campaign_kb** search, **workflow_ui** for the S1–S5 pipeline, and human-in-the-loop authority over AI suggestions (“AI proposes, human disposes”). The same repository also holds a **downstream mirror** of harness notes under `ObsidianVault/Harness/` and a compounding **LLM-Wiki** tree for technical writing—so not everything here is TTRPG prose.
 
 *Programmer first. Cyberpunk. Bitcoin. Glitch. Goth.*
 
-## What lives here (priority order)
+## Repository layout (read first)
 
-1. **Harness / AI harness memory** — `ObsidianVault/Harness/` is a **downstream mirror** from the **MiscRepos** checkout (e.g. `local-proto/scripts/sync_harness_to_vault.ps1` run from MiscRepos). Do not treat mirrored files as SSOT for harness policy, gates, or orchestrator behavior.
-2. **LLM-Wiki** — Compounding technical notes under `ObsidianVault/LLM-Wiki/`; policy in `ObsidianVault/Vault-meta/00_LLM_WIKI_VAULT.md`.
-3. **TTRPG** — Wrath & Glory and Warhammer 40k rules, campaigns, RAG, `campaign_kb`, and `workflow_ui`; folder and tag rules in `ObsidianVault/Vault-meta/00_VAULT_RULES.md`.
+Three layers share one git clone. **Canonical harness automation** (orchestrator, MCP, `.cursor` policy) lives in sibling **MiscRepos**; edit there, then mirror into the vault when needed.
 
-**Canonical harness and automation** live in the **MiscRepos** repo. Boundary table: `MiscRepos/local-proto/docs/REPO_BOUNDARY_INDEX.md`. Vault vs clone layout: `MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md`.
+| Layer | Where | Source of truth |
+|-------|--------|-----------------|
+| **Harness / AI harness memory** | `ObsidianVault/Harness/` | **MiscRepos** — e.g. run `MiscRepos/local-proto/scripts/sync_harness_to_vault.ps1` from your MiscRepos checkout. Mirrored files are not the place to invent orchestrator policy, gates, or MCP wiring. |
+| **LLM-Wiki** | `ObsidianVault/LLM-Wiki/` · policy `ObsidianVault/Vault-meta/00_LLM_WIKI_VAULT.md` | Vault-local; keep compounding tech notes separate from campaign voice and from mirrored `Harness/`. |
+| **TTRPG** | Rules, campaigns, RAG outputs, **workflow_ui**, scripts under `ObsidianVault/`; **campaign_kb** at repo root | `ObsidianVault/Vault-meta/00_VAULT_RULES.md` — folders and tags (including how to keep **Wrath & Glory** vs **40k** material distinct). |
 
-**Arc Forge** is a RAG-backed campaign workbench for the **Wrath & Glory** (Warhammer 40K) TTRPG. It helps GMs and players create and track campaigns by synthesizing adventure arcs, representing stories visually and textually (pipeline, arc tree, storyboards), showing branching narrative (encounters and opportunities), and using AI to assist in rendering the universe during and asynchronously from sessions — with the human as final authority ("AI proposes, human disposes").
+**Sibling documentation** (typical layout: `...\GitHub\{Arc_Forge,MiscRepos,OpenHarness}\`):
 
-## Key Concepts
+- [MiscRepos repo boundary index](../MiscRepos/local-proto/docs/REPO_BOUNDARY_INDEX.md) — what lives in MiscRepos vs Arc_Forge vs OpenHarness
+- [Obsidian / GitHub gap analysis](../MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md) — vault paths, `OBSIDIAN_VAULT_ROOT`, `VAULT_SYNC_SAFE_BASE`, duplication notes
+
+The repository folder is intended to be named **Arc_Forge**. Older configs may reference `D:\Arc_Forge`; set env and paths to match your machine. If your folder is still `wrath_and_glory`, rename on disk and reopen the workspace.
+
+## Key concepts
 
 | Concept | Description |
 |---------|-------------|
@@ -24,23 +31,14 @@ Human-in-the-loop narrative authority; adventure arcs, pipeline UI, session memo
 | **Pipeline S1–S5** | Storyboard → encounter pipeline: task decomposition, encounter drafts, human feedback, refinement, export |
 | **Session Archivist/Foreshadow** | Temporal continuity via session summaries, Archivist, and Foreshadow threads |
 
-The repository folder is intended to be named **Arc_Forge** (paths in config and docs use `D:\Arc_Forge` or the folder name). If your folder is still `wrath_and_glory`, rename it on disk (e.g. `D:\wrath_and_glory` → `D:\Arc_Forge`) and reopen the workspace.
-
-## Purpose
-
-A **RAG system** that assists GMs and players in creating and tracking campaigns:
+## Narrative workbench (what you run it for)
 
 - **Adventure arcs**: Storyboard → encounter pipeline (S1–S5): task decomposition, encounter drafts, human feedback, refinement, export.
 - **Visual and textual representation**: Pipeline view (Mermaid), arc file-tree (encounters, opportunities, task_decomposition, feedback, expanded storyboard), module tree in the workflow UI.
 - **Branching narrative**: Encounter/opportunity structure (sequence, after/before, optional threads) and arc tree.
-- **AI-assisted universe rendering**: RAG over rules/lore and campaign content; role-based prompts (Story Architect, Encounter Designer, Archivist, Foreshadowing Engine); support during and async from TTRPG sessions.
-- **Human authority**: GM remains final arbiter; AI suggests, GM edits and approves.
-
-## What this is
-
-- **Memory**: RAG over rules/lore and campaign content (NPCs, locations, missions).
-- **Temporal continuity**: Session summaries, Archivist, Foreshadow threads.
-- **Collaborative narrative workbench**: Not "an AI that writes adventures" — modular components, provenance, and human gatekeeping. See [ObsidianVault/Campaigns/docs/narrative_workbench_spec.md](ObsidianVault/Campaigns/docs/narrative_workbench_spec.md).
+- **AI-assisted universe rendering**: RAG over rules/lore and campaign content; role-based prompts (Story Architect, Encounter Designer, Archivist, Foreshadowing Engine); support during and async from sessions.
+- **Memory + continuity**: RAG over rules/lore and campaign content; session summaries, Archivist, Foreshadow threads.
+- **Not** “an AI that writes adventures” — modular components, provenance, and human gatekeeping. Spec: [ObsidianVault/Campaigns/docs/narrative_workbench_spec.md](ObsidianVault/Campaigns/docs/narrative_workbench_spec.md).
 
 ## Components
 
@@ -49,7 +47,7 @@ A **RAG system** that assists GMs and players in creating and tracking campaigns
 | **campaign_kb** | FastAPI service: ingest (PDFs, seeds, DoD, docs, repos), full-text search, merge seed doc. SQLite at `campaign_kb/data/kb.sqlite3`. No GUI; API only. | See [Quickstart](#quickstart). |
 | **ObsidianVault** | Vault + scripts: PDF ingest, RAG pipeline, storyboard workflow (S1–S5), session Archivist/Foreshadow. | Scripts run from `ObsidianVault`; workflow is driven by **workflow_ui** or CLI. |
 | **workflow_ui** | Flask app (default port 5050). Single dashboard: arcs, pipeline (S1–S5), task decomp/feedback forms, session memory, optional Campaign KB panel. | See [Quickstart](#quickstart). |
-| **Grimoire** | Separate Obsidian vault (cursor-bridge, dataview, omnisearch, pdf-plus). Use as alternate/reference vault for note-taking and linking; "run workflow" is done via **workflow_ui** (browser) or CLI, not from Grimoire. | Open in Obsidian as a second vault if desired. |
+| **Grimoire** | Separate Obsidian vault (cursor-bridge, dataview, omnisearch, pdf-plus). Use as alternate/reference vault for note-taking and linking; “run workflow” is done via **workflow_ui** (browser) or CLI, not from Grimoire. | Open in Obsidian as a second vault if desired. |
 
 ## Quickstart
 
@@ -73,7 +71,7 @@ Or use the **unified launcher** (starts both and opens the browser):
 
 Having issues? See [ObsidianVault/workflow_ui/docs/TROUBLESHOOTING.md](ObsidianVault/workflow_ui/docs/TROUBLESHOOTING.md) (workflow UI) and [ObsidianVault/scripts/TROUBLESHOOTING.md](ObsidianVault/scripts/TROUBLESHOOTING.md) (PDF ingestion).
 
-## Interfacing the User
+## Interfacing the user
 
 - **Primary**: Use **workflow_ui** (browser at http://127.0.0.1:5050) for storyboard→encounter workflow (S1–S5), session memory (Archivist/Foreshadow), and — when campaign_kb is running — KB search, ingest, and merge.
 - **Secondary**: Use **ObsidianVault** (and optionally **Grimoire**) in Obsidian for editing campaign markdown, session notes, and viewing outputs. Run workflow from the dashboard or CLI, not from Obsidian.
@@ -132,7 +130,7 @@ See [scripts/run_tests.sh](scripts/run_tests.sh) (or run_tests.ps1) for exact pa
 | [`.github/workflows/workflow_ui_tests.yml`](.github/workflows/workflow_ui_tests.yml) | `ObsidianVault/workflow_ui/**` | `cd ObsidianVault && pytest workflow_ui/tests/ -v` |
 | [`.github/workflows/scripts_tests.yml`](.github/workflows/scripts_tests.yml) | `ObsidianVault/scripts/**` | `cd ObsidianVault && pytest scripts/tests/ -v` |
 
-## Credentials and AI Security
+## Credentials and AI security
 
 **No keys in code.** Use OS keychain (keyring) for production, or `.env` for development (`.env` is gitignored; never commit keys).
 
@@ -141,22 +139,22 @@ See [scripts/run_tests.sh](scripts/run_tests.sh) (or run_tests.ps1) for exact pa
 - **Production:** `pip install keyring` (in requirements-enhancements.txt) then store keys via keyring
 - `ObsidianVault/scripts/credential_vault.py` tries keyring first, falls back to `os.environ`
 
-**AI security (MVP):** Credential vault, HITL consent (`cloud_ai_consent.py`), append-only audit log (`audit_ai.py`), kill switch in workflow_ui chat, tool registry for RAG pipeline. See [D:\local-first\AI_SECURITY.md](D:\local-first\AI_SECURITY.md). Unit tests: `pytest ObsidianVault/scripts/tests/test_ai_security.py -v`
+**AI security (MVP):** Credential vault, HITL consent (`cloud_ai_consent.py`), append-only audit log (`audit_ai.py`), kill switch in workflow_ui chat, tool registry for RAG pipeline. Align any operator-wide methodology with your own `AI_SECURITY` notes if you maintain them; in-repo behavior is covered by `ObsidianVault/scripts/tests/test_ai_security.py`. For tool safeguards in the wider harness, see [MiscRepos local-proto/docs/TOOL_SAFEGUARDS.md](../MiscRepos/local-proto/docs/TOOL_SAFEGUARDS.md) when that clone is present.
 
 ## Local-first alignment
 
 Arc Forge aligns with [local-first principles](https://www.inkandswitch.com/local-first): vault and campaign markdown live on disk (you own your data); workflow_ui and scripts run locally. RAG/campaign_kb is optional—ingest and search can run fully offline with local embeddings. Community: [LoFi](https://lofi.so), [Local-First News](https://www.localfirstnews.com/).
 
-## Agent harness (Cursor workspace)
+## Agent harness and sibling repos
 
-Sibling-repo docs for OpenGrimoire + MiscRepos harness work:
+**Arc_Forge does not replace MiscRepos or OpenGrimoire merge bars.** Use this section together with [Repository layout](#repository-layout-read-first) and the MiscRepos boundary index.
 
-- [docs/WORKSPACE_MCP_REGISTRY.md](docs/WORKSPACE_MCP_REGISTRY.md) — MCP registry stub and link to [`MiscRepos` MCP capability map](../MiscRepos/.cursor/docs/MCP_CAPABILITY_MAP.md)
+- [docs/WORKSPACE_MCP_REGISTRY.md](docs/WORKSPACE_MCP_REGISTRY.md) — MCP registry stub and link to [MiscRepos MCP capability map](../MiscRepos/.cursor/docs/MCP_CAPABILITY_MAP.md)
 - [docs/CURSOR_PLANS_TASK_STATE.md](docs/CURSOR_PLANS_TASK_STATE.md) — `.cursor/plans` as task state vs chat transcript
 - [docs/USER_RULES_VS_POLICY_ENGINE.md](docs/USER_RULES_VS_POLICY_ENGINE.md) — user rules vs automated policy / CI
 - Canonical **GitHub repo naming** and merge vs sibling policy: [OpenGrimoire `docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md`](../OpenGrimoire/docs/engineering/OPENGRIMOIRE_NAMING_AND_URLS.md)
 
-**OpenGrimoire + harness verify (sibling repos):** Arc_Forge does **not** substitute for OpenGrimoire’s merge bar. With `OpenGrimoire` and `MiscRepos` cloned next to this repo (e.g. `Documents/GitHub/{Arc_Forge,OpenGrimoire,MiscRepos}`):
+**Verification when siblings exist** (`...\GitHub\{Arc_Forge,OpenGrimoire,MiscRepos}\`):
 
 ```bash
 cd ../OpenGrimoire && npm run verify
@@ -165,6 +163,15 @@ cd ../MiscRepos && python .cursor/scripts/checksum_integrity.py --verify --stric
 
 Use the first when plans or tasks change **OpenGrimoire** application code or API docs; use the second when changing **rules, skills, or `.cursor` policy** in MiscRepos. See [OpenGrimoire CONTRIBUTING.md](../OpenGrimoire/CONTRIBUTING.md) § Pre-push / local verification.
 
-## License and Credits
+## Next steps (repo evolution)
+
+Rough priority after this README refresh:
+
+1. **Vault contract** — One authoritative `Vault-meta` page for folder + tag rules so **Wrath & Glory** vs **40k** vs **Harness** stay separated in search, graph, and RAG (extends `00_VAULT_RULES.md` / `00_HARNESS_VAULT_SCHEMA.md`).
+2. **Single canonical campaign tree** — Resolve `ObsidianVault` campaign notes vs `campaign_kb` overlap (see [OBSIDIAN_GITHUB_GAP_ANALYSIS.md](../MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md) § gaps) before any hard repo/vault split.
+3. **Optional path/tag linter** — Small script in MiscRepos (env-gated to `OBSIDIAN_VAULT_ROOT`) to validate frontmatter against the contract.
+4. **Phase-2 split only if needed** — Second vault or second repo for pure TTRPG if noise remains after 1–3.
+
+## License and credits
 
 Per project conventions. **Wrath & Glory** is a trademark of its respective owners. Rulebook and supplement PDFs are used locally only and are not distributed with this repo; place your own PDFs in the paths configured in `ObsidianVault/scripts/ingest_config.json` (e.g. `ObsidianVault/pdf/`). See this repo's root `.gitignore` for excluded paths (PDFs and optional derived caches).
