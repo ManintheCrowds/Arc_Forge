@@ -4,6 +4,14 @@ Human-in-the-loop narrative authority; adventure arcs, pipeline UI, session memo
 
 *Programmer first. Cyberpunk. Bitcoin. Glitch. Goth.*
 
+## What lives here (priority order)
+
+1. **Harness / AI harness memory** — `ObsidianVault/Harness/` is a **downstream mirror** from the **MiscRepos** checkout (e.g. `local-proto/scripts/sync_harness_to_vault.ps1` run from MiscRepos). Do not treat mirrored files as SSOT for harness policy, gates, or orchestrator behavior.
+2. **LLM-Wiki** — Compounding technical notes under `ObsidianVault/LLM-Wiki/`; policy in `ObsidianVault/Vault-meta/00_LLM_WIKI_VAULT.md`.
+3. **TTRPG** — Wrath & Glory and Warhammer 40k rules, campaigns, RAG, `campaign_kb`, and `workflow_ui`; folder and tag rules in `ObsidianVault/Vault-meta/00_VAULT_RULES.md`.
+
+**Canonical harness and automation** live in the **MiscRepos** repo. Boundary table: `MiscRepos/local-proto/docs/REPO_BOUNDARY_INDEX.md`. Vault vs clone layout: `MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md`.
+
 **Arc Forge** is a RAG-backed campaign workbench for the **Wrath & Glory** (Warhammer 40K) TTRPG. It helps GMs and players create and track campaigns by synthesizing adventure arcs, representing stories visually and textually (pipeline, arc tree, storyboards), showing branching narrative (encounters and opportunities), and using AI to assist in rendering the universe during and asynchronously from sessions — with the human as final authority ("AI proposes, human disposes").
 
 ## Key Concepts
