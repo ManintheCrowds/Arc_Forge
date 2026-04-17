@@ -15,4 +15,4 @@ FIPS (Free Internetworking Peering System) contextualizes human authority withou
 x402 natively supports USDC; audit suggests third-party/KYC risk; bots cannot provide KYC — prefer L402 for agentic payments.
 
 ### 2026-03-10T18:00:00Z | BitDevs MPLS Socratic Seminar 36 | community_norm
-Bitcoin: no chargebacks; known advantage for agentic payments. IronClaw (Rust, WASM sandbox) as future privacy-first AI path.
+Bitcoin: no chargebacks; known advantage for agentic payments. IronClaw (Rust, WASM sandbox) — G7 evaluation memo: [2026-04-17_g7_ironclaw_evaluation.md](../../.cursor/state/adhoc/2026-04-17_g7_ironclaw_evaluation.md).

@@ -49,7 +49,7 @@ Structured capture of seminar topics, references, and action items for Bitcoin-C
 - **Link:** [github.com/nearai/ironclaw](https://github.com/nearai/ironclaw)
 - **Context:** OpenClaw-inspired Rust implementation; WASM sandbox; credential protection; prompt-injection defense.
 - **Interest:** Prioritize privacy and security with Rust in future development; IronClaw could function as base.
-- **Status:** Research / future dev path.
+- **Status:** G7 evaluation complete (2026-04-17) — see [.cursor/state/adhoc/2026-04-17_g7_ironclaw_evaluation.md](../../.cursor/state/adhoc/2026-04-17_g7_ironclaw_evaluation.md) (pilot/patterns/defer summary, rubric, threats, hands-on blockers).
 
 ---
 
@@ -180,7 +180,7 @@ Structured capture of seminar topics, references, and action items for Bitcoin-C
 2. Add x402/L402/unhuman.domains to workflow docs (AGENT_ENTRY_INDEX or PAYMENT_WORKFLOWS).
 3. Research: Fedimint CLI, MCP2CLI, LiteLLM + Routstr/OpenRouter.
 4. Future: Agent PR capability for bitdevsmpls.org.
-5. Future: IronClaw evaluation for Rust-based privacy-first AI.
+5. ~~Future: IronClaw evaluation for Rust-based privacy-first AI.~~ **Done:** [G7 memo](../../.cursor/state/adhoc/2026-04-17_g7_ironclaw_evaluation.md); optional follow-ups G7-P1–P3 in memo.
 
 ---
 

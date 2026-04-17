@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Harness/Pending-Tasks.md",
+                "file": "Harness/MOC_Harness_State.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -40,7 +40,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "Pending-Tasks"
+              "title": "MOC_Harness_State"
             }
           }
         ],
@@ -210,6 +210,12 @@
   },
   "active": "a46faebc65a1ba84",
   "lastOpenFiles": [
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T195543Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T182621Z.md",
+    "Harness/Pending-Tasks.md",
+    "Harness/Handoff-archive/20260417-192536.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T192649Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T192538Z.md",
     "Harness/Session-Handoff/Session-Handoff-2026-04-17T182650Z.md",
     "Harness/Handoff-archive/20260417-181443.md",
     "Harness/Session-Handoff/Session-Handoff-2026-04-17T181445Z.md",
@@ -229,13 +235,7 @@
     "Harness/Handoff-archive/20260417-155544.md",
     "Harness/Docs/Scheduled-Tasks.md",
     "Harness/Docs/Single-Vault-Inventory-2026-04-17.md",
-    "Harness/Pending-Tasks.md",
     "Harness/Session-Handoff/Session-Handoff-2026-04-17T154908Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154527Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T151503Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T135248Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T135230Z.md",
-    "Harness/Handoff-archive/20260417-150500-ai-trends-review-tests.md",
     "Interview-Archive",
     "Reference",
     "MOC-from-MiscRepos",
