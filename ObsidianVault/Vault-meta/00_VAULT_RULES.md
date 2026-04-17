@@ -119,6 +119,6 @@ source_refs: []
 
 Notes under `Harness/`, **`LLM-Wiki/`**, `research/`, and folders like `Pointers/` use the **same** `type/` + `status/` + domain pattern. Prefer **`domain/harness`** (or tags defined in **[[00_LLM_WIKI_VAULT]]** for wiki-only pages) so they stay graph- and search-separable from **`domain/ttrpg`** universe notes. See **[[00_HARNESS_VAULT_SCHEMA]]** for types like `type/harness-state`, exclusions for `workflow_ui/` mirrors, and YAML examples.
 
-**Graph filters (saved-style recipes):** see **[[GRAPH_VIEWS]]** — TTRPG vs harness vs meta search strings and optional color groups.
+**Graph filters (saved-style recipes):** see **[[GRAPH_VIEWS]]** — TTRPG vs harness vs meta search strings and optional color groups. **Harness + LLM-Wiki pipeline (Capture→Publish):** [[00_HARNESS_WIKI_PIPELINE]].
 
 Automated tag coverage: run `local-proto/scripts/Scan-ObsidianTagGaps.ps1` — reports land in `_meta/Tag-Gap-Report.*` (generated report path is excluded from the gap list). **Link hygiene:** `local-proto/scripts/Scan-ObsidianOrphans.ps1` writes `_meta/Orphan-Link-Report.*` (same path exclusions as the tag scan; complements **[[Graph_and_lint_dashboard]]**). Back-fill: `local-proto/scripts/Add-ObsidianVaultFrontmatter.ps1` (`-DryRun` first). **Ongoing:** after MiscRepos harness-related edits, run `sync_harness_to_vault.ps1`; for new non-Harness notes, `Add-ObsidianVaultFrontmatter.ps1 -DryRun` before applying — see **[[00_HARNESS_VAULT_SCHEMA]]** (section *Going forward (operator workflow)*).

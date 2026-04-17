@@ -1,23 +1,23 @@
 ---
 title: "Start here"
-tags: ["type/moc", "status/verified", "domain/ttrpg"]
+tags: ["type/moc", "status/verified", "domain/harness"]
 ---
 
 # Start here
 
-This vault mixes **TTRPG / Redacted Records** material, **harness** mirrors from MiscRepos, and **pointers** to external work. Use this hub so the file tree stays navigable.
+This vault is **primarily** a **MiscRepos harness mirror** (`Harness/`) plus a compounding **LLM-Wiki** for harness and technical writing. **TTRPG / 40k universe** material still lives here but is an **extraction-target**—see repository [`docs/TTRPG_EXTRACTION_PREP.md`](../../docs/TTRPG_EXTRACTION_PREP.md) (open from clone root).
 
-| Area | Location | First open |
-|------|----------|------------|
-| Tag rules (TTRPG + YAML) | [[Vault-meta/00_VAULT_RULES]] | DM / entity notes |
-| Graph filters (TTRPG vs harness vs meta) | [[Vault-meta/GRAPH_VIEWS]] | Reduce clutter in global graph |
-| Harness + cross-repo tags | [[Vault-meta/00_HARNESS_VAULT_SCHEMA]] | `Harness/`, research, scripts |
-| Scripts folder docs (config, RAG, features) | [[Vault-meta/SCRIPTS_DOCS_INDEX]] | Engineering markdown next to Python tooling |
-| Git repos and doc entry points | [[Vault-meta/GitHub-Repos-Index]] | Cross-repo work |
-| Ingest / stub notes | `Pointers/` | News, SCP, Bitcoin stubs |
-| Ideas and alignment | `Concepts/` | Brainstorms |
-| Vehicle recovery (campaign) | `Vehicle-Recovery/` | Session-adjacent fiction |
-| Mirrored agent state | `Harness/` | Handoff, decision log, dailies, Bitcoin observations · [[Harness/MOC_Harness_State]] (daily chain + handoff map) |
-| LLM Wiki (compounding layer) | [[Vault-meta/00_LLM_WIKI_VAULT]], `LLM-Wiki/` | Karpathy-style derived wiki — **not** harness sync; start at [[LLM-Wiki/_index]] |
+| Priority | Location | First open |
+|----------|----------|------------|
+| **Harness + wiki pipeline (Capture→Publish)** | [[Vault-meta/00_HARNESS_WIKI_PIPELINE]] | Stages, gates, SSOT links |
+| **Mirrored agent state** | `Harness/` · [[Harness/MOC_Harness_State]] | Handoff, dailies, decision log — **edit canonical sources in MiscRepos**, then sync |
+| **LLM-Wiki** | [[Vault-meta/00_LLM_WIKI_VAULT]], `LLM-Wiki/` · [[LLM-Wiki/_index]] | Compounding wiki — **not** harness mirror writes |
+| **Harness tags + exclusions** | [[Vault-meta/00_HARNESS_VAULT_SCHEMA]] | `Harness/`, research, MOC YAML |
+| **Graph filters** | [[Vault-meta/GRAPH_VIEWS]] | TTRPG vs harness + LLM-Wiki vs meta |
+| **Vault rules (two domains)** | [[Vault-meta/00_VAULT_RULES]] | TTRPG vs harness & AI |
+| **Scripts docs (TTRPG tooling)** | [[Vault-meta/SCRIPTS_DOCS_INDEX]] | RAG / Python next to vault |
+| **Git repos index** | [[Vault-meta/GitHub-Repos-Index]] | Cross-repo entry points |
+| **Pointers / ingest** | `Pointers/` | Stubs before wiki or harness context |
+| **TTRPG campaigns & entities** | `Campaigns/`, `Sources/`, `Rules/`, … | In-universe play — extraction roadmap above |
 
-**Graph view:** Expect a large component around `Sources/`, `Rules/`, and `Campaigns/`; harness content clusters under `Harness/`; policy notes live under `Vault-meta/`.
+**Graph view:** Harness + LLM-Wiki cluster together; TTRPG reference layer around `Sources/` and `Rules/`; policy under `Vault-meta/`.

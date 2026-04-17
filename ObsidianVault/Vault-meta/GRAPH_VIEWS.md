@@ -57,6 +57,14 @@ When exploring any view, you can always append:
 -path:workflow_ui -path:scripts -path:.pytest-tmp
 ```
 
+### 5. Harness + wiki pipeline (policy + Sources)
+
+**Vault-meta** policy pages plus **[[00_HARNESS_WIKI_PIPELINE]]** and raw **LLM-Wiki/Sources** (Capture stage) without the full `Harness/` tree.
+
+```text
+(path:Vault-meta OR path:LLM-Wiki/Sources) -path:workflow_ui -path:scripts
+```
+
 ## Local graph
 
 Open **Local graph** from [[START_HERE]] or a campaign note: the filter applies from the **current note’s neighborhood**. Start from `Campaigns/Campaign_Index` or `Sources/Source_Index` for dense subgraphs.
@@ -83,6 +91,7 @@ If you prefer **tag-based** groups: `tag:#type/harness-state`, `tag:#type/source
 
 ## See also
 
+- [[00_HARNESS_WIKI_PIPELINE]] — Capture→Publish harness + LLM-Wiki pipeline
 - [[00_VAULT_RULES]] — folder map
 - [[00_HARNESS_VAULT_SCHEMA]] — tag schema and exclusions
 - [[Graph_and_lint_dashboard]] — Dataview + lint-style lists

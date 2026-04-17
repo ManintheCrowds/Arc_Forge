@@ -9,6 +9,8 @@ This vault implements a **Karpathy-style LLM Wiki**: a compounding, interlinked 
 
 **Vault contract:** LLM-Wiki is on the **harness & AI** side of the vault (compounding technical memory)—**not** in-universe TTRPG canon. See [[00_VAULT_RULES]] (*Vault contract: two domains*). Tags use **`domain/llm-wiki`** here; do not file wiki synthesis as `domain/ttrpg` unless it is explicitly in-character reference material (prefer keeping those in `Campaigns/` / `Sources/` instead).
 
+**Operator pipeline (Capture→Publish):** [[00_HARNESS_WIKI_PIPELINE]] — same shape as the narrative workbench, gated on MiscRepos SSOT instead of PDF lore.
+
 **MiscRepos reference (repo clone):** `MiscRepos/local-proto/docs/LLM_WIKI_VAULT.md` (operator guide); archived gist: `MiscRepos/local-proto/docs/references/karpathy-llm-wiki-snapshot.md`.
 
 ## Three layers (this vault)
@@ -56,5 +58,6 @@ Mechanical lint only (no ingest/compile logic in scripts):
 
 ## See also
 
+- [[00_HARNESS_WIKI_PIPELINE]] — harness + LLM-Wiki Capture→Publish stages and gates
 - [[LLM-Wiki/_index]] — catalog hub
 - [[START_HERE]] — vault root hub
