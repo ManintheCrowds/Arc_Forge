@@ -51,10 +51,12 @@ Full session templates (ingest / compile / lint), lint bundle flags, and **searc
 
 - `local-proto/docs/LLM_WIKI_VAULT.md`
 - `local-proto/docs/LLM_WIKI_SEARCH.md`
+- `local-proto/docs/LLM_WIKI_SCHEDULED_PIPELINE.md` — Windows Task Scheduler, bi-daily capture, optional OpenGrimoire sync
 
 Mechanical lint only (no ingest/compile logic in scripts):
 
 - `local-proto/scripts/Lint-LlmWikiVault.ps1` — runs tag-gap + orphan scans; optional `-FailOnTagGaps`, `-FailOnStrictOrphans`.
+- `local-proto/scripts/Run-LlmWikiScheduledPipeline.ps1` — optional staging import → lint → optional wiki mirror folder; **compile** stays an agent session (see scheduled pipeline doc).
 
 ## See also
 

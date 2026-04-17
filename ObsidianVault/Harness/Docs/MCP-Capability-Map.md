@@ -133,6 +133,16 @@ Skill: [foam-pkm](../skills/foam-pkm/SKILL.md). Tool selection by vault type: Ob
 
 **Note:** Foam has no MCP; agent uses filesystem. Graph visualization is UI-only (N/A for agent).
 
+### Harness Obsidian vault scripts (terminal only)
+
+No MCP tools—these run via **`run_terminal_cmd`** from repo root (operator or agent). See also [OBSIDIAN_GITHUB_GAP_ANALYSIS.md](../../local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md).
+
+| Script | Purpose |
+|--------|---------|
+| `local-proto/scripts/Lint-ObsidianVaultContract.ps1` | Vault contract / frontmatter lint against harness rules |
+| `local-proto/scripts/Scan-ObsidianTagGaps.ps1` | Tag / dimension gap scan → report under vault `_meta/` |
+| `local-proto/scripts/Add-ObsidianVaultFrontmatter.ps1` | Add or normalize frontmatter (`-DryRun` first) |
+
 ---
 
 ## credential-vault
@@ -323,8 +333,32 @@ Skill: [foam-pkm](../skills/foam-pkm/SKILL.md). Tool selection by vault type: Ob
 | Contain content as data | `scp_contain` | Done |
 | Enable semantic judge for handoff/state | `scp_run_pipeline` with `options: {"semantic_judge": true}` or `SCP_SEMANTIC_JUDGE=1` | Done |
 | Pull, aggregate, analyze AI Trends ingested content | `scp_analyze_ai_trends(date?)` — reads `.cursor/state/ai_trends/raw/`, runs inspect on each file | Done |
+| List quarantine entries | `scp_list_quarantine` — returns `{ "quarantine": […], "_scp_meta": … }` | Done |
+| Read threat registry stats (path, fingerprint, section sizes) | `scp_registry_summary` | Done |
+| Read one threat registry section (capped) | `scp_registry_section` | Done |
 
-**Note:** SCP sits between content sources and sinks (handoff, state, LLM context). Findings include power_words, multilingual_override, morse_like, encoding_blocks, homoglyphs, structural_anomalies. See [SKILL.md](../skills/secure-contain-protect/SKILL.md) Inspection Categories.
+**Note:** SCP sits between content sources and sinks (handoff, state, LLM context). Tool JSON includes **`_scp_meta`** (package version, harness hints, optional registry fingerprint). `scp_run_pipeline` includes **`steps`** (inspect → optional semantic_judge → sanitize → contain/quarantine). Findings include power_words, multilingual_override, morse_like, encoding_blocks, homoglyphs, structural_anomalies. See [SKILL.md](../skills/secure-contain-protect/SKILL.md) Inspection Categories.
+
+---
+
+## ai_trends (hub + MCP)
+
+Server: `local-proto/scripts/ai_trends_mcp.py`. Full tool list and operator CLIs: [AI_TRENDS_MCP.md](../../local-proto/docs/AI_TRENDS_MCP.md). Primitive vs composite / cron caution: [MCP_TOOL_LAYERS.md](../../local-proto/docs/MCP_TOOL_LAYERS.md).
+
+| User action | Agent tool | Status |
+|-------------|------------|--------|
+| Preview GitHub trending-style repos (metadata JSON, no raw files) | `fetch_github_trending` | Done |
+| Preview Hugging Face trending models (metadata JSON, no raw files) | `fetch_huggingface_trending` | Done |
+| Ingest GitHub hub items to `raw/{date}/` (SCP-gated per file) | `ingest_github_trending_to_raw` | Done |
+| Ingest Hugging Face hub items to `raw/{date}/` (SCP-gated per file) | `ingest_huggingface_trending_to_raw` | Done |
+| Run multi-source cron-style ingest (subprocess to `ai_trends_ingest.py`) | `run_ingestion_pipeline` — default `sources`: `youtube,futuretools,newsletters,github,huggingface` | Done |
+| List ingested raw files for a date (MCP parity / E2E) | `list_ingested` | Done |
+| Fetch YouTube metadata (single video) | `fetch_youtube_video_info` | Done |
+| SCP-gated summarize of a raw content file | `summarize_content` | Done (composite — prefer primitive chain per [MCP_TOOL_LAYERS.md](../../local-proto/docs/MCP_TOOL_LAYERS.md)) |
+| Fetch YouTube channel metadata | `fetch_youtube_channel` | Done |
+| List caption tracks for a video | `list_video_subs` | Done |
+
+**Note:** Single-source hub writes match CLI `python local-proto/scripts/ai_trends_ingest.py --sources github` or `--sources huggingface`. Post-ingest analysis remains `scp_analyze_ai_trends` (scp section above). Full tool enumeration lives in `local-proto/scripts/ai_trends_mcp.py` (`@mcp.tool`); extend this table when adding user-facing tools.
 
 ---
 

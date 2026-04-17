@@ -13,10 +13,21 @@ Commands and scripts used ~90% of the time. Run from repo root (`D:\portfolio-ha
 
 ## Slash Commands (Chat)
 
+Commands are defined under **MiscRepos** [`.cursor/commands/`](../commands/) — Cursor only indexes them when **MiscRepos is a workspace root** (see [local-proto/docs/CURSOR_WORKSPACE.md](../../local-proto/docs/CURSOR_WORKSPACE.md)). If you use OpenHarness as a separate root, additional slash flows may live there (e.g. full **agent-native audit** checklist under `OpenHarness/docs/`).
+
 | Command | When |
 |---------|------|
+| `/architect` | Tech-lead / placement — where code or structure belongs |
+| `/audit-rules` | Security scan of rules and skills (checklist, no auto-fix unless asked) |
 | `/cl4r1t4s` | Apply CL4R1T4S patterns (frontier-ops, tech-lead, dialectic); bounded retries, convention-first, verify before done |
+| `/critic` | Model-as-judge report on an artifact (code, doc, UI) |
+| `/debate` | Second opinion: answer → critic → revise |
+| `/docs` | Write or update documentation with docs skill + critic |
 | `/escalate` | Stop retrying; ask user for direction after multiple failed attempts |
+| `/handoff` | Context handoff for the next chat (archive + write flow) |
+| `/plan` | Decompose into WBS; approve then implement or hand off |
+| `/qa` | Run tests / lint / verification with qa-verifier skill |
+| `/scp-pre-engage` | SCP checklist before engaging an important or untrusted codebase |
 
 ---
 
@@ -24,7 +35,7 @@ Commands and scripts used ~90% of the time. Run from repo root (`D:\portfolio-ha
 
 | Command | When |
 |---------|------|
-| `python .cursor/scripts/write_handoff.py --file path\\to\\body.md` | **Preferred:** archive existing handoff, write `handoff_latest.md`, update checksum |
+| `python .cursor/scripts/write_handoff.py --file path\\to\\body.md` | **Preferred:** archive existing handoff, write `handoff_latest.md`, update checksum; when **`OBSIDIAN_VAULT_ROOT`** is set, also appends **`vault/.cursor_context/sessions.db`** (same store as MCP `session_save`; opt out `HANDOFF_VAULT_SESSION_DISABLE=1`), then runs **int-vault-resync** |
 | `python .cursor/scripts/archive_handoff_latest.py` | Archive only (before manual edit); `--dry-run` to preview path |
 | `python .cursor/scripts/verify_handoff_staged_archive.py` | Pre-commit: staged handoff vs `HEAD` requires matching staged archive (run via hook) |
 | `.\\.cursor\\scripts\\copy_continue_prompt.ps1` | After handoff, before new chat |
@@ -33,6 +44,7 @@ Commands and scripts used ~90% of the time. Run from repo root (`D:\portfolio-ha
 | `.\\.cursor\\scripts\\copy_daggr_deploy_prompt.ps1` | New chat: deploy Daggr visualizations for most important functionality |
 | `.\\.cursor\\scripts\\copy_summarize_today_prompt.ps1` | End of day or "summarize today" |
 | `.\\.cursor\\scripts\\show_next_goals.ps1` | New session orientation; `-Fallback` infers from handoff |
+| `npm run vault:sync` | Material refresh of Obsidian **Harness/** after vault-affecting `.cursor/state` edits (or anytime); needs `OBSIDIAN_VAULT_ROOT` — see [OBSIDIAN_VAULT_INTEGRATION.md](OBSIDIAN_VAULT_INTEGRATION.md) |
 
 **Docs:** [docs/agent/HANDOFF_COMPACTION.md](../../docs/agent/HANDOFF_COMPACTION.md) (trim handoff before LLM steps) · [docs/agent/CALLER_SIDE_LLM_BUDGETS.md](../../docs/agent/CALLER_SIDE_LLM_BUDGETS.md) (orchestrator / Ollama env vars and caps).
 
@@ -88,6 +100,7 @@ Commands and scripts used ~90% of the time. Run from repo root (`D:\portfolio-ha
 |---------|---------|
 | `python .cursor/scripts/setup_env.py local-proto` | Generate VAULT_KEY, copy .env.example |
 | `python .cursor/scripts/setup_env.py` | General credential setup (PentAGI, Med-Vis, etc.) |
+| `python .cursor/scripts/audit_pending_credentials.py` | Redacted checklist audit (no values); `--also` for extra `local-proto`-style `.env` paths; `--json` for tooling. See [TWO_MACHINE_ENV.md](TWO_MACHINE_ENV.md). |
 | `python .cursor/scripts/install_agency_agents.py --clone` | Install curated agency-agents to project (SCP-gated) |
 | `.\\.cursor\\scripts\\verify_pentagi_protection.ps1` | Verify PentAGI protection setup |
 

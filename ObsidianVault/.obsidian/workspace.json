@@ -10,14 +10,41 @@
           {
             "id": "e3ed7a26c7014c40",
             "type": "leaf",
+            "pinned": true,
             "state": {
               "type": "graph",
               "state": {},
+              "pinned": true,
               "icon": "lucide-git-fork",
               "title": "Graph view"
             }
+          },
+          {
+            "id": "a46faebc65a1ba84",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Harness/Pending-Tasks.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Pending-Tasks"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -176,46 +203,49 @@
       "bases:Create new base": false,
       "pdf-plus:PDF++: Toggle auto-copy": false,
       "pdf-plus:PDF++: Toggle auto-focus": false,
-      "pdf-plus:PDF++: Toggle auto-paste": false
+      "pdf-plus:PDF++: Toggle auto-paste": false,
+      "audio-recorder:Start/stop recording": false,
+      "publish:Publish changes...": false
     }
   },
-  "active": "e3ed7a26c7014c40",
+  "active": "a46faebc65a1ba84",
   "lastOpenFiles": [
-    "Vault-meta/00_HARNESS_WIKI_PIPELINE.md",
-    "LLM-Wiki/Entities/README.md",
-    "Sources/Source_Index.md",
-    "workflow_ui/docs/audit_tasks/T5_write_report.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T182650Z.md",
+    "Harness/Handoff-archive/20260417-181443.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T181445Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T172511Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T172106Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T172031Z.md",
+    "Harness/Handoff-archive/20260417-172029.md",
+    "LLM-Wiki/Synthesis/2026-04-17-Cursor-session-BYOC-vault-env.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154503Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154413Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T152833Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155906Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155849Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155656Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155615Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155546Z.md",
+    "Harness/Handoff-archive/20260417-155544.md",
+    "Harness/Docs/Scheduled-Tasks.md",
+    "Harness/Docs/Single-Vault-Inventory-2026-04-17.md",
     "Harness/Pending-Tasks.md",
-    "LLM-Wiki/Synthesis/README.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154908Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154527Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T151503Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T135248Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-17T135230Z.md",
+    "Harness/Handoff-archive/20260417-150500-ai-trends-review-tests.md",
+    "Interview-Archive",
+    "Reference",
+    "MOC-from-MiscRepos",
+    "Harness/Session-Handoff",
+    "Untitled.canvas",
+    "Harness/Handoff-archive",
     "LLM-Wiki/Synthesis",
-    "LLM-Wiki/Topics/README.md",
     "LLM-Wiki/Topics",
     "LLM-Wiki/Entities",
-    "LLM-Wiki/Sources/README.md",
     "LLM-Wiki/Sources",
-    "LLM-Wiki/log.md",
-    "LLM-Wiki/_index.md",
-    "LLM-Wiki",
-    "Vault-meta/00_LLM_WIKI_VAULT.md",
-    "research/2026-04-10-gemma-4-turboquant-openclaw-stack-brainstorm.md",
-    "Harness/MOC_Harness_State.md",
-    "Vault-meta/SCRIPTS_DOCS_INDEX.md",
-    "Campaigns/_rag_outputs/MOC_RAG_Outputs.md",
-    "Harness/Daily/2026-03-05.md",
-    "workflow_ui/prompts/stage1_task_decomposition.md",
-    "scripts/API_DOCUMENTATION.md",
-    "Campaigns/_rag_outputs/rag_generated_rules.md",
-    "Campaigns/_rag_outputs/rag_generated_bios.md",
-    "_meta/Orphan-Link-Report.md",
-    "_meta/Orphan-Link-Report.csv",
-    "Vault-meta/Graph_and_lint_dashboard.md",
-    "Vault-meta/GRAPH_VIEWS.md",
-    "Harness/Daily/2026-02-15.md",
-    "START_HERE.md",
-    "Vehicle-Recovery/Vehicle_Recovery_Squad165A_Lead_Summary.md",
-    "Vehicle-Recovery",
-    "Concepts",
-    "Pointers",
-    "Vault-meta"
+    "LLM-Wiki"
   ]
 }

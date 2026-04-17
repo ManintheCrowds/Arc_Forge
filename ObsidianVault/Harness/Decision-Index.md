@@ -1,0 +1,31 @@
+---
+title: "Decision index"
+tags: ["type/harness-state", "status/mirror", "domain/harness"]
+---
+
+# Decision index
+
+| decision_id | timestamp (UTC) | summary | link |
+|-------------|-----------------|--------|------|
+| handoff-2026-04-17-model-router-weekly-archive | 2026-04-17 | LOCAL_FIRST_MODEL_ROUTER_SPEC + examples + cross-links; G5 done + MR1–MR8 backlog; `scheduled_split_done_tasks.ps1` + split_done vault flags; SCHEDULED_TASKS Harness-PendingTasksArchive + GOVERNANCE row; Handoff #21; archive #20 | [Handoff-Latest.md](Handoff-Latest.md) |
+| handoff-2026-04-17-byoc-vault-session-pkm | 2026-04-17 | BYOC adhoc + vault LLM-Wiki session note + `handoff_vault_session.py` / `write_handoff.py` → `sessions.db` + doc sweep; **PENDING_PORTABLE_AI_MEMORY** BYOC-1..6; Handoff #20; archive #19 | [Handoff-archive/20260417-181443.md](Handoff-archive/20260417-181443.md) |
+| handoff-2026-04-17-single-vault-handoff-archive | 2026-04-17 | Single-vault checklist + inventory + docMappings; Windows User env + Cursor mcp obsidian-vault env; SCHEDULED single-mirror note; Handoff #19; archive #18 → `20260417-155544` | [Handoff-archive/20260417-172029.md](Handoff-archive/20260417-172029.md) |
+| handoff-2026-04-16-vault-harness-mirror-security | 2026-04-16 | Vault harness `npm run vault:sync` / Sync-VaultHarness; Mirror-Status + `.mirror-meta.json`; handoff_archive fingerprint; `vault_resync.py`; security + reparse vault root; Handoff #18 | [Handoff-archive/20260417-155544.md](Handoff-archive/20260417-155544.md) |
+| handoff-2026-04-17-oa-fr3-vault-decision-index | 2026-04-17 | OA-FR-3 Brain Map System 3 docs + decision_index repair + sync Decision-Index link rewrite for Obsidian; archive Handoff #16 `20260417-040226` | [Handoff-archive/20260417-043634.md](Handoff-archive/20260417-043634.md) |
+| handoff-2026-04-17-ogan-debate-vault | 2026-04-17 | OGAN ship (survey `CustomEvent` refetch, mock banner, capabilities `cohort_survey_visualization`), GUI audit MiscRepos `/debate`; Handoff #16 + vault mirror | [Handoff-archive/20260417-040226.md](Handoff-archive/20260417-040226.md) |
+| handoff-2026-04-16-og-data-viz-agent-native-vault | 2026-04-16 | OpenGrimoire OA-FR-2 matrix + System 2 GUI audit + canonical AGENT_NATIVE scorecard + OGAN-01–17 backlog + Handoff #15 + vault mirror (incl. new Harness/Docs OG copies) | [Handoff-archive/20260417-034518.md](Handoff-archive/20260417-034518.md) |
+| handoff-2026-04-16-og-survey-moderation-vault | 2026-04-17 | OpenGrimoire OA-FR-1 survey/moderation backlog (E2E, verify script, read-gate logic tests) + Handoff #14 + vault mirror | [Handoff-archive/20260417-003507.md](Handoff-archive/20260417-003507.md) |
+| handoff-2026-04-16-intent-og-vault | 2026-04-16 | OG intent elicitation + vault Interview-Archive workflow (docs, bridge, templates, sync, vault note); Handoff #13 | [Handoff-archive/20260417-000750.md](Handoff-archive/20260417-000750.md) |
+| handoff-2026-04-16-vault-resync-moc-r2-spec | 2026-04-16 | int-vault-resync + git hooks + Harness-IntVaultResync; vault MOC + R2 log; GUI/agent-native spec + critic JSON; Handoff #12 | [Handoff-archive/20260416-231358.md](Handoff-archive/20260416-231358.md) |
+| handoff-2026-04-16-og-base-engineering | 2026-04-16 | OpenGrimoire base-features engineering plan (docs + crosslinks); OA-FR-BASE in pending_tasks; npm verify OK; Handoff #11 | [Handoff-archive/20260416-213443.md](Handoff-archive/20260416-213443.md) |
+| handoff-2026-04-14-obsidian-vault-docs-graph | 2026-04-14 | Obsidian vault: sync generators + graph doc + SCHEDULED_TASKS upgrade callout; MCP/user env alignment; Handoff #10 | [Handoff-archive/20260416-213422.md](Handoff-archive/20260416-213422.md) |
+| handoff-2026-04-14-harness-schedule-comfort | 2026-04-14 | Harness Task Scheduler: Hidden window + quieter cadences; SCHEDULED_TASKS SSOT; split_done merge; vault mirror; Handoff #9 | [Handoff-archive/20260414-015517.md](Handoff-archive/20260414-015517.md) |
+| handoff-2026-04-11-bitcoiner-seed-export | 2026-04-12 | Shareable Windows seed archive (public OpenClaw/Ollama links only); CAPABILITY_INDEX outreach; Handoff #8 | [Handoff-archive/20260414-010642.md](Handoff-archive/20260414-010642.md) |
+| handoff-2026-04-12-agent-native-top10 | 2026-04-12 | Agent-native audit top-10: audit_wrapper shell hardening + tests; digest/vault path containment; migrate CLI; GUI wave config; LiteralPath scheduled PS1; session-bootstrap; README/AEI discovery; MCP Obsidian PS1 table; state README CRUD | [Handoff-archive/20260412-193641.md](Handoff-archive/20260412-193641.md) |
+| handoff-2026-04-11-openclaw-topology-ops | 2026-04-11 | OpenClaw Ollama baseline + effectiveness log; pagefile CIM; UPGRADE_TOPOLOGY_MAP + ALPHA_R2_AGA_SETUP + CAPABILITY_INDEX row | [Handoff-archive/20260412-193605.md](Handoff-archive/20260412-193605.md) |
+| handoff-2026-04-09-aga-gpu-archive | 2026-04-09 | AGA GPU upgrade archive (AGA_GPU_UPGRADE_ARCHIVE.md), vault sync mapping, gitignore docs/private — **link:** successor Handoff #6 (supersedes chain; no standalone aga snapshot in archive) | [Handoff-archive/20260411-222819.md](Handoff-archive/20260411-222819.md) |
+| handoff-2026-04-09-obsidian-github-gap-analysis | 2026-04-09 | Obsidian vault vs GitHub gap analysis (vault path, Harness mirror gaps, OBSIDIAN_GITHUB_GAP_ANALYSIS.md) | [Handoff-archive/20260409-231452.md](Handoff-archive/20260409-231452.md) |
+| handoff-2026-04-03-opengrimoire-naming-migration | 2026-04-03 | OpenAtlas → OpenGrimoire naming sweep (multi-repo bulk migrate, renames, portfolio junction, MiscRepos OpenGrimoire folder, script restore) | [Handoff-archive/20260409-231326.md](Handoff-archive/20260409-231326.md) |
+| handoff-2026-03-30-skills-stack-agent-native | 2026-03-30 | Skills stack wave (IMPROVING_SKILLS, pilot tiers/TEST_BASKET, validator, GOVERNANCE 6b) + OpenGrimoire agent-native audit snapshot | [Handoff-archive/20260403-214950.md](Handoff-archive/20260403-214950.md) |
+| handoff-2026-03-30-opengrimoire-gui-waves-harness | 2026-03-30 | OpenGrimoire GUI waves OA-2–OA-4 + portfolio harness | [Handoff-archive/20260331-043103.md](Handoff-archive/20260331-043103.md) |
+| handoff-20260324-opencompass-mcp-docs | 2026-03-24 | OpenCompass brain-map MCP allowlist README + handoff; reload MCP after env | [Handoff-archive/20260331-043103.md](Handoff-archive/20260331-043103.md) |

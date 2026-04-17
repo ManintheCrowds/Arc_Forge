@@ -1,3 +1,5 @@
 {
-  "communityPluginEnabled": true
+  "communityPluginEnabled": true,
+  "alwaysUpdateLinks": true,
+  "showUnsupportedFiles": true
 }

@@ -38,6 +38,8 @@ Record the **chosen option** here when decided: ___________________
 
 ## 3. CI cutover checklist
 
+MiscRepos operator index (sibling clone layout): `../MiscRepos/local-proto/docs/REPO_BOUNDARY_INDEX.md` — maintenance rhythm includes a **TTRPG stack extraction** bullet that links back to this page.
+
 - [ ] Create target repo (or submodule mount) and push initial tree from filtered `git filter-repo` or copy + fresh history (team choice).
 - [ ] Update **Arc_Forge** root `README.md`: remove or shorten Quickstart for moved stack; link to new repo.
 - [ ] Update **MiscRepos** `local-proto/docs/REPO_BOUNDARY_INDEX.md` Arc_Forge row if canonical paths change.

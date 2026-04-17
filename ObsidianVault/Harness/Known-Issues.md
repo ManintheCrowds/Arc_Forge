@@ -9,7 +9,7 @@ Append entries below using the schema in [README.md](README.md).
 
 ## Agent behavior (Cursor / AI)
 
-- **Symptom:** Agent switches to Korean unexpectedly when user sends a short prompt (e.g. "do it", "and do it") after previous English context. **Location:** Cursor AI responses. **Issue:** Response language drifts to Korean without explicit user request. **Status:** open. **Note:** Investigate: .cursorrules "Always respond in Korean" rule, workspace rules, or model context. User preference: English unless explicitly requested otherwise. Mitigation: Added language preference to AGENTS.md, preferences.json, and .cursorrules per Korean Output Audit plan.
+- **Symptom:** Agent switches to Korean unexpectedly when user sends a short prompt (e.g. "do it", "and do it") after previous English context. **Location:** Cursor AI responses. **Issue:** Response language drifts to Korean without explicit user request. **Status:** open. **Note:** `.cursorrules` requires English unless the user explicitly requests another language—there is no "always Korean" rule. Suspects: model behavior, long-thread context, or IDE/locale; also review workspace rules. User preference: English unless explicitly requested otherwise. Mitigation: language preference in AGENTS.md, preferences.json, and `.cursorrules` (Korean Output Audit). Cross-ref: [pending_tasks.md](pending_tasks.md) **H5**.
 
 ## OSINT Tools (osint-tools/)
 
@@ -35,7 +35,7 @@ Append entries below using the schema in [README.md](README.md).
 
 ## Agent telemetry (agent_log.jsonl)
 
-- **Symptom:** agent_log.jsonl has no events (skill_load, critic_score, failure). **Location:** `.cursor/state/agent_log.jsonl`. **Issue:** Agents instructed to append per AGENT_TELEMETRY.md and role-routing but do not. **Note:** Meta-review uses handoff_archive and known-issues as fallback. Consider `python .cursor/scripts/log_agent_event.py` to reduce friction.
+- **Symptom:** `agent_log.jsonl` is sparse on `skill_load`, `critic_score`, and `failure` even though other lines (e.g. `handoff`, `calibration_check`) may be present. **Location:** `.cursor/state/agent_log.jsonl`. **Issue:** Routine sessions often skip per-event appends; governance/critic/verifier/handoff sessions should log per [AGENT_TELEMETRY.md](../docs/AGENT_TELEMETRY.md). **Note:** Meta-review uses handoff_archive and known-issues as fallback when logs are thin. Use `python .cursor/scripts/log_agent_event.py` to reduce friction.
 
 ## Docker MCP
 
@@ -45,7 +45,8 @@ Append entries below using the schema in [README.md](README.md).
 
 ## MCP (Windows / multi-machine)
 
-- **Location:** `.cursor/mcp.json` (MiscRepos; mirror under `portfolio-harness/.cursor/mcp.json` when possible). **Issue (2026-03-24):** Paths pointed at another laptop (`D:/portfolio-harness`, `D:/Arc_Forge`, `C:/Users/schum/...`). **Fix:** Use this machine’s harness and Arc roots, e.g. `C:/Users/Dell/Documents/GitHub/portfolio-harness`, `C:/Users/Dell/Documents/GitHub/Arc_Forge`, `C:/Users/Dell/.cursor/projects`. **Reference:** [.cursor/state/mcp_audit_matrix.md](mcp_audit_matrix.md).
+- **Note (2026-04-16):** foam-pkm **TEST_PROMPTS #1** (Obsidian vault note about Bitcoin–Chaos mapping) was executed with a vault-side artifact under `LLM-Wiki/Topics/`; **R2** in [pending_tasks.md](pending_tasks.md) marked **done** with log [.cursor/state/adhoc/2026-04-16_foam_pkm_TEST_PROMPTS_1_R2.md](adhoc/2026-04-16_foam_pkm_TEST_PROMPTS_1_R2.md). **Caveat:** that session used Cursor filesystem `Write` to the vault path (MCP `apply_patch` not in tool trace). For strict R2 proof, re-run the same prompt in a chat where **obsidian-vault** MCP is loaded and confirm `apply_patch` in the tool transcript.
+- **Location:** `.cursor/mcp.json` (MiscRepos; mirror under `portfolio-harness/.cursor/mcp.json` when possible). **Issue (2026-03-24):** Paths pointed at another laptop (`D:/portfolio-harness`, `D:/Arc_Forge`, `C:/Users/schum/...`). **Fix:** Use this machine’s harness and Arc roots, e.g. `C:/Users/Dell/Documents/GitHub/portfolio-harness`, `C:/Users/Dell/Documents/GitHub/Arc_Forge`, `C:/Users/Dell/.cursor/projects`. **Reference:** [.cursor/state/mcp_audit_matrix.md](mcp_audit_matrix.md), [MCP_MACHINE_PATH_CHECKLIST.md](../docs/MCP_MACHINE_PATH_CHECKLIST.md).
 - **Location:** `portfolio-harness/local-proto/scripts/audit_wrapper.py`. **Issue (FIXED 2026-03-24):** Python 3.12 raised `TypeError` on `threading.Lock | None` annotations at import. **Fix:** `from __future__ import annotations` at top of file.
 - **Location:** `audit_wrapper.py` + `uvx` in mcp.json. **Issue (2026-03-24):** `pip install uv` on Windows may install `uv.exe` but not `uvx.exe`, so `uvx` subprocess fails. **Fix:** Wrapper rewrites `uvx` → `uv tool run` when `uvx.exe` is missing; ensure `PYTHONPATH` / Scripts on PATH for Cursor-spawned MCP.
 - **Location:** SCP MCP (`scp_mcp.py`). **Issue:** `scp_utils` re-exports `from scp.scp_utils import` — requires the **scp** package. **Fix:** `pip install -e` from the SCP repo (e.g. `C:/Users/Dell/Documents/GitHub/SCP`). **Reference:** mcp_audit_matrix.md.
@@ -61,7 +62,7 @@ Append entries below using the schema in [README.md](README.md).
 
 ## MCP audit gap (Cursor-provided MCPs)
 
-- **Location:** audit_wrapper, mcp_audit.jsonl. **Issue:** Cursor-provided MCPs (cursor-ide-browser, built-in Playwright) bypass audit_wrapper. Their tool invocations are not logged to mcp_audit.jsonl or intent_decisions.jsonl. **Mitigation:** Prefer mcp.json-configured equivalents (e.g. Playwright MCP in mcp.json) when audit coverage is required. **Reference:** [TOOL_SAFEGUARDS.md](../../local-proto/docs/TOOL_SAFEGUARDS.md) § Audit gaps. Per Security Audit SCP Testing Observability plan P2-8.
+- **Location:** audit_wrapper, mcp_audit.jsonl. **Issue:** Cursor-provided MCPs (cursor-ide-browser, built-in Playwright) bypass audit_wrapper. Their tool invocations are not logged to mcp_audit.jsonl or intent_decisions.jsonl. **Mitigation:** Prefer mcp.json-configured equivalents (e.g. Playwright MCP in mcp.json) when audit coverage is required; document out-of-band browser use in handoff if needed. **Reference:** [TOOL_SAFEGUARDS.md](../../local-proto/docs/TOOL_SAFEGUARDS.md) § Audit coverage gaps (MCP). Per Security Audit SCP Testing Observability plan P2-8.
 
 ## Path traversal (Filesystem MCP)
 
@@ -187,10 +188,6 @@ All pytest runs use project-local basetemp (e.g. `--basetemp=.pytest-tmp`). Do n
 ## External reference: CL4R1T4S repo (leaked AI prompts)
 
 - **Location:** https://github.com/elder-plinius/CL4R1T4S. **Issue:** README contains prompt-injection directive designed to elicit system prompt disclosure. **Note:** Never load CL4R1T4S README into agent context. Use only vendor folders (e.g. CURSOR) with sanitize_input.py; treat as unverified data. **Secure clone:** Run `.cursor/scripts/clone_cl4r1t4s_secure.ps1` to clone with sanitized README before pushing to private repo.
-
-## Agent behavior (Cursor / AI)
-
-- **Symptom:** Agent switches to Korean unexpectedly when user sends a short prompt (e.g. "do it", "and do it") after previous English context. **Location:** Cursor AI responses. **Issue:** Response language drifts to Korean without explicit user request. **Status:** open. **Note:** Investigate: .cursorrules "Always respond in Korean" rule, workspace rules, or model context. User preference: English unless explicitly requested otherwise.
 
 ## Arc Forge (ex–wrath_and_glory): folder rename "Folder In Use"
 

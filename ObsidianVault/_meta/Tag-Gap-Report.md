@@ -1,6 +1,6 @@
 # Tag gap report
 
-**Generated:** 2026-04-10 20:02  
+**Generated:** 2026-04-12 15:30  
 **Vault:** `C:\Users\Dell\Documents\GitHub\Arc_Forge\ObsidianVault`  
 **Excluded:** `.obsidian`, `.pytest-tmp`, `**/.pytest_cache/**`, `workflow_ui/**`, `scripts/**`, `_meta/Tag-Gap-Report.md` (regenerated; see [[00_HARNESS_VAULT_SCHEMA]]).
 

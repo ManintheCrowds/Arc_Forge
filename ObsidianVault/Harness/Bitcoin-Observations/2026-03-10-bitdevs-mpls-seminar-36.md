@@ -85,6 +85,7 @@ Structured capture of seminar topics, references, and action items for Bitcoin-C
 
 - **Link:** [josephvoelbel.com](https://josephvoelbel.com)
 - **Context:** Website made with AI; inside the Bitcoin community.
+- **Deeper intel (collab / ClawHub / SCP):** [joseph-voelbel-openclaw-clawhub.md](../collaborators/joseph-voelbel-openclaw-clawhub.md)
 - **Status:** Reference / case study.
 
 ---
@@ -180,3 +181,11 @@ Structured capture of seminar topics, references, and action items for Bitcoin-C
 3. Research: Fedimint CLI, MCP2CLI, LiteLLM + Routstr/OpenRouter.
 4. Future: Agent PR capability for bitdevsmpls.org.
 5. Future: IronClaw evaluation for Rust-based privacy-first AI.
+
+---
+
+## See also (MOC)
+
+- [Bitcoin observations README](README.md) — observation log schema plus **Research MOC** links (Voelbel / ClawHub, Ghost runbook, PKM parity).
+- [Joseph Voelbel — OpenClaw, ClawHub, Ghost …](../collaborators/joseph-voelbel-openclaw-clawhub.md) — full integration primer (cross-ref §9 above).
+- [PKM: attention pockets + Brain Map (no OpenClaw required)](../PKM_ATTENTION_POCKETS_AND_BRAIN_MAP.md).

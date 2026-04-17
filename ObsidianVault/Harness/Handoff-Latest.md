@@ -1,72 +1,64 @@
 ---
-title: "Handoff #5: AGA GPU archive lands in local-proto"
+title: "Handoff #21: Local-first model router spec + weekly pending→completed archive"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
 ---
 
-# Handoff #5: AGA GPU archive lands in local-proto
+# Handoff #21: Local-first model router spec + weekly pending→completed archive
 
-decision_id: handoff-2026-04-09-aga-gpu-archive
-supersedes: handoff-2026-04-09-obsidian-github-gap-analysis
-Updated: 2026-04-09T12:00:00Z
-Session: local-proto AGA GPU documentation
-
-## Context
-
-Prior thread analyzed [Dell KB 000178406](https://www.dell.com/support/kbdoc/en-us/000178406/alienware-graphics-amplifier-supported-graphics-card-list) for Alienware Graphics Amplifier GPU tiers; this session archived that analysis into the repo and wired Obsidian/private mirror paths.
+decision_id: handoff-2026-04-17-model-router-weekly-archive
+supersedes: handoff-2026-04-17-byoc-vault-session-pkm
+Updated: 2026-04-17T18:50:00Z
 
 ## Done
 
-- Added **`local-proto/docs/AGA_GPU_UPGRADE_ARCHIVE.md`** — Dell link, AGA size/power limits, NVIDIA/AMD tiers, ideal picks (2080 Ti / 2070–2080 / 1080 Ti / RX 580), local inference tie-in, changelog, mirroring instructions.
-- Linked from **`local-proto/docs/HARDWARE.md`** (Alpha R2 + AGA bullet) and **`local-proto/docs/ALPHA_R2_AGA_SETUP.md`** (references).
-- Extended **`local-proto/scripts/sync_harness_to_vault.ps1`** — maps archive → **`Harness/Docs/AGA-GPU-Upgrade-Archive.md`** in the Obsidian vault when sync runs.
-- **`MiscRepos/.gitignore`** — `local-proto/docs/private/` for optional git-ignored copies/symlinks.
+- **LOCAL_FIRST_MODEL_ROUTER_SPEC:** [LOCAL_FIRST_MODEL_ROUTER_SPEC.md](../docs/LOCAL_FIRST_MODEL_ROUTER_SPEC.md) — normative router contract (inputs/outputs, vault/skip flags, meditation appendix). Example profile: [examples/hardware_profile.yaml.example](../docs/examples/hardware_profile.yaml.example) (copy to gitignored `.cursor/private/hardware_profile.yaml`).
+- **Cross-links:** [AI_TASK_EVALS.md](../docs/AI_TASK_EVALS.md), [AGENT_ENTRY_INDEX.md](../docs/AGENT_ENTRY_INDEX.md), [ORCHESTRATOR_CONFIG.md](../../local-proto/docs/ORCHESTRATOR_CONFIG.md), [LOCAL_AI_TOKEN_OFFLOAD_POLICY.md](../../local-proto/docs/LOCAL_AI_TOKEN_OFFLOAD_POLICY.md), [model-selection.mdc](../rules/model-selection.mdc).
+- **Pending tasks:** **G5** closed (model escalation doc + spec); new [§ PENDING_MODEL_ROUTER](pending_tasks.md#pending_model_router-local-first) (**MR1–MR8** implementation backlog).
+- **Weekly archive automation:** [scheduled_split_done_tasks.ps1](../scripts/scheduled_split_done_tasks.ps1) — validate tables → optional dry-run log → `split_done_tasks_to_completed.py` with default `--ignore-vault-resync-failure`; flags `-SkipVaultResync`, `-StrictVault`, `-DryRunOnly`, `-SkipDryRunLog`. Python: `--skip-vault-resync`, `--ignore-vault-resync-failure` on [split_done_tasks_to_completed.py](../scripts/split_done_tasks_to_completed.py).
+- **Scheduling SSOT:** [SCHEDULED_TASKS.md](../../local-proto/docs/SCHEDULED_TASKS.md) — table row, **Harness-PendingTasksArchive** `Register-ScheduledTask` (Sunday 10:40), cron row, hygiene exception, PowerShell example; [GOVERNANCE_RITUAL.md](../docs/GOVERNANCE_RITUAL.md) table row + git policy note for state files.
 
 ## Next
 
-**Operator:** Run harness→vault sync so Obsidian picks up the new doc (and other mapped files):
-
-```powershell
-cd <MiscRepos>
-$env:OBSIDIAN_VAULT_ROOT = "D:\Arc_Forge\ObsidianVault"  # adjust; must sit under VAULT_SYNC_SAFE_BASE unless overridden
-.\local-proto\scripts\sync_harness_to_vault.ps1
-```
-
-Optional: create `local-proto/docs/private/` and copy or symlink `AGA_GPU_UPGRADE_ARCHIVE.md` there for a non-committed duplicate.
+- **Commit + push MiscRepos:** Stage `handoff_latest.md`, `handoff_archive/20260417-181443.md` (Handoff #20), `handoff_checksum.txt`, `decision_index.md`, `decision-log.md`, `pending_tasks.md`, `completed_tasks.md`, `.cursor/docs/**`, `.cursor/scripts/**`, `local-proto/docs/SCHEDULED_TASKS.md`, `GOVERNANCE_RITUAL.md`, `model-selection.mdc`. Run `python .cursor/scripts/validate_pending_tasks_table.py` before commit.
+- **Operator:** Optional Task Scheduler **Harness-PendingTasksArchive** per SCHEDULED_TASKS; optional **MR1–MR8** router implementation when ready.
+- **Vault:** `npm run vault:sync` or `int-vault-resync` so Harness **Pending-Tasks** / **Completed-Tasks** / **Handoff-Latest** reflect the post-split repo state (`write_handoff` already synced once; split used `--skip-vault-resync` so run sync again after commit if needed).
 
 ## Paths / artifacts
 
-| Path | Role |
+| Area | Path |
 |------|------|
-| `local-proto/docs/AGA_GPU_UPGRADE_ARCHIVE.md` | Canonical archive |
-| `local-proto/docs/HARDWARE.md` | Link under Alpha R2 + AGA |
-| `local-proto/docs/ALPHA_R2_AGA_SETUP.md` | GPU selection reference |
-| `local-proto/scripts/sync_harness_to_vault.ps1` | `docMappings` entry for AGA doc |
-| `MiscRepos/.gitignore` | `local-proto/docs/private/` |
+| Router spec | `MiscRepos/.cursor/docs/LOCAL_FIRST_MODEL_ROUTER_SPEC.md` |
+| Hardware profile example | `MiscRepos/.cursor/docs/examples/hardware_profile.yaml.example` |
+| Weekly archive script | `MiscRepos/.cursor/scripts/scheduled_split_done_tasks.ps1` |
+| Split + vault flags | `MiscRepos/.cursor/scripts/split_done_tasks_to_completed.py` |
+| Scheduling / Task name | `MiscRepos/local-proto/docs/SCHEDULED_TASKS.md` § Harness-PendingTasksArchive |
+| Model router backlog | `MiscRepos/.cursor/state/pending_tasks.md` § PENDING_MODEL_ROUTER |
 
 ## dependency_links
 
-- `local-proto/docs/AGA_GPU_UPGRADE_ARCHIVE.md`
-- `local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md` (related vault/GitHub context if continuing Obsidian work)
+- [AI_TASK_EVALS.md](../docs/AI_TASK_EVALS.md)
+- [SCHEDULED_TASKS.md](../../local-proto/docs/SCHEDULED_TASKS.md)
+- [HANDOFF_FLOW.md](../HANDOFF_FLOW.md)
 
 ## open_risks
 
-- Vault sync requires `OBSIDIAN_VAULT_ROOT` and path under safe base; script errors if unset.
-- Newer GPUs (RTX 30/40) are not on Dell’s list — noted in archive; operator risk if experimenting.
+- **No pytest** yet for split CLI flags (critic noted); MR1–MR8 remain pending for router code.
+- **Tee-Object / LASTEXITCODE:** Verified on host PS for one case; re-check if Task Scheduler ever shows false success.
 
 ## Decisions / gotchas
 
-- **`/brainstorm` Cursor command** is deprecated; prefer superpowers brainstorming skill for structured ideation (mentioned in prior thread only — not codified in repo).
+- **Git:** Scheduled archive does **not** commit; same as handoff — review `git diff` then commit state files.
+- **Vault exit:** Default `--ignore-vault-resync-failure` keeps Tier A green when `OBSIDIAN_VAULT_ROOT` unset; use `-StrictVault` when red is preferred.
 
 ## Verification
 
-- **Session type:** documentation and config only. **Tests/build:** not run (no code change requiring CI).
-
-## Assumptions
-
-- Repo root for scripts is **`MiscRepos`** (parent of `local-proto`).
+- `python .cursor/scripts/validate_pending_tasks_table.py` — OK before split (2026-04-17).
+- `python .cursor/scripts/split_done_tasks_to_completed.py --skip-vault-resync` — archived **3** `done` rows (G5, AT1, AT2) to `completed_tasks.md`.
+- Optional: `npm run vault:sync` so Harness **Pending-Tasks** / **Completed-Tasks** match repo after local split (split used `--skip-vault-resync` here).
+- `powershell -File .cursor/scripts/scheduled_split_done_tasks.ps1 -DryRunOnly` for future smoke checks.
 ## Vault navigation
 
-**Daily log:** [[Harness/Daily/2026-04-09]]
+**Daily log:** [[Harness/Daily/2026-04-17]]
 **Handoff chain:** [[Harness/MOC_Harness_State]]
 **Decision index:** [[Harness/Decision-Index]]
-**Supersedes:** [[Harness/Handoff-archive/20260409-231452.md]]
+**Supersedes:** [[Harness/Handoff-archive/20260417-181443.md]]
