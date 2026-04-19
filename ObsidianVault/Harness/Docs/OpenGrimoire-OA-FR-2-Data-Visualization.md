@@ -49,7 +49,7 @@ flowchart LR
 | Primary viz (Layout) | `/visualization` | [`src/app/visualization/page.tsx`](../../src/app/visualization/page.tsx) → [`DataVisualization`](../../src/components/DataVisualization/index.tsx) | `useVisualizationData` + header `useApprovedQuotes`; `AppContext` auto-play + theme. |
 | Dark entry | `/visualization/dark` | [`src/app/visualization/dark/page.tsx`](../../src/app/visualization/dark/page.tsx) | Same `DataVisualization`; forces dark (`toggleDarkMode`, `documentElement` class). |
 | Alluvial-only | `/visualization/alluvial` | [`src/app/visualization/alluvial/page.tsx`](../../src/app/visualization/alluvial/page.tsx) | Renders [`AlluvialDiagram`](../../src/components/DataVisualization/AlluvialDiagram.tsx) only (no full header/tabs). |
-| Constellation | `/constellation` | [`src/app/constellation/page.tsx`](../../src/app/constellation/page.tsx) | Dynamic import of [`visualization/ConstellationView`](../../src/components/visualization/ConstellationView.tsx) inside [`VisualizationContainer`](../../src/components/DataVisualization/shared/VisualizationContainer.tsx). Uses **Zustand** [`visualizationStore`](../../src/store/visualizationStore.ts) + [`fetchVisualizationData`](../../src/lib/visualization/fetchVisualizationData.ts) — not the same fetch shape as `useVisualizationData` (see §1.5). |
+| Constellation | `/constellation` | [`src/app/constellation/page.tsx`](../../src/app/constellation/page.tsx) | Dynamic import of [`visualization/ConstellationView`](../../src/components/visualization/ConstellationView.tsx) inside [`VisualizationContainer`](../../src/components/DataVisualization/shared/VisualizationContainer.tsx). Uses **Zustand** [`visualizationStore`](../../src/store/visualizationStore.ts) + [`fetchVisualizationData`](../../src/lib/visualization/fetchVisualizationData.ts) (wrapper over [`surveyVisualizationFetch`](../../src/lib/visualization/surveyVisualizationFetch.ts)) — different **mode** than cohort hook (see §1.5). |
 | Nav bar | (global) | [`SharedNavBar.tsx`](../../src/components/SharedNavBar.tsx), home [`page.tsx`](../../src/app/page.tsx) | Link to `/visualization`. |
 
 **Legacy / alternate bundle:** [`src/components/visualization/`](../../src/components/visualization) (Three.js, `Visualization` default export) is used from [`/test`](../../src/app/test/page.tsx). It is **not** the same tree as [`src/components/DataVisualization/`](../../src/components/DataVisualization).
@@ -74,19 +74,19 @@ Production gate matrix (headers, cookies, env): **do not duplicate** — see [AR
 
 | Hook | File | Fetches | Consumers |
 |------|------|---------|-----------|
-| `useVisualizationData` | [`useVisualizationData.ts`](../../src/components/DataVisualization/shared/useVisualizationData.ts) | `GET /api/survey/visualization?all=1` + `credentials: 'include'` | **Shipped:** [`AlluvialDiagram`](../../src/components/DataVisualization/AlluvialDiagram.tsx), [`ChordDiagram`](../../src/components/DataVisualization/ChordDiagram.tsx). **Orphan:** [`DataVisualization/Constellation/ConstellationView`](../../src/components/DataVisualization/Constellation/ConstellationView.tsx) also calls the hook but has **no** `src/app/**` importer — live `/constellation` uses [`visualization/ConstellationView`](../../src/components/visualization/ConstellationView.tsx) + Zustand instead. |
+| `useVisualizationData` | [`useVisualizationData.ts`](../../src/components/DataVisualization/shared/useVisualizationData.ts) → [`surveyVisualizationFetch.ts`](../../src/lib/visualization/surveyVisualizationFetch.ts) (`mode: 'cohort'`) | `GET /api/survey/visualization?all=1` + `credentials: 'include'` | **Shipped:** [`AlluvialDiagram`](../../src/components/DataVisualization/AlluvialDiagram.tsx), [`ChordDiagram`](../../src/components/DataVisualization/ChordDiagram.tsx). Live `/constellation` uses [`visualization/ConstellationView`](../../src/components/visualization/ConstellationView.tsx) + Zustand + `fetchVisualizationData` (not this hook). |
 | `useApprovedQuotes` | [`useApprovedQuotes.ts`](../../src/components/DataVisualization/shared/useApprovedQuotes.ts) | `GET /api/survey/approved-qualities` + `credentials: 'include'` | [`EnhancedVisualizationHeader`](../../src/components/DataVisualization/shared/EnhancedVisualizationHeader.tsx) — quote slot `data-region="opengrimoire-viz-quote-slot"`; rotates every **8s** when `quotes.length > 1`. |
 
 **Auto-play and theme:** [`AppContext.tsx`](../../src/lib/context/AppContext.tsx) exposes `isAutoPlayEnabled`, `autoPlaySpeed`, `toggleAutoPlay`, `isDarkMode`, `useTestData`. [`DataVisualization/index.tsx`](../../src/components/DataVisualization/index.tsx) passes `autoPlay={settings.isAutoPlayEnabled}` into Alluvial and Chord. Operator-facing copy: [`/admin/controls`](../../src/app/admin/controls/page.tsx).
 
 **A11y / test ids:** Stable ids in [`vizLayoutIds.ts`](../../src/components/DataVisualization/shared/vizLayoutIds.ts); diagrams expose `data-testid="alluvial-diagram"` / `data-testid="chord-diagram"`; canvas region `data-region="opengrimoire-viz-canvas"`.
 
-### 1.5 Two client fetch shapes (avoid conflation)
+### 1.5 Two client fetch modes (same SSOT module)
 
-| Path | Function | Typical query | Used by |
-|------|----------|---------------|---------|
-| Survey alluvial/chord hook | `useVisualizationData` | `?all=1` | Main `/visualization` diagrams |
-| Zustand / export-style | [`fetchVisualizationData.ts`](../../src/lib/visualization/fetchVisualizationData.ts) | `?showTestData={true\|false}&all=0` | [`visualizationStore`](../../src/store/visualizationStore.ts), [`constellationStore`](../../src/store/constellationStore.ts), [`export.ts`](../../src/lib/utils/export.ts) |
+| Path | Entry | Typical query | Used by |
+|------|-------|---------------|---------|
+| Survey alluvial/chord hook | `useVisualizationData` → [`surveyVisualizationFetch.ts`](../../src/lib/visualization/surveyVisualizationFetch.ts) `mode: 'cohort'` | `?all=1` | Main `/visualization` diagrams |
+| Zustand / export | [`fetchVisualizationData.ts`](../../src/lib/visualization/fetchVisualizationData.ts) → same module `mode: 'filtered'` | `?all=0&showTestData={true\|false}` | [`visualizationStore`](../../src/store/visualizationStore.ts), [`constellationStore`](../../src/store/constellationStore.ts), [`export.ts`](../../src/lib/utils/export.ts) |
 
 When `all=0`, the API applies the `showTestData` filter; when `all=1`, the server returns the full row set for the hook to validate and dedupe by `attendee_id`.
 
@@ -101,9 +101,9 @@ Defined in [`middleware.ts`](../../middleware.ts) as `TEST_ROUTE_PREFIXES`: `/te
 | `/test-context` | Toggles `AppContext` (dark, test data, auto-play) | **No HTTP** — client-only |
 | `/test-sqlite` | SQLite smoke | `fetch('/api/survey/visualization?all=1')` — documents gate + JSON shape |
 
-### 1.7 NavigationDots (legacy nav targets)
+### 1.7 NavigationDots (survey viz ↔ constellation)
 
-[`NavigationDots.tsx`](../../src/components/DataVisualization/shared/NavigationDots.tsx) lists `/constellation`, `/tapestry`, `/comparison`, `/waves`, `/qualities`. **`/constellation` exists**; as of this matrix authorship there are **no** matching `src/app/tapestry|comparison|waves|qualities` pages — treat as **orphan nav** unless another app hosts them. Gap recorded below.
+[`NavigationDots.tsx`](../../src/components/DataVisualization/shared/NavigationDots.tsx) lists only **`/visualization`** and **`/constellation`** (matching `src/app` routes). It is not currently mounted from production pages; kept for reuse without dead `app/` targets (OGAN-13).
 
 ---
 
@@ -163,9 +163,9 @@ Defined in [`middleware.ts`](../../middleware.ts) as `TEST_ROUTE_PREFIXES`: `/te
 | Gap ID | Description | Severity | Source |
 |--------|-------------|----------|--------|
 | G-S2-01 | F1 remediation: client must not log survey row samples. | Critical (remediated) | **PUBLIC_SURFACE_AUDIT F1** — verify [`useVisualizationData.ts`](../../src/components/DataVisualization/shared/useVisualizationData.ts) |
-| G-S2-02 | F4: residual unconditional `console.*` on visualization path. | Medium | **PUBLIC_SURFACE_AUDIT F4** — [`DataVisualization/index.tsx`](../../src/components/DataVisualization/index.tsx) logs on **auto-play setting change** unconditionally; [`AlluvialDiagram.tsx`](../../src/components/DataVisualization/AlluvialDiagram.tsx) and [`ChordDiagram.tsx`](../../src/components/DataVisualization/ChordDiagram.tsx) emit **many** unconditional `console.log` calls on layout/animation paths (not gated by `NEXT_PUBLIC_DEBUG_VISUALIZATION`); [`visualization/ConstellationView.tsx`](../../src/components/visualization/ConstellationView.tsx) logs each render; `useApprovedQuotes` uses `console.error` on failure (errors only; still noisy). |
+| G-S2-02 | F4: residual unconditional `console.*` on visualization path. | Medium | **PUBLIC_SURFACE_AUDIT F4** — **Partial (2026-04-19):** removed hot-path `console.log` from [`DataVisualization/index.tsx`](../../src/components/DataVisualization/index.tsx), [`visualizationStore.ts`](../../src/store/visualizationStore.ts), and [`visualization/ConstellationView.tsx`](../../src/components/visualization/ConstellationView.tsx). **Remaining:** [`AlluvialDiagram.tsx`](../../src/components/DataVisualization/AlluvialDiagram.tsx) / [`ChordDiagram.tsx`](../../src/components/DataVisualization/ChordDiagram.tsx) may still emit verbose logs unless gated by `NEXT_PUBLIC_DEBUG_VISUALIZATION`; `useApprovedQuotes` uses `console.error` on failure. |
 | G-S2-03 | F5: error logging may include rich `Error` objects in some paths. | Medium | **PUBLIC_SURFACE_AUDIT F5** — spot-check forced `GET` failures in DevTools |
-| G-S2-04 | `NavigationDots` targets `/tapestry`, `/comparison`, `/waves`, `/qualities` without matching `app` routes. | Low (UX / dead links) | **Code** — [`NavigationDots.tsx`](../../src/components/DataVisualization/shared/NavigationDots.tsx) |
+| G-S2-04 | ~~`NavigationDots` dead `/tapestry`… routes~~ | **Remediated (2026-04-19)** | **OGAN-13** — [`NavigationDots.tsx`](../../src/components/DataVisualization/shared/NavigationDots.tsx) now `/visualization` + `/constellation` only. |
 | G-S2-05 | Two visualization architectures (DataVisualization vs `components/visualization` + Zustand). | Low (maintainability) | **Code** — increases onboarding cost; document-only unless consolidating |
 | G-S2-06 | `all=1` bypasses `showTestData` filter — intentional for hook, but operators must understand PII mix. | Low (ops clarity) | **Code** + ARCHITECTURE |
 
@@ -201,9 +201,15 @@ Expect **200** JSON with `data` / `items` in development. In production without 
 ```bash
 npx playwright test e2e/visualization.spec.ts
 npx playwright test e2e/test-routes.spec.ts
+npx playwright test e2e/visualization-constellation-a11y.spec.ts
+npx playwright test e2e/visualization-constellation-network-shape.spec.ts
 ```
 
-### 4.5 Operator doc pointers
+### 4.5 Harness selectors + viz E2E (OGAN-15 / OGAN-16 / OGAN-17)
+
+Stable **`data-testid`**, **`data-region`**, and **`vizLayoutIds`** for harnesses: [agent/PLAYWRIGHT_VIZ_HARNESS_SELECTORS.md](../agent/PLAYWRIGHT_VIZ_HARNESS_SELECTORS.md). **Axe** (shell chrome; `canvas` excluded): [`e2e/visualization-constellation-a11y.spec.ts`](../../e2e/visualization-constellation-a11y.spec.ts). **Network** query drift guard: [`e2e/visualization-constellation-network-shape.spec.ts`](../../e2e/visualization-constellation-network-shape.spec.ts).
+
+### 4.6 Operator doc pointers
 
 - Debug viz logging: [`ANIMATION_DEBUG_GUIDE.md`](../../ANIMATION_DEBUG_GUIDE.md) (mentions `useVisualizationData` and `NEXT_PUBLIC_DEBUG_VISUALIZATION`).
 - Capabilities map: `GET /api/capabilities` lists survey visualization **routes** and the **`workflows`** entry **`cohort_survey_visualization`** ([`capabilities/route.ts`](../../src/app/api/capabilities/route.ts)).
@@ -212,4 +218,4 @@ npx playwright test e2e/test-routes.spec.ts
 
 ## 5. Completion
 
-Mark harness **OA-FR-2** done in [MiscRepos `.cursor/state/pending_tasks.md`](../../../MiscRepos/.cursor/state/pending_tasks.md) when this document is merged and stakeholders accept the verification bar. Further work (perf CI, consolidating viz stacks, fixing `NavigationDots`) is **out of scope** for the minimum OA-FR-2 deliverable unless promoted to a new task.
+Mark harness **OA-FR-2** done in [MiscRepos `.cursor/state/pending_tasks.md`](../../../MiscRepos/.cursor/state/pending_tasks.md) when this document is merged and stakeholders accept the verification bar. Further work (perf CI, consolidating viz stacks, diagram-level F4 log gating) is **out of scope** for the minimum OA-FR-2 deliverable unless promoted to a new task.

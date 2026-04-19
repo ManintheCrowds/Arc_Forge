@@ -7,7 +7,7 @@ tags: ["type/harness-doc", "status/mirror", "domain/harness"]
 
 **Role:** Gap report and **harness-facing scorecard** vs [ARCHITECTURE_REST_CONTRACT.md](./ARCHITECTURE_REST_CONTRACT.md) and [AGENT_INTEGRATION.md](./AGENT_INTEGRATION.md). This file is **not** a substitute for those contracts.
 
-**Last updated:** 2026-04-18 (MCP wave scoped pass appended same day)
+**Last updated:** 2026-04-19 (OGAN-11–OGAN-17 closure + harness tracker sync)
 
 ---
 
@@ -22,7 +22,7 @@ tags: ["type/harness-doc", "status/mirror", "domain/harness"]
 | [docs/plans/OA_FR_2_SYSTEM2_DATA_VISUALIZATION.md](./plans/OA_FR_2_SYSTEM2_DATA_VISUALIZATION.md) | OA-FR-2 REQ/AC |
 | [docs/plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md](./plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md) | Post-charter refresh — delta, verify matrix, GUI + critic |
 
-**Harness backlog:** decomposed rows live in [MiscRepos `.cursor/state/pending_tasks.md`](../../MiscRepos/.cursor/state/pending_tasks.md) under **PENDING_OPENGRIMOIRE_AGENT_NATIVE_DECOMPOSED** (IDs `OGAN-02` …); **OGAN-01** archived in [completed_tasks.md § PENDING_AGENT_NATIVE](../../../MiscRepos/.cursor/state/completed_tasks.md#pending_agent_native).
+**Harness backlog:** decomposed rows live in [MiscRepos `.cursor/state/pending_tasks.md`](../../MiscRepos/.cursor/state/pending_tasks.md) under **PENDING_OPENGRIMOIRE_AGENT_NATIVE_DECOMPOSED** (**OGAN-09**–**OGAN-10** deferred only); **OGAN-01–OGAN-08** and **OGAN-11–OGAN-17** archived in [completed_tasks.md § PENDING_AGENT_NATIVE](../../../MiscRepos/.cursor/state/completed_tasks.md#pending_agent_native).
 
 ---
 
@@ -133,15 +133,15 @@ Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows cl
 | Priority | Action | Principle |
 |----------|--------|-------------|
 | P1 | **Refetch** path for viz + quotes after survey POST / moderation — **shipped** via `OPENGRIMOIRE_SURVEY_DATA_CHANGED` listeners (`survey-post` on POST success; `moderation-patch` on admin PATCH success, 2026-04-18); **remaining:** Playwright proof of second `GET` + external-writer dispatch doc. | UI integration |
-| P2 | Extend **`GET /api/capabilities`** with `workflows` / `ui_surfaces` for `/visualization`, `/constellation`, query semantics (`all` vs `showTestData`). | **Partially shipped (2026-04-17):** `workflows[]` covers `/context-atlas`, `/wiki`, `/visualization` + refresh note; constellation query semantics still doc-only. |
-| P3 | Optional **GET** returning rows + optional **precomputed graph** for constellation mode (or document “must run `processVisualizationData` locally”). | Action parity |
-| P4 | **Banner** when `isMockData` / empty API — kill silent mock confusion. | Shared workspace · Task success |
-| P5 | **OpenAPI** response schemas for visualization + approved-qualities bodies. | Action parity · Tools |
-| P6 | **Single client module** for visualization fetch query shapes (prevent `?all=1` drift). | Action parity · Architecture |
-| P7 | **Archive or fix** root `## Master System Prompt*` file if still Supabase-stale. | Context injection |
-| P8 | Mark **`/test*`** explicitly non-contractual in capabilities or agent docs. | Action parity |
-| P9 | **Persist** theme/autoplay/color prefs via authenticated API if operators need agent parity. | Action parity |
-| P10 | If prompt-native ever required: **versioned chart spec JSON** + thin renderer over existing D3. | Prompt-native |
+| P2 | Extend **`GET /api/capabilities`** with `workflows` / `ui_surfaces` for `/visualization`, `/constellation`, query semantics (`all` vs `showTestData`). | **Shipped (2026-04-19):** `ui_surfaces[]` + workflow `api` string; matrix row in `ARCHITECTURE_REST_CONTRACT.md`; `e2e/capabilities.spec.ts`. |
+| P3 | Optional **GET** returning rows + optional **precomputed graph** for constellation mode (or document “must run `processVisualizationData` locally”). | **Doc path shipped (2026-04-19):** `AGENT_INTEGRATION.md` § Survey graph JSON; optional API remains backlog if product asks. |
+| P4 | **Banner** when `isMockData` / empty API — kill silent mock confusion. | **Shipped (2026-04-19):** `/visualization/alluvial` + copy tweak + `e2e/visualization-mock-banner.spec.ts` (main `/visualization` already had banner). |
+| P5 | **OpenAPI** response schemas for visualization + approved-qualities bodies. | **Shipped (2026-04-19):** `openapi-document.ts` `components.schemas` + `e2e/openapi.spec.ts`. |
+| P6 | **Single client module** for visualization fetch query shapes (prevent `?all=1` drift). | **Shipped (2026-04-19):** `surveyVisualizationFetch.ts`; hook + Zustand wrapper + `export.ts`. |
+| P7 | **Archive or fix** root `## Master System Prompt*` file if still Supabase-stale. | **Shipped (2026-04-19):** archived under `docs/archive/master-system-prompt-dataviz-legacy.md`; root artifact removed. |
+| P8 | Mark **`/test*`** explicitly non-contractual in capabilities or agent docs. | **Shipped (2026-04-19):** `AGENT_INTEGRATION.md` § Dev / mock UI routes; `GET /api/capabilities` `documentation.non_contractual_ui`. |
+| P9 | **Persist** theme/autoplay/color prefs via authenticated API if operators need agent parity. | **Deferred** — product scope; no API in this slice ([pending_tasks OGAN-09](../../../MiscRepos/.cursor/state/pending_tasks.md)). |
+| P10 | If prompt-native ever required: **versioned chart spec JSON** + thin renderer over existing D3. | **Deferred** — roadmap-only unless product commits ([pending_tasks OGAN-10](../../../MiscRepos/.cursor/state/pending_tasks.md)). |
 
 ---
 
@@ -168,22 +168,22 @@ Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows cl
 | ID | Default disposition | Notes |
 |----|---------------------|--------|
 | OGAN-01 | **Done (2026-04-18)** | In-app: POST + PATCH dispatch `opengrimoire-survey-data-changed`; viz + approved-quotes hooks refetch. **Remaining:** Playwright “second GET” proof ([OPENGRIMOIRE_FULL_REVIEW_REFRESH](./plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md) checklist). |
-| OGAN-02 | **Backlog** | Constellation / query-semantics prose in capabilities still incomplete vs audit. |
-| OGAN-03 | **Defer** | Optional API bundle — needs product call. |
-| OGAN-04 | **Backlog** | UX banner for mock cohort — ties GUI dimension 1. |
-| OGAN-05 | **Backlog** | OpenAPI response bodies for survey reads. |
-| OGAN-06 | **Backlog** | Single client module for `?all=` / `showTestData`. |
-| OGAN-07 | **Backlog** | Stale prompt / context file hunt. |
-| OGAN-08 | **Backlog** | Mark `/test*` non-contractual in agent-facing docs. |
-| OGAN-09 | **Defer** | Persisted viz prefs — product scope. |
-| OGAN-10 | **Defer** | Prompt-native chart spec — roadmap-only. |
-| OGAN-11 | **Backlog** | Doc hygiene `AGENT_TOOL_MANIFEST.md`. |
-| OGAN-12 | **Backlog** | Hot-path logging / F4. |
-| OGAN-13 | **Backlog** | Dead `NavigationDots` links. |
-| OGAN-14 | **Backlog** | Orphan `DataVisualization/Constellation/`. |
-| OGAN-15 | **Backlog** | Axe on `/visualization` + `/constellation`. |
-| OGAN-16 | **Backlog** | E2E query-shape drift guard. |
-| OGAN-17 | **Backlog** | Playwright selector appendix for harnesses. |
+| OGAN-02 | **Done (2026-04-19)** | `ui_surfaces[]` + workflow updates + contract row + capabilities e2e — see [completed_tasks.md § PENDING_AGENT_NATIVE](../../../MiscRepos/.cursor/state/completed_tasks.md). |
+| OGAN-03 | **Done (2026-04-19)** | Doc-first closure: `AGENT_INTEGRATION.md` § Survey graph JSON + capabilities `agent_note` pointers; no graph bundle API. |
+| OGAN-04 | **Done (2026-04-19)** | Mock banner on `/visualization/alluvial`, copy, Playwright — see completed_tasks. |
+| OGAN-05 | **Done (2026-04-19)** | OpenAPI schemas for survey read GETs + openapi e2e — see completed_tasks. |
+| OGAN-06 | **Done (2026-04-19)** | `surveyVisualizationFetch.ts` SSOT — see completed_tasks. |
+| OGAN-07 | **Done (2026-04-19)** | Root Master System Prompt archived + deleted — see completed_tasks. |
+| OGAN-08 | **Done (2026-04-19)** | `AGENT_INTEGRATION` + capabilities `documentation.non_contractual_ui` — see completed_tasks. |
+| OGAN-09 | **Defer** | Persisted viz prefs — product scope (status `deferred` in pending_tasks). |
+| OGAN-10 | **Defer** | Prompt-native chart spec — roadmap-only (status `deferred` in pending_tasks). |
+| OGAN-11 | **Done (2026-04-19)** | Manifest + sibling doc links — see completed_tasks. |
+| OGAN-12 | **Done (2026-04-19)** | ConstellationView + visualizationStore + viz index logging — see completed_tasks; diagram-level F4 may remain. |
+| OGAN-13 | **Done (2026-04-19)** | `NavigationDots` `/visualization` + `/constellation` only — see completed_tasks. |
+| OGAN-14 | **Done (2026-04-19)** | Removed orphan `DataVisualization/Constellation/` view — see completed_tasks. |
+| OGAN-15 | **Done (2026-04-19)** | `e2e/visualization-constellation-a11y.spec.ts` — see completed_tasks; `canvas` excluded. |
+| OGAN-16 | **Done (2026-04-19)** | `e2e/visualization-constellation-network-shape.spec.ts` — see completed_tasks. |
+| OGAN-17 | **Done (2026-04-19)** | `docs/agent/PLAYWRIGHT_VIZ_HARNESS_SELECTORS.md` + OA-FR-2 / AGENT_INTEGRATION links — see completed_tasks. |
 
 **Wave 10 note:** MiscRepos **OG-GUI-*** (System 1 GUI release) is **closed** 2026-04-18 — see [gui-2026-04-16-opengrimoire-survey.md](./audit/gui-2026-04-16-opengrimoire-survey.md) § Flow evidence. **AN1** remains **pending** until the table above is executed or formally waived row-by-row.
 
@@ -201,7 +201,7 @@ Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows cl
 |--------------------|---------------------------|--------|
 | Main viz cohort data | `GET /api/survey/visualization` | **Data:** full via query params; **rendered** D3/Three outcome browser-only (**OGAN-03**) |
 | Approved header quotes | `GET /api/survey/approved-qualities` | **Data:** full |
-| Capability discovery | `GET /api/capabilities` incl. `workflows.cohort_survey_visualization` | **Discovery:** full prose still tightening (**OGAN-02**) |
+| Capability discovery | `GET /api/capabilities` incl. `workflows` + **`ui_surfaces`** | **Discovery:** **shipped** for viz/constellation query mapping (**OGAN-02**, 2026-04-19) |
 | Constellation rows | same visualization route family with `all=0` + `showTestData` | **Data:** full; **camera/UI** browser-only |
 | Operator probes / admin | `/api/admin/*`, `/api/operator-probes/*` | Out of System 2 slice; parity not rescored here |
 

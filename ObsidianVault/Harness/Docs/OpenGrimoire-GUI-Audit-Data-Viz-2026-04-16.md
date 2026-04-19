@@ -119,7 +119,7 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 | Layer | OpenGrimoire System 2 (2026-04-18 refresh) |
 |-------|------------------------|
 | Contract | **`npm run verify`** (OpenGrimoire) enforces capabilities ↔ routes ↔ OpenAPI coverage repo-wide — **not** viz-only, but drift is gated on every PR that runs verify. |
-| E2E | `visualization.spec.ts`, `test-routes.spec.ts` — good smoke; **still missing** explicit assertion that `/constellation` network query uses `?all=0` + `showTestData` vs `/visualization` `?all=1` (**OGAN-16**). |
+| E2E | `visualization.spec.ts`, `test-routes.spec.ts`, **`visualization-constellation-network-shape.spec.ts`** (OGAN-16 query drift), **`visualization-constellation-a11y.spec.ts`** (OGAN-15 axe shell). |
 | A11y | **System 1:** `e2e/sync-session-admin-a11y.spec.ts` + `npm run test:e2e:a11y` (Wave **OG-GUI-04**). **System 2 viz routes:** not in that spec — track **OGAN-15**. |
 
 **Wave boundary:** MiscRepos [Wave 10 — OG GUI release](../../../MiscRepos/local-proto/docs/WAVED_PENDING_TASKS.md) covers **System 1** survey/moderation evidence (`OG-GUI-*`). System 2 GUI debt stays here + **OGAN-*** in [MiscRepos pending_tasks — PENDING_AGENT_NATIVE](../../../MiscRepos/.cursor/state/pending_tasks.md).
@@ -142,8 +142,8 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 
 ### 3 — Accessibility
 
-- [ ] Run axe-playwright (or equivalent) on `/visualization` + `/constellation`; file issues for focus traps in Three canvas if any.
-- [ ] **Maintain:** Do not assume **OG-GUI-04** covers viz — keep **OGAN-15** visible until axe E2E exists for `/visualization` and `/constellation`.
+- [x] Run axe-playwright on `/visualization` + `/constellation` — [`e2e/visualization-constellation-a11y.spec.ts`](../../e2e/visualization-constellation-a11y.spec.ts) (**OGAN-15**). **`canvas`** (WebGL) is **excluded** from axe; keyboard focus inside the Three scene is still a **product / AT** gap — track with UX if raised.
+- [x] **Maintain:** **OG-GUI-04** remains Sync Session + admin; viz uses the dedicated spec above.
 
 ### 4 — Visual system
 
@@ -159,7 +159,7 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 ### 6 — Agent parity
 
 - [x] Add **`workflows`** entry **`cohort_survey_visualization`** plus refresh contract on `GET /api/capabilities` (see [`src/app/api/capabilities/route.ts`](../../src/app/api/capabilities/route.ts)); prod headers remain in ARCHITECTURE / AGENT_INTEGRATION.
-- [ ] Optional: document Playwright selectors for tab + auto-play for external agents (link from OA-FR-2 verification).
+- [x] Document Playwright selectors for external harnesses — [agent/PLAYWRIGHT_VIZ_HARNESS_SELECTORS.md](../agent/PLAYWRIGHT_VIZ_HARNESS_SELECTORS.md) + OA-FR-2 §4.5 (**OGAN-17**).
 - [ ] **Maintain:** On route or query-param changes, update **`GET /api/capabilities`** prose and verify scripts together (**OGAN-02**, **OGAN-05**).
 
 ---
