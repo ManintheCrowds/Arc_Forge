@@ -15,11 +15,12 @@ Maps **active git workspaces** under this machine to their `docs/` entry points.
 - **Brainstorms:** `MiscRepos/local-proto/docs/brainstorms/` (also check `MiscRepos/docs/brainstorms/` when present)
 - **Cursor plans (repo-local):** `MiscRepos/local-proto/.cursor/plans/` — pointers only; promote to decision-log / vault when actionable
 - **Gap analysis (repo):** `MiscRepos/local-proto/docs/OBSIDIAN_GITHUB_GAP_ANALYSIS.md`
+- **Brain Map / context atlas:** [BRAIN_MAP_HUB.md](../../../MiscRepos/docs/BRAIN_MAP_HUB.md) — `BRAIN_MAP_VAULT_ROOTS` / `BRAIN_MAP_VAULT_LABELS` to merge this vault’s markdown into OpenGrimoire `/context-atlas` (see § *Environment variables*)
 
 **Arc_Forge** (contains this vault):
 
 - Repo: `C:\Users\Dell\Documents\GitHub\Arc_Forge`
-- This vault: `Arc_Forge/ObsidianVault` (Obsidian root); use [[START_HERE]] at the vault root for a folder map and links to [[00_VAULT_RULES]] / [[00_HARNESS_VAULT_SCHEMA]].
+- This vault: `Arc_Forge/ObsidianVault` (Obsidian root); use [[Vault-meta/START_HERE]] for a folder map and links to [[00_VAULT_RULES]] / [[00_HARNESS_VAULT_SCHEMA]].
 
 **Submodules / sibling repos** (clone paths typical on this machine):
 

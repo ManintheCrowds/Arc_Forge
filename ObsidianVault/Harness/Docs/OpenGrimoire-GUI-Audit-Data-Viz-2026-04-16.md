@@ -14,7 +14,7 @@ tags: ["type/harness-doc", "status/mirror", "domain/harness"]
 
 ## AuditorSpec
 
-- **App / repo:** OpenGrimoire (`C:/Users/Dell/Documents/GitHub/OpenGrimoire`)
+- **App / repo:** OpenGrimoire (sibling checkout next to MiscRepos / Arc_Forge; no host-specific path in audit text)
 - **Branch / PR:** (not pinned)
 - **Environment:** local dev primary; production gate checks optional
 
@@ -28,16 +28,35 @@ tags: ["type/harness-doc", "status/mirror", "domain/harness"]
   3. **Operate demos safely** — prod: survey reads gated; dev-only test routes blocked unless `OPENGRIMOIRE_ALLOW_TEST_ROUTES`.
 
 - **CI / verify targets**
-  - Lint / typecheck: `npm run lint`, `npm run build` (or repo-standard scripts from `package.json`)
-  - E2E: `npx playwright test e2e/visualization.spec.ts e2e/test-routes.spec.ts`
-  - Contract: `GET /api/capabilities`, `docs/api/ROUTE_INDEX.json`, OpenAPI doc in repo
-  - A11y / visual: no dedicated OG workflow at audit time; manual + optional axe on `/visualization`
+  - Lint / typecheck / unit: `npm run lint`, `npm run type-check`, `npm run test` (Vitest)
+  - Full gate (repo root): `npm run verify` — includes `verify:capabilities`, `verify:openapi`, `verify:route-index`, `verify:moderation-auth`, `verify:admin-panel-a2ui` (shared with System 1)
+  - E2E (viz smoke): `npx playwright test e2e/visualization.spec.ts e2e/test-routes.spec.ts`
+  - **System 1 a11y gate (2026-04-18):** `npm run test:e2e:a11y` — **does not** visit `/visualization` or `/constellation`; viz a11y remains **OGAN-15** backlog
+  - A11y / visual (viz): manual or future axe spec on `/visualization` + `/constellation` (see dimension 3)
 
 - **Existing audit doc:** [gui-2026-04-16-opengrimoire-survey.md](./gui-2026-04-16-opengrimoire-survey.md) (System 1)
 
 - **Parity / capability docs:** [AGENT_INTEGRATION.md](../AGENT_INTEGRATION.md) · [ARCHITECTURE_REST_CONTRACT.md](../ARCHITECTURE_REST_CONTRACT.md) · `src/app/api/capabilities/route.ts`
 
 - **Notes:** Two visualization stacks (`DataVisualization` vs `components/visualization` + Zustand); `?all=1` vs `?all=0` + `showTestData` must not be conflated in harnesses.
+
+---
+
+## BrowserReviewSpec (MCP hardening wave, 2026-04-18)
+
+Aligned with **browser-review-protocol** (three human jobs above → flows).
+
+- **Base URL:** `http://localhost:3001`
+- **Route(s):** `/visualization`, `/constellation`, `/visualization/alluvial`, `/test-chord`
+- **Auth:** none (local dev); prod/staging not in scope for this desk pass
+- **Viewports:** 1280×720 (desktop), 375×667 (mobile) when live browser is used
+- **Flows**
+  1. Open `/visualization` → **Expected:** page settles; diagram or mock banner present; no uncaught console errors on first paint.
+  2. Open `/constellation` → **Expected:** Three view loads or documented empty state; network uses `all=0` semantics per OA-FR-2 (contrast with `/visualization` `?all=1` — **OGAN-16**).
+  3. Open `/test-chord` (dev) → **Expected:** mock chord only when test routes allowed; blocked in prod per middleware.
+- **Critical screens:** `/visualization` (main D3), `/constellation` (Three + Zustand)
+
+**Executor report:** [evidence/og-system2-mcp-wave/BROWSER_REVIEW_REPORT.md](./evidence/og-system2-mcp-wave/BROWSER_REVIEW_REPORT.md)
 
 ---
 
@@ -97,11 +116,13 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 
 ## Automation gaps
 
-| Layer | OpenGrimoire System 2 |
+| Layer | OpenGrimoire System 2 (2026-04-18 refresh) |
 |-------|------------------------|
-| Contract | Capabilities + OpenAPI exist; **no** CI in-repo at audit time enforcing route↔OpenAPI drift for OG alone. |
-| E2E | `visualization.spec.ts`, `test-routes.spec.ts` — good smoke; **no** assertion that `/constellation` uses `?all=0` + `showTestData` vs `/visualization` `?all=1`. |
-| A11y | Manual / optional; not wired as merge gate for viz routes. |
+| Contract | **`npm run verify`** (OpenGrimoire) enforces capabilities ↔ routes ↔ OpenAPI coverage repo-wide — **not** viz-only, but drift is gated on every PR that runs verify. |
+| E2E | `visualization.spec.ts`, `test-routes.spec.ts` — good smoke; **still missing** explicit assertion that `/constellation` network query uses `?all=0` + `showTestData` vs `/visualization` `?all=1` (**OGAN-16**). |
+| A11y | **System 1:** `e2e/sync-session-admin-a11y.spec.ts` + `npm run test:e2e:a11y` (Wave **OG-GUI-04**). **System 2 viz routes:** not in that spec — track **OGAN-15**. |
+
+**Wave boundary:** MiscRepos [Wave 10 — OG GUI release](../../../MiscRepos/local-proto/docs/WAVED_PENDING_TASKS.md) covers **System 1** survey/moderation evidence (`OG-GUI-*`). System 2 GUI debt stays here + **OGAN-*** in [MiscRepos pending_tasks — PENDING_AGENT_NATIVE](../../../MiscRepos/.cursor/state/pending_tasks.md).
 
 ---
 
@@ -111,29 +132,35 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 
 - [ ] Add E2E or smoke: `NavigationDots` targets either get real `app/` pages or are removed from shipped UI.
 - [x] When mock fallback activates, show non-blocking banner (`MockSurveyDataBanner`, `data-testid="opengrimoire-viz-mock-data-banner"`).
+- [ ] **Maintain:** After changing viz routes or `NavigationDots`, run `npx playwright test e2e/visualization.spec.ts e2e/test-routes.spec.ts` before merge.
 
 ### 2 — Cognitive load
 
 - [ ] In admin or docs, one diagram: “Which page uses which stack” (D3 vs Three vs fixtures).
 - [ ] Rename or namespace exports so `ConstellationView` search resolves to the live file first.
+- [ ] **Maintain:** When adding a viz surface, update OA-FR-2 or this audit’s “dual stack” note so harness authors do not assume one HTTP shape.
 
 ### 3 — Accessibility
 
 - [ ] Run axe-playwright (or equivalent) on `/visualization` + `/constellation`; file issues for focus traps in Three canvas if any.
+- [ ] **Maintain:** Do not assume **OG-GUI-04** covers viz — keep **OGAN-15** visible until axe E2E exists for `/visualization` and `/constellation`.
 
 ### 4 — Visual system
 
 - [ ] Audit `DataVisualization` for stray hex outside tokens; align with `--opengrimoire-viz-*` where missing.
+- [ ] **Maintain:** If product adds Percy/Chromatic for viz pages, mirror the **OG-GUI-06** pattern (`e2e/visual-baselines-og-gui-06.spec.ts`) for stable selectors first.
 
 ### 5 — A2UI / catalog
 
 - [ ] Extend `data-region` / `data-testid` to `/constellation` loading shell and Zustand-driven controls used in demos.
 - [ ] Document `data-usage-hint` on header in AGENT_INTEGRATION or OA-FR-2 appendix.
+- [ ] **Maintain:** New operator-facing components should follow the same `data-region` / non-decorative naming discipline as System 1 **OG-GUI-A2**.
 
 ### 6 — Agent parity
 
 - [x] Add **`workflows`** entry **`cohort_survey_visualization`** plus refresh contract on `GET /api/capabilities` (see [`src/app/api/capabilities/route.ts`](../../src/app/api/capabilities/route.ts)); prod headers remain in ARCHITECTURE / AGENT_INTEGRATION.
 - [ ] Optional: document Playwright selectors for tab + auto-play for external agents (link from OA-FR-2 verification).
+- [ ] **Maintain:** On route or query-param changes, update **`GET /api/capabilities`** prose and verify scripts together (**OGAN-02**, **OGAN-05**).
 
 ---
 

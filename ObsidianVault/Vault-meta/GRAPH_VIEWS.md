@@ -43,6 +43,8 @@ Same as §2 but **hides** `Harness/Handoff-archive/` (current handoff + dailies 
 (path:Harness OR path:LLM-Wiki OR path:Vault-meta OR path:Pointers OR path:research OR path:docs OR path:.cursor_context) -path:Handoff-archive -path:workflow_ui -path:scripts
 ```
 
+**Metrics (read-only):** From MiscRepos root with `OBSIDIAN_VAULT_ROOT` set (or `-VaultRoot`), run `local-proto/scripts/Get-ObsidianVaultGraphSlice2bMetrics.ps1` (default **§2b**). For the **full §2** slice (includes `Handoff-archive/`), run the same script with **`-Slice 2`**. Output: markdown file count in slice, strict orphans (resolved `[[wikilinks]]` against the whole vault, same exclusions as `Scan-ObsidianOrphans.ps1`), and top inbound hubs. Optional **`-Json`** for automation; **`-TopHubs N`** to change hub list length.
+
 ### 3. Meta only (policy + index hub)
 
 ```text
@@ -67,7 +69,7 @@ When exploring any view, you can always append:
 
 ## Local graph
 
-Open **Local graph** from [[START_HERE]] or a campaign note: the filter applies from the **current note’s neighborhood**. Start from `Campaigns/Campaign_Index` or `Sources/Source_Index` for dense subgraphs.
+Open **Local graph** from [[Vault-meta/START_HERE]] or a campaign note: the filter applies from the **current note’s neighborhood**. Start from `Campaigns/Campaign_Index` or `Sources/Source_Index` for dense subgraphs.
 
 ## Color groups (global graph)
 

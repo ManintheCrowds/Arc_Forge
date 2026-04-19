@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Harness/MOC_Harness_State.md",
+                "file": "LLM-Wiki/Topics/README.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -40,11 +40,21 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "MOC_Harness_State"
+              "title": "README"
+            }
+          },
+          {
+            "id": "00adc9c46570bcdb",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -101,7 +111,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "right": {
     "id": "393ccb5c7e0f78e8",
@@ -208,34 +218,34 @@
       "publish:Publish changes...": false
     }
   },
-  "active": "a46faebc65a1ba84",
+  "active": "00adc9c46570bcdb",
   "lastOpenFiles": [
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T195543Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T182621Z.md",
     "Harness/Pending-Tasks.md",
-    "Harness/Handoff-archive/20260417-192536.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T192649Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T192538Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T182650Z.md",
-    "Harness/Handoff-archive/20260417-181443.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T181445Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T172511Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T172106Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T172031Z.md",
-    "Harness/Handoff-archive/20260417-172029.md",
-    "LLM-Wiki/Synthesis/2026-04-17-Cursor-session-BYOC-vault-env.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154503Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154413Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T152833Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155906Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155849Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155656Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155615Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T155546Z.md",
-    "Harness/Handoff-archive/20260417-155544.md",
-    "Harness/Docs/Scheduled-Tasks.md",
-    "Harness/Docs/Single-Vault-Inventory-2026-04-17.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-17T154908Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T024914Z.md",
+    "Harness/Handoff-archive/20260419-024910.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T013952Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T012851Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T011821Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T004145Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T002056Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T000644Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T000012Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T000001Z.md",
+    "Vault-meta/MOC_Harness_Vault_Lint.md",
+    "Vault-meta/MOC_Harness_OpenGrimoire.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T235657Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T233236Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T233049Z.md",
+    "research/MiscRepos-Vault-Sync-Command.md",
+    "research/Int-Vault-Resync-Operator-Archive.md",
+    "Vault-meta/MOC_Operator_Base_Camp.md",
+    "Vault-meta/START_HERE.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T222424Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T221543Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T213159Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T212158Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T210526Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-18T210338Z.md",
     "Interview-Archive",
     "Reference",
     "MOC-from-MiscRepos",

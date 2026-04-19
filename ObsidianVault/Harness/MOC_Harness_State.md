@@ -7,6 +7,19 @@ tags: ["type/moc", "status/verified", "domain/harness"]
 
 Obsidian **`Harness/`** is a **read-mostly mirror** of agent state from the MiscRepos harness (see `local-proto/scripts/sync_harness_to_vault.ps1`). Files here are **not** the canonical edit surface unless you are intentionally round-tripping; the vault exists so you can **browse, search, and graph** the same text the agent uses.
 
+## Hub diet (rename blast radius)
+
+This note is the **default “where is harness mirror surface X?”** map. **Fan-in** is dominated by **Harness/Daily**, **Harness/Handoff-archive**, **Harness/Handoff-Latest**, plus a small set of **Vault-meta** entry links (dozens of inbound `[[Harness/MOC_Harness_State]]` wikilinks total). That is expected for a super-hub; do **not** bulk-edit historical mirrors to “delink” them.
+
+For **new** notes, when the topic is a **narrow recurring theme** (OpenGrimoire audits, vault graph/lint/metrics), link to a **theme hub** below instead of adding more prose-only pointers here. Keep **this MOC** for mirror-surface orientation and first-time navigation.
+
+**Renames:** the vault has **`alwaysUpdateLinks`: true** in `.obsidian/app.json`, so Obsidian updates many wikilinks when a moved note keeps its relationship to the graph; still prefer **path-qualified** `[[Harness/...]]` / `[[Vault-meta/...]]` where stems collide (see **[[Vault-meta/00_VAULT_RULES]]**).
+
+## Theme hubs
+
+- [[Vault-meta/MOC_Harness_OpenGrimoire]] — OpenGrimoire GUI, audits, observability backlog pointers
+- [[Vault-meta/MOC_Harness_Vault_Lint]] — graph views, orphan budget, tag/orphan scripts, §2 metrics
+
 ## What each surface is
 
 | Vault path | Canonical source (harness repo) | Role |
@@ -53,4 +66,4 @@ SORT file.name ASC
 
 - [[Vault-meta/00_HARNESS_VAULT_SCHEMA]] — tag dimensions for harness notes
 - [[Vault-meta/GitHub-Repos-Index]] — repo entry points
-- [[START_HERE]] — vault-wide hub
+- [[Vault-meta/START_HERE]] — vault-wide hub

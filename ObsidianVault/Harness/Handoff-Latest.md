@@ -1,59 +1,56 @@
 ---
-title: "Handoff #22: IronClaw G7 + engineering spec (ACE + local-first)"
+title: "Handoff #29: Stack atlas closure — **STK-*** + **OA-OH-0** archived; OpenHarness `docs/BRAIN_MAP.md`"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
 ---
 
-# Handoff #22: IronClaw G7 + engineering spec (ACE + local-first)
+# Handoff #29: Stack atlas closure — **STK-*** + **OA-OH-0** archived; OpenHarness `docs/BRAIN_MAP.md`
 
-decision_id: handoff-2026-04-17-ironclaw-spec-ace-localfirst
-supersedes: handoff-2026-04-17-model-router-weekly-archive
-Updated: 2026-04-17T23:30:00Z
+decision_id: handoff-2026-04-18-stack-atlas-og-closure
+supersedes: handoff-2026-04-18-og-observability-hub-pending-tasks
+Updated: 2026-04-18T23:59:00Z
 
 ## Done
 
-- **G7 IronClaw evaluation** closed with memo: [.cursor/state/adhoc/2026-04-17_g7_ironclaw_evaluation.md](adhoc/2026-04-17_g7_ironclaw_evaluation.md) (rubric, threats, agent-native table, hands-on blockers on host without `cargo`/`psql`/`ironclaw`; decision: pilot/patterns, defer default substrate). `pending_tasks.md` **G7** → done; seminar + observations cross-links updated.
-- **Engineering spec seed:** [docs/specs/IRONCLAW_ENGINEERING_SPEC.md](../docs/specs/IRONCLAW_ENGINEERING_SPEC.md) — architecture, agent-native §, portfolio integration; extended with **local-first** ([.cursor/skills/local-first/SKILL.md](../skills/local-first/SKILL.md), `D:\local-first\` corpus, §5.3) and **ACE (David Shapiro)** — L1–L6 mapping vs IronClaw + [PENTAGI_FEDIMINT_ACE_ROADMAP.md](../docs/PENTAGI_FEDIMINT_ACE_ROADMAP.md) §2–3; upstream [ACE_Framework](https://github.com/daveshap/ACE_Framework), [Medium intro](https://medium.com/@dave-shap/autonomous-agents-are-here-introducing-the-ace-framework-a180af15d57c).
-- **G10** added to `pending_tasks.md` § PENDING_FUTURE — maintain spec, G7-P1 spike follow-up, MCP stdio fit, ACE/local-first gates; row text updated when spec gained ACE/local-first.
+- **`pending_tasks.md`:** Marked **STK-0 … STK-6** and **OA-OH-0** `done`; ran **`python .cursor/scripts/split_done_tasks_to_completed.py --skip-vault-resync`** — **8** rows → **`completed_tasks.md`** (new § **PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE** + § **PENDING_OPENGRIMOIRE_HARNESS** row **OA-OH-0**).
+- **`pending_tasks.md` stub:** § **PENDING_STACK_ATLAS…** kept for anchor stability; **Status** = closed **2026-04-18**; cross-ref + Contents point to archive; **NEXT-3** link in **`completed_tasks.md`** fixed to in-file archive anchor (was pending-only `#pending_stack_atlas…`).
+- **OpenHarness:** New **[`docs/BRAIN_MAP.md`](../../OpenHarness/docs/BRAIN_MAP.md)** stub → MiscRepos **`BRAIN_MAP_HUB`**, sibling paths, `/context-atlas` SSOT pointers.
+- **STK-1 wording:** Harness state path corrected to repo-root **`state/`** (not `.cursor/state`) in archived task text.
 
 ## Next
 
-- **Operator / future session:** G7-P1 — provision host with Rust + Postgres/pgvector + IronClaw (MSI or `cargo`); Ollama smoke; append results to G7 memo appendix or spec.
-- **G10:** Refine spec after spike; map top MCP servers to HTTP vs stdio (G7-P2).
-- **Commit:** Stage `docs/specs/IRONCLAW_ENGINEERING_SPEC.md`, `docs/bitcoin_observations/*`, `.cursor/state/pending_tasks.md`, `.cursor/state/adhoc/2026-04-17_g7_ironclaw_evaluation.md`, `handoff_latest.md`, new `handoff_archive/*.md`, `handoff_checksum.txt`, `decision_index.md`. Run `python .cursor/scripts/validate_pending_tasks_table.py` before commit.
-- **Vault:** If `OBSIDIAN_VAULT_ROOT` set, `npm run vault:sync` or int-vault-resync after commit so Harness Handoff/Pending reflect changes.
+- **Carry from #28:** **OG-OH-01 … OG-OH-13** (observability hub backlog); **AN1** + **OGAN-02 … OGAN-17**; **PUB-***; **BYOC-***; **BM-A11Y**; **WS-PRIV-***. ~~**STK-*** / **OA-OH-0**~~ — **closed** (this handoff).
+- **Vault mirror:** If **`Harness/Pending-Tasks.md`** / Obsidian mirror stale, run **`local-proto/scripts/sync_harness_to_vault.ps1`** or **`int-vault-resync.ps1 -HarnessRoot <MiscRepos>`** (split used **`--skip-vault-resync`**).
+- **OpenGrimoire:** First **OG-OH** implementation row still suggests **`npm run verify`** after code edits.
 
 ## Paths / artifacts
 
 | Area | Path |
 |------|------|
-| IronClaw spec | `MiscRepos/docs/specs/IRONCLAW_ENGINEERING_SPEC.md` |
-| G7 memo | `MiscRepos/.cursor/state/adhoc/2026-04-17_g7_ironclaw_evaluation.md` |
-| Pending G10 | `MiscRepos/.cursor/state/pending_tasks.md` § PENDING_FUTURE |
-| ACE + Fedimint map | `MiscRepos/docs/PENTAGI_FEDIMINT_ACE_ROADMAP.md` |
-| Local-first skill | `MiscRepos/.cursor/skills/local-first/SKILL.md` |
+| Archived rows | `MiscRepos/.cursor/state/completed_tasks.md` § **PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE**, § **PENDING_OPENGRIMOIRE_HARNESS** (OA-OH-0) |
+| Pending stub + open work | `MiscRepos/.cursor/state/pending_tasks.md` |
+| OpenHarness stub | `OpenHarness/docs/BRAIN_MAP.md` |
+| SSOT (operator) | `OpenGrimoire/README.md`, `OpenGrimoire/docs/OPENGRIMOIRE_SYSTEMS_INVENTORY.md`, `OpenGrimoire/docs/GUI_ACTION_MAP_BRAIN_MAP.md`, `MiscRepos/.cursor/brain-map.env.example`, `MiscRepos/docs/BRAIN_MAP_HUB.md` |
 
 ## dependency_links
 
-- [IRONCLAW_ENGINEERING_SPEC.md](../docs/specs/IRONCLAW_ENGINEERING_SPEC.md)
-- [PENTAGI_FEDIMINT_ACE_ROADMAP.md](../docs/PENTAGI_FEDIMINT_ACE_ROADMAP.md)
-- [HANDOFF_FLOW.md](../HANDOFF_FLOW.md)
+- [completed_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](completed_tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
+- [pending_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](pending_tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
+- [OpenHarness docs/BRAIN_MAP.md](../../OpenHarness/docs/BRAIN_MAP.md)
 
 ## open_risks
 
-- Hands-on IronClaw not verified on this Windows host (`cargo`/`psql` missing earlier); spike still blocks “adopt” claims.
-- MCP **HTTP-only** may conflict with stdio-heavy harness MCP map until bridges exist.
+- None specific to stack-atlas closure; **OG-OH-06** alignment-key creep risk remains per **#28**.
 
 ## Decisions / gotchas
 
-- **ACE vs Fedimint doc “ACE”:** Shapiro ACE layers are the framing; `PENTAGI_FEDIMINT_ACE_ROADMAP` is portfolio SSOT for L1–L6 harness mapping—spec §5.4 extends that to IronClaw pilot surfaces.
-- **Private scope-notes:** G7 block may live under `.cursor/private/scope-notes.md` (cursorignore); handoff does not duplicate proprietary lines.
+- **STK-5** closed as **waived** (labels + `/context-atlas` suffice); deeper UX → **OGAN-*** / **BM-A11Y** if reopened.
+- **`split_done`** without vault resync: operator must sync harness mirror separately if they rely on Obsidian **`Harness/Pending-Tasks.md`**.
 
 ## Verification
 
-- Spec and pending_tasks tables edited in-editor; run `validate_pending_tasks_table.py` before commit if touching `pending_tasks.md`.
+- **`split_done_tasks_to_completed.py`** exit **0** (8 rows moved). No OpenGrimoire **`npm run verify`** this thread (harness/docs + OpenHarness stub only).
 ## Vault navigation
 
-**Daily log:** [[Harness/Daily/2026-04-17]]
+**Daily log:** [[Harness/Daily/2026-04-18]]
 **Handoff chain:** [[Harness/MOC_Harness_State]]
 **Decision index:** [[Harness/Decision-Index]]
-**Supersedes:** [[Harness/Handoff-archive/20260417-192536.md]]

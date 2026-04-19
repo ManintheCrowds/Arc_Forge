@@ -13,6 +13,8 @@ This vault implements a **Karpathy-style LLM Wiki**: a compounding, interlinked 
 
 **MiscRepos reference (repo clone):** `MiscRepos/local-proto/docs/LLM_WIKI_VAULT.md` (operator guide); archived gist: `MiscRepos/local-proto/docs/references/karpathy-llm-wiki-snapshot.md`.
 
+**Context atlas (Brain Map):** To include this vault’s markdown in OpenGrimoire **`/context-atlas`**, set **`BRAIN_MAP_VAULT_ROOTS`** and **`BRAIN_MAP_VAULT_LABELS`** per MiscRepos [BRAIN_MAP_HUB.md](../../../MiscRepos/docs/BRAIN_MAP_HUB.md) § *Environment variables* (and `MiscRepos/.cursor/brain-map.env.example`).
+
 ## Three layers (this vault)
 
 | Layer | Location | Who writes |
@@ -62,4 +64,4 @@ Mechanical lint only (no ingest/compile logic in scripts):
 
 - [[00_HARNESS_WIKI_PIPELINE]] — harness + LLM-Wiki Capture→Publish stages and gates
 - [[LLM-Wiki/_index]] — catalog hub
-- [[START_HERE]] — vault root hub
+- [[Vault-meta/START_HERE]] — vault hub (harness + LLM-Wiki entry)

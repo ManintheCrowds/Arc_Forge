@@ -141,7 +141,11 @@ No MCP tools—these run via **`run_terminal_cmd`** from repo root (operator or 
 |--------|---------|
 | `local-proto/scripts/Lint-ObsidianVaultContract.ps1` | Vault contract / frontmatter lint against harness rules |
 | `local-proto/scripts/Scan-ObsidianTagGaps.ps1` | Tag / dimension gap scan → report under vault `_meta/` |
+| `local-proto/scripts/Scan-ObsidianOrphans.ps1` | Read-only orphan / weak wikilink scan → `_meta/Orphan-Link-Report.md` (set `OBSIDIAN_VAULT_ROOT` or `-VaultRoot`) |
+| `local-proto/scripts/Get-ObsidianVaultGraphSlice2bMetrics.ps1` | Read-only **GRAPH_VIEWS** §2 / §2b metrics (default `-Slice 2b`; `-Slice 2` for full §2) |
 | `local-proto/scripts/Add-ObsidianVaultFrontmatter.ps1` | Add or normalize frontmatter (`-DryRun` first) |
+
+**Agent onboarding:** same paths, env, and §2 definition as humans — [AGENT_ENTRY_INDEX.md](AGENT_ENTRY_INDEX.md) row *Running read-only Obsidian vault audits*; detail table [LLM_WIKI_VAULT.md](../../local-proto/docs/LLM_WIKI_VAULT.md) § Tagging and mechanical lint.
 
 ---
 

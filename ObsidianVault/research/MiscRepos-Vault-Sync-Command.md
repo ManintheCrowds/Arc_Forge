@@ -2,6 +2,7 @@
 title: "MiscRepos harness → Obsidian vault sync"
 tags:
   - type/runbook
+  - status/verified
   - domain/harness
 date: 2026-04-16
 ---

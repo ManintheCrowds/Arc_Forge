@@ -2,6 +2,7 @@
 title: Int vault resync — operator archive
 tags:
   - type/operator-runbook
+  - status/verified
   - domain/harness
 date: 2026-04-16
 ---
