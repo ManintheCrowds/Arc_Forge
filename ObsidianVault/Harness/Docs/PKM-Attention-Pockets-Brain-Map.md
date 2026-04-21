@@ -1,6 +1,11 @@
 ---
 title: "PKM: attention pockets and Brain Map parity (no OpenClaw)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # PKM: attention pockets and Brain Map parity (no OpenClaw)

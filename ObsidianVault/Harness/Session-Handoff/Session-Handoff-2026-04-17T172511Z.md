@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -20,7 +26,7 @@ Updated: 2026-04-17T23:40:00Z
 - **BYOC / Nate B Jones:** Adhoc archive [2026-04-17_nate-b-jones-byoc-working-intelligence.md](adhoc/2026-04-17_nate-b-jones-byoc-working-intelligence.md) — four layers, BYOC stack, cross-links (AI_TRENDS SHA manifest, SCP-ANT1, CHAOS_BITCOIN_MAPPING), crypto-role table; optional YouTube ingest deferred until URL.
 - **Obsidian archive:** Vault note on disk `ObsidianVault/LLM-Wiki/Synthesis/2026-04-17-Cursor-session-BYOC-vault-env.md` (session summary for humans); operator adhoc [2026-04-17_obsidian_vault_mcp_operator_handoff.md](adhoc/2026-04-17_obsidian_vault_mcp_operator_handoff.md) updated for CLI `sessions.db` parity.
 - **Automation:** [handoff_vault_session.py](../scripts/handoff_vault_session.py) — `write_handoff.py` appends **`sessions.db`** when `OBSIDIAN_VAULT_ROOT` set (`HANDOFF_VAULT_SESSION_DISABLE` to opt out). Docs: [HANDOFF_FLOW.md](../HANDOFF_FLOW.md), [OBSIDIAN_VAULT_INTEGRATION.md](../docs/OBSIDIAN_VAULT_INTEGRATION.md), [.cursorrules](../../.cursorrules), [HARNESS_VAULT_WRITE_CONTRACT.md](../../local-proto/docs/HARNESS_VAULT_WRITE_CONTRACT.md), [COMMANDS_README.md](../docs/COMMANDS_README.md), [local-proto/.env.example](../../local-proto/.env.example).
-- **Backlog:** New [§ PENDING_PORTABLE_AI_MEMORY](pending_tasks.md#pending_portable_ai_memory-byoc-session-db-vault-harness) — **BYOC-1**..**BYOC-6**; **NEXT-3** row points at BYOC-*; **Last synced** line updated in `pending_tasks.md`.
+- **Backlog:** New [§ PENDING_PORTABLE_AI_MEMORY](Harness/Pending-Tasks.md#pending_portable_ai_memory-byoc-session-db-vault-harness) — **BYOC-1**..**BYOC-6**; **NEXT-3** row points at BYOC-*; **Last synced** line updated in `pending_tasks.md`.
 
 ## Next
 

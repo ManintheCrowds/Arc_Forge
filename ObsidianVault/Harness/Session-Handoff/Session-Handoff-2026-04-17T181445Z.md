@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -19,7 +25,7 @@ Updated: 2026-04-17T18:50:00Z
 
 - **LOCAL_FIRST_MODEL_ROUTER_SPEC:** [LOCAL_FIRST_MODEL_ROUTER_SPEC.md](../docs/LOCAL_FIRST_MODEL_ROUTER_SPEC.md) — normative router contract (inputs/outputs, vault/skip flags, meditation appendix). Example profile: [examples/hardware_profile.yaml.example](../docs/examples/hardware_profile.yaml.example) (copy to gitignored `.cursor/private/hardware_profile.yaml`).
 - **Cross-links:** [AI_TASK_EVALS.md](../docs/AI_TASK_EVALS.md), [AGENT_ENTRY_INDEX.md](../docs/AGENT_ENTRY_INDEX.md), [ORCHESTRATOR_CONFIG.md](../../local-proto/docs/ORCHESTRATOR_CONFIG.md), [LOCAL_AI_TOKEN_OFFLOAD_POLICY.md](../../local-proto/docs/LOCAL_AI_TOKEN_OFFLOAD_POLICY.md), [model-selection.mdc](../rules/model-selection.mdc).
-- **Pending tasks:** **G5** closed (model escalation doc + spec); new [§ PENDING_MODEL_ROUTER](pending_tasks.md#pending_model_router-local-first) (**MR1–MR8** implementation backlog).
+- **Pending tasks:** **G5** closed (model escalation doc + spec); new [§ PENDING_MODEL_ROUTER](Harness/Pending-Tasks.md#pending_model_router-local-first) (**MR1–MR8** implementation backlog).
 - **Weekly archive automation:** [scheduled_split_done_tasks.ps1](../scripts/scheduled_split_done_tasks.ps1) — validate tables → optional dry-run log → `split_done_tasks_to_completed.py` with default `--ignore-vault-resync-failure`; flags `-SkipVaultResync`, `-StrictVault`, `-DryRunOnly`, `-SkipDryRunLog`. Python: `--skip-vault-resync`, `--ignore-vault-resync-failure` on [split_done_tasks_to_completed.py](../scripts/split_done_tasks_to_completed.py).
 - **Scheduling SSOT:** [SCHEDULED_TASKS.md](../../local-proto/docs/SCHEDULED_TASKS.md) — table row, **Harness-PendingTasksArchive** `Register-ScheduledTask` (Sunday 10:40), cron row, hygiene exception, PowerShell example; [GOVERNANCE_RITUAL.md](../docs/GOVERNANCE_RITUAL.md) table row + git policy note for state files.
 

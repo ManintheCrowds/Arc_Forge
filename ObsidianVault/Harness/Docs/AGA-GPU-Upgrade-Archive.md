@@ -1,6 +1,11 @@
 ---
 title: "Alienware Graphics Amplifier — GPU upgrade archive"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # Alienware Graphics Amplifier — GPU upgrade archive

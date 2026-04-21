@@ -1,6 +1,11 @@
 ---
 title: "Handoff #25: Ghost canonical publishing backlog + vault Harness sync (HARNESS_ROOT)"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
+group: harness-archive
+color: slate
+cssclasses:
+  - vault-grp-harness-archive
+  - vault-col-slate
 ---
 
 # Handoff #25: Ghost canonical publishing backlog + vault Harness sync (HARNESS_ROOT)
@@ -30,7 +35,7 @@ Updated: 2026-04-18T19:29:13Z
 
 ## dependency_links
 
-- [pending_tasks.md](pending_tasks.md)
+- [pending_tasks.md](Harness/Pending-Tasks.md)
 
 ## open_risks
 

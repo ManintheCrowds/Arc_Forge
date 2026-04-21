@@ -1,6 +1,11 @@
 ---
 title: "Handoff #23: OpenGrimoire OG-GUI-01 — BrowserReviewSpec + evidence"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
+group: harness-archive
+color: slate
+cssclasses:
+  - vault-grp-harness-archive
+  - vault-col-slate
 ---
 
 # Handoff #23: OpenGrimoire OG-GUI-01 — BrowserReviewSpec + evidence

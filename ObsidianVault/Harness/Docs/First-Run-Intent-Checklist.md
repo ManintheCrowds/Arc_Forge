@@ -1,6 +1,11 @@
 ---
 title: "First run — OpenGrimoire intent + vault (operator checklist)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # First run — OpenGrimoire intent + vault (operator checklist)

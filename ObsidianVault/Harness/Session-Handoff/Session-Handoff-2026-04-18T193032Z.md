@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -36,7 +42,7 @@ Updated: 2026-04-18T19:29:13Z
 
 ## dependency_links
 
-- [pending_tasks.md](pending_tasks.md)
+- [pending_tasks.md](Harness/Pending-Tasks.md)
 
 ## open_risks
 

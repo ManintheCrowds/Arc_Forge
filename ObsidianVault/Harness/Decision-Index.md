@@ -1,12 +1,18 @@
 ---
 title: "Decision index"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
+group: harness-core
+color: slate
+cssclasses:
+  - vault-grp-harness-core
+  - vault-col-slate
 ---
 
 # Decision index
 
 | decision_id | timestamp (UTC) | summary | link |
 |-------------|-----------------|--------|------|
+| handoff-2026-04-21-oa-1-systems-inventory | 2026-04-21 | **OA-1:** Refreshed OpenGrimoire `OPENGRIMOIRE_SYSTEMS_INVENTORY.md` (routes, Vitest, full `verify` chain, MCP link-only); `npm run verify` green; **Handoff #31**; archive **#30** (ChatGPT export pipeline) | [Handoff-Latest.md](Handoff-Latest.md) |
 | handoff-2026-04-18-stack-atlas-og-closure | 2026-04-18 | **PENDING_STACK_ATLAS** closed: **STK-0..6** + **OA-OH-0** → **completed_tasks**; pending stub + cross-refs; **OpenHarness** `docs/BRAIN_MAP.md` stub; **NEXT-3** archive link fix; **split_done** `--skip-vault-resync`; **write_handoff** → Handoff **#29**; archive **#28** → [20260419-024910.md](Handoff-archive/20260419-024910.md) | [Handoff-Latest.md](Handoff-Latest.md) |
 | handoff-2026-04-18-pending-next-e2e-closure | 2026-04-18 | **PENDING_NEXT** NEXT-1..5 closed: **split_done** → **completed_tasks** § PENDING_NEXT; **pending_tasks** stub + links; **CONTEXT_PKM_E2E** Obsidian `sessions.db` teaching; **CONTEXT_PKM_PREREQUISITES** P0.2c port **3001**; **build_brain_map** verified; **sync_harness_to_vault**; vault **sessions.db** row via **write_handoff**; Handoff **#27**; archive **#26** | [Handoff-Latest.md](Handoff-Latest.md) |
 | handoff-2026-04-18-ogan01-vault-mirror-systemic | 2026-04-18 | **OGAN-01** shipped: moderation **PATCH** → `dispatchSurveyDataChanged`; row → **completed_tasks**; **AGENT_NATIVE_AUDIT** table + P1; **known-issues** Harness/Obsidian drift + **README** + **split_done** stderr hints; archive **Handoff #25** | [Handoff-archive/20260418-202812.md](Handoff-archive/20260418-202812.md) |

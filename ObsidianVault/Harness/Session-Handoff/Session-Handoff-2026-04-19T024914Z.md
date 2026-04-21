@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -40,7 +46,7 @@ Updated: 2026-04-18T23:59:00Z
 ## dependency_links
 
 - [completed_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](completed_tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
-- [pending_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](pending_tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
+- [pending_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](Harness/Pending-Tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
 - [OpenHarness docs/BRAIN_MAP.md](../../OpenHarness/docs/BRAIN_MAP.md)
 
 ## open_risks

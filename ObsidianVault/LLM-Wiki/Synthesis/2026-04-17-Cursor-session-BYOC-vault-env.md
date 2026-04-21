@@ -6,6 +6,12 @@ tags:
   - domain/cursor
   - domain/harness
 source: Cursor agent transcript (logged by operator request)
+group: llm-wiki-synthesis
+color: violet
+cssclasses:
+  - vault-grp-llm-wiki-synthesis
+  - vault-col-violet
+
 ---
 
 # Session summary (logged from Cursor)

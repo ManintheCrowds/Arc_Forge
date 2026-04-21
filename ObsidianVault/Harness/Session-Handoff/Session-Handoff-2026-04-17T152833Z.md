@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -31,7 +37,7 @@ Updated: 2026-04-16T22:45:00Z
 
 ## Todos — OpenGrimoire full review refresh (OA-FR-REFRESH-2026-04-17)
 
-**Source:** [OpenGrimoire `docs/plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md`](../../../OpenGrimoire/docs/plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md) · harness row **`OA-FR-REFRESH-2026-04-17`** in [pending_tasks.md](pending_tasks.md) § OPENGRIMOIRE_FULL_REVIEW.
+**Source:** [OpenGrimoire `docs/plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md`](../../../OpenGrimoire/docs/plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md) · harness row **`OA-FR-REFRESH-2026-04-17`** in [pending_tasks.md](Harness/Pending-Tasks.md) § OPENGRIMOIRE_FULL_REVIEW.
 
 - [ ] **OG-REFRESH-01 (E2E / task success):** Playwright spec — dispatch `opengrimoire-survey-data-changed` (or real POST + moderation) and assert a **second** `GET` to `/api/survey/visualization` (closes REQ-S2.VIZ-REF observer gap).
 - [ ] **OG-REFRESH-02 (docs / cognitive load):** One operator diagram: when to use **`/wiki`** vs vault SSOT — link [WIKI_MIRROR.md](../../../OpenGrimoire/docs/WIKI_MIRROR.md).

@@ -1,6 +1,11 @@
 ---
 title: "Joseph Voelbel — OpenClaw stack, ClawHub skills, collaboration primer"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # Joseph Voelbel — OpenClaw stack, ClawHub skills, collaboration primer

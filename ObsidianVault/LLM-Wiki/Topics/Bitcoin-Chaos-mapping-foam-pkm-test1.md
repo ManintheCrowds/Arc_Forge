@@ -6,6 +6,12 @@ tags:
   - status/draft
 date: 2026-04-16
 source_session: foam-pkm-TEST_PROMPTS-1-R2
+group: llm-wiki-topic
+color: blue
+cssclasses:
+  - vault-grp-llm-wiki-topic
+  - vault-col-blue
+
 ---
 
 # Bitcoin–Chaos mapping (foam-pkm TEST_PROMPTS #1)

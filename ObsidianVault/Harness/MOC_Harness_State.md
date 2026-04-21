@@ -1,6 +1,12 @@
 ---
 title: "Harness state and daily log (mirror map)"
 tags: ["type/moc", "status/verified", "domain/harness"]
+group: harness-core
+color: slate
+cssclasses:
+  - vault-grp-harness-core
+  - vault-col-slate
+
 ---
 
 # Harness state and daily log (mirror map)

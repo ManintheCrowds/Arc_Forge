@@ -1,6 +1,12 @@
 ---
 title: "LLM Wiki Synthesis"
 tags: ["type/llm-wiki-synthesis", "status/draft", "domain/llm-wiki"]
+group: llm-wiki-synthesis
+color: violet
+cssclasses:
+  - vault-grp-llm-wiki-synthesis
+  - vault-col-violet
+
 ---
 
 # Synthesis

@@ -1,6 +1,11 @@
 ---
 title: "AI Trends — full review test run (self-contained)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # AI Trends — full review test run (self-contained)

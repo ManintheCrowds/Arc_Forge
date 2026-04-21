@@ -1,6 +1,11 @@
 ---
 title: "OA-FR-2 — System 2 Data visualization"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # OA-FR-2 — System 2 Data visualization

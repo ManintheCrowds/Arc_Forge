@@ -47,10 +47,24 @@
             "id": "00adc9c46570bcdb",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "Harness/Completed-Tasks.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Completed-Tasks"
             }
           },
           {
@@ -76,9 +90,67 @@
               "icon": "lucide-file",
               "title": "Sources"
             }
+          },
+          {
+            "id": "355981df85026c2f",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          },
+          {
+            "id": "b82158cb162b9361",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Harness/Pending-Tasks.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Pending-Tasks"
+            }
+          },
+          {
+            "id": "58230020cbcfbc95",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Harness/Pending-Tasks.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Pending-Tasks"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 6
       }
     ],
     "direction": "vertical"
@@ -242,11 +314,23 @@
       "publish:Publish changes...": false
     }
   },
-  "active": "00adc9c46570bcdb",
+  "active": "58230020cbcfbc95",
   "lastOpenFiles": [
-    "LLM-Wiki/_index.md",
-    "Sources.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-20T235300Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-20T235213Z.md",
+    "Harness/Handoff-archive/20260420-235209.md",
+    "Harness/Docs/ChatGPT-Export-Pipeline-Log.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-20T233824Z.md",
+    "Harness/Daily/2026-02-29.md",
+    "pending_tasks.md",
     "Harness/Pending-Tasks.md",
+    "Sources.md",
+    "Harness/Completed-Tasks.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T211822Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-20T151504Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T151504Z.md",
+    "Harness/Session-Handoff/Session-Handoff-2026-04-19T063335Z.md",
+    "LLM-Wiki/_index.md",
     "Harness/Session-Handoff/Session-Handoff-2026-04-19T080121Z.md",
     "research/2026-04-19-OpenGrimoire-OGAN-handoff.md",
     "Harness/Session-Handoff/Session-Handoff-2026-04-18T232204Z.md",
@@ -258,18 +342,6 @@
     "Harness/Session-Handoff/Session-Handoff-2026-04-19T012851Z.md",
     "Harness/Session-Handoff/Session-Handoff-2026-04-19T011821Z.md",
     "Harness/Session-Handoff/Session-Handoff-2026-04-19T004145Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-19T002056Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-19T000644Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-19T000012Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-19T000001Z.md",
-    "Vault-meta/MOC_Harness_Vault_Lint.md",
-    "Vault-meta/MOC_Harness_OpenGrimoire.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-18T235657Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-18T233236Z.md",
-    "Harness/Session-Handoff/Session-Handoff-2026-04-18T233049Z.md",
-    "research/MiscRepos-Vault-Sync-Command.md",
-    "research/Int-Vault-Resync-Operator-Archive.md",
-    "Vault-meta/MOC_Operator_Base_Camp.md",
     "Interview-Archive",
     "Reference",
     "MOC-from-MiscRepos",

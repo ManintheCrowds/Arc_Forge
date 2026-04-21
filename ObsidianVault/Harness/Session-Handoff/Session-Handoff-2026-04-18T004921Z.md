@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -26,7 +32,7 @@ Updated: 2026-04-18T00:10:00Z
 ## Next
 
 - **OG-GUI-02:** Playwright — after `loginAsAdmin`, `/admin` moderation **UI** asserts when queue non-empty (`e2e/admin-moderation.spec.ts` complement).
-- **OG-GUI-03** … **OG-GUI-10** / **OG-GUI-A2:** per [pending_tasks.md](pending_tasks.md) § **PENDING_OG_GUI_RELEASE** and WAVED Wave 10.
+- **OG-GUI-03** … **OG-GUI-10** / **OG-GUI-A2:** per [pending_tasks.md](Harness/Pending-Tasks.md) § **PENDING_OG_GUI_RELEASE** and WAVED Wave 10.
 - **Resume IronClaw thread:** G7-P1 spike, G10 spec refinement (Handoff #22 archive).
 - **Commit:** Stage OpenGrimoire (`e2e/og-gui-01-browser-review-evidence.spec.ts`, `docs/audit/**`), MiscRepos (`.cursor/state/handoff_latest.md`, `handoff_archive/20260417-233000-handoff-22-ironclaw-g7.md`, `decision_index.md`, `decision-log.md`, `pending_tasks.md`, `completed_tasks.md`, `local-proto/docs/WAVED_PENDING_TASKS.md`). Run `python .cursor/scripts/validate_pending_tasks_table.py` if `pending_tasks.md` touched again.
 - **Vault:** `npm run vault:sync` or int-vault-resync so Harness **Handoff-Latest** / **Pending-Tasks** / **Completed-Tasks** mirror this handoff.

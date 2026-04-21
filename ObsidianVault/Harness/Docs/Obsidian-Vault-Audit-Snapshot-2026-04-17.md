@@ -1,6 +1,11 @@
 ---
 title: "Obsidian vault numeric audit snapshot (2026-04-17)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # Obsidian vault numeric audit snapshot (2026-04-17)

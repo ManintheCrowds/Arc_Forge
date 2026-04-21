@@ -1,6 +1,11 @@
 ---
 title: "GHOST1 — close out task in software repo"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # GHOST1 — close out task in software repo

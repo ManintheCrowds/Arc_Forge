@@ -1,6 +1,11 @@
 ---
 title: "Security sentinel — OpenGrimoire GUI / Wave 10 follow-up"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # Security sentinel — OpenGrimoire GUI / Wave 10 follow-up

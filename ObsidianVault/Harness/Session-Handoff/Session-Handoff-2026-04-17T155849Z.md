@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -18,7 +24,7 @@ Updated: 2026-04-17T22:00:00Z
 ## Done
 
 - **Single-vault consolidation (in repo):** [WORKSPACE_PATH_ENV_CHECKLIST.md § Single vault consolidation](../../local-proto/docs/WORKSPACE_PATH_ENV_CHECKLIST.md#single-vault-consolidation); [adhoc/2026-04-17_single_vault_inventory.md](adhoc/2026-04-17_single_vault_inventory.md); [sync_harness_to_vault.ps1](../../local-proto/scripts/sync_harness_to_vault.ps1) `docMappings` → **Harness/Docs/Single-Vault-Inventory-2026-04-17.md**; [SCHEDULED_TASKS.md](../../local-proto/docs/SCHEDULED_TASKS.md) single-mirror cadence note; [OBSIDIAN_VAULT_INTEGRATION.md](../docs/OBSIDIAN_VAULT_INTEGRATION.md) cross-link; [local-proto/.env.example](../../local-proto/.env.example) canonical `C:/Users/<you>/Documents/GitHub/...` lines.
-- **Harness state:** [decision-log.md](decision-log.md) entry; [pending_tasks.md](pending_tasks.md) **Last synced** + **WS-PRIV-4** links; `validate_pending_tasks_table.py` OK.
+- **Harness state:** [decision-log.md](decision-log.md) entry; [pending_tasks.md](Harness/Pending-Tasks.md) **Last synced** + **WS-PRIV-4** links; `validate_pending_tasks_table.py` OK.
 - **Operator host:** Windows **User** env `OBSIDIAN_VAULT_ROOT` + `VAULT_SYNC_SAFE_BASE`; `%USERPROFILE%\.cursor\mcp.json` **obsidian-vault** `env` adds the same pair; **Harness-IntVaultResync** remains registered (inherits User env when interactive). **obsidian://** used to open **Harness/Docs/Single-Vault-Inventory-2026-04-17** and **Scheduled-Tasks** mirrors.
 - **Handoff automation:** This file delivered via `write_handoff.py` (archives **Handoff #18**); `int-vault-resync` (**Handoff**).
 

@@ -1,6 +1,11 @@
 ---
 title: "OpenGrimoire — agent-native audit (canonical)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # OpenGrimoire — agent-native audit (canonical)

@@ -1,6 +1,11 @@
 ---
 title: "Bitcoin Observations Log"
 tags: ["type/harness-bitcoin-obs", "status/mirror", "domain/bitcoin"]
+group: harness-bitcoin
+color: rose
+cssclasses:
+  - vault-grp-harness-bitcoin
+  - vault-col-rose
 ---
 
 # Bitcoin Observations Log

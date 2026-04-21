@@ -1,6 +1,11 @@
 ---
 title: "Single-vault inventory (2026-04-17)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # Single-vault inventory (2026-04-17)

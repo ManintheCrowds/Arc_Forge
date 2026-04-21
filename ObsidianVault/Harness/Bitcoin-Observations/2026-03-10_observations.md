@@ -1,6 +1,11 @@
 ---
 title: "Observations 2026-03-10"
 tags: ["type/harness-bitcoin-obs", "status/mirror", "domain/bitcoin"]
+group: harness-bitcoin
+color: rose
+cssclasses:
+  - vault-grp-harness-bitcoin
+  - vault-col-rose
 ---
 
 # Observations 2026-03-10

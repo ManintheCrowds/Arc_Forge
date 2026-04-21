@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -53,7 +59,7 @@ Updated: 2026-04-18T17:45:00Z
 - [SECURITY_SENTINEL_OPENGRIMOIRE_GUI_2026-04-18.md](../../OpenGrimoire/docs/audit/SECURITY_SENTINEL_OPENGRIMOIRE_GUI_2026-04-18.md)
 - [AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md](../../OpenGrimoire/docs/AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md)
 - [GUI_AUDIT_PORTFOLIO_INDEX.md](../docs/audit/GUI_AUDIT_PORTFOLIO_INDEX.md)
-- [pending_tasks.md](pending_tasks.md)
+- [pending_tasks.md](Harness/Pending-Tasks.md)
 
 ## open_risks
 

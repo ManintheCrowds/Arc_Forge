@@ -1,6 +1,12 @@
 ---
 title: "Session handoff snapshot"
 tags: ["type/harness-session-snapshot", "status/mirror", "domain/harness"]
+group: harness-session
+color: violet
+cssclasses:
+  - vault-grp-harness-session
+  - vault-col-violet
+
 ---
 
 # Session handoff snapshot
@@ -24,8 +30,8 @@ Updated: 2026-04-19T12:00:00Z
 
 ## Next
 
-- **Desk lab (meat-space):** Operator thread → **`pending_tasks.md` § [PENDING_GEARHEAD](pending_tasks.md#pending_gearhead)** — **GH-DL1** (Prusa XL cable repair + evidence), **GH-DL2** (Pi + USB print watch MVP), **GH-DL3** (cable management + attic / no-overhang ergonomics), **GH-DL4** (basement clear → BOM incl. PowerEdge → servers online).
-- **Operator meta + BMI:** **`pending_tasks.md` § [PENDING_OTHER](pending_tasks.md#pending_other)** — **IC-1**, **BMI-1**, **BMI-2** (**Muse-first** headset; Galea/OpenBCI later), **BMI-3** (Muse → LSL → local disk MVP). **TRIBE v2:** **`pending_tasks.md` § [PENDING_AI_TRENDS](pending_tasks.md#pending_ai_trends)** — **AT-TRIBE1**; [TRIBE v2 archive](../docs/bmi-neuroscience/2026-04-19-tribe-v2-official-documentation-archive.md); AI Trends raw `.cursor/state/ai_trends/raw/2026-04-19/manual_bmi_tribe_v2_01.txt` — rerun **`stack_intel`** without `--skip-ollama` when Ollama up. **BMI papers index:** [archive/2026-04-19-downloaded-papers-and-links-index.md](../docs/bmi-neuroscience/archive/2026-04-19-downloaded-papers-and-links-index.md).
+- **Desk lab (meat-space):** Operator thread → **`pending_tasks.md` § [PENDING_GEARHEAD](Harness/Pending-Tasks.md#pending_gearhead)** — **GH-DL1** (Prusa XL cable repair + evidence), **GH-DL2** (Pi + USB print watch MVP), **GH-DL3** (cable management + attic / no-overhang ergonomics), **GH-DL4** (basement clear → BOM incl. PowerEdge → servers online).
+- **Operator meta + BMI:** **`pending_tasks.md` § [PENDING_OTHER](Harness/Pending-Tasks.md#pending_other)** — **IC-1**, **BMI-1**, **BMI-2** (**Muse-first** headset; Galea/OpenBCI later), **BMI-3** (Muse → LSL → local disk MVP). **TRIBE v2:** **`pending_tasks.md` § [PENDING_AI_TRENDS](Harness/Pending-Tasks.md#pending_ai_trends)** — **AT-TRIBE1**; [TRIBE v2 archive](../docs/bmi-neuroscience/2026-04-19-tribe-v2-official-documentation-archive.md); AI Trends raw `.cursor/state/ai_trends/raw/2026-04-19/manual_bmi_tribe_v2_01.txt` — rerun **`stack_intel`** without `--skip-ollama` when Ollama up. **BMI papers index:** [archive/2026-04-19-downloaded-papers-and-links-index.md](../docs/bmi-neuroscience/archive/2026-04-19-downloaded-papers-and-links-index.md).
 - **Tomorrow (operator confirm):** **Muse model** (exact SKU) → **BMI-2** note; **GH-DL1** post-repair photos; **GH-DL4** BOM; **GH-DL3** desk photo if ready; **AT-TRIBE1** stack_intel with Ollama. **`/ce-compound`:** reply **Full** or **Lightweight** (first message) so session can be written to **`local-proto/docs/solutions/`** per skill — not run yet pending that choice.
 - **Carry from #28:** **OG-OH-01 … OG-OH-13** (observability hub backlog); **AN1** + **OGAN-02 … OGAN-17**; **PUB-***; **BYOC-***; **BM-A11Y**; **WS-PRIV-***. ~~**STK-*** / **OA-OH-0**~~ — **closed** (this handoff).
 - **Vault mirror:** If **`Harness/Pending-Tasks.md`** / Obsidian mirror stale, run **`local-proto/scripts/sync_harness_to_vault.ps1`** or **`int-vault-resync.ps1 -HarnessRoot <MiscRepos>`** (split used **`--skip-vault-resync`**).
@@ -43,7 +49,7 @@ Updated: 2026-04-19T12:00:00Z
 ## dependency_links
 
 - [completed_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](completed_tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
-- [pending_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](pending_tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
+- [pending_tasks.md § PENDING_STACK_ATLAS_OPENHARNESS_IN_OPENGRIMOIRE](Harness/Pending-Tasks.md#pending_stack_atlas_openharness_in_opengrimoire)
 - [OpenHarness docs/BRAIN_MAP.md](../../OpenHarness/docs/BRAIN_MAP.md)
 
 ## open_risks

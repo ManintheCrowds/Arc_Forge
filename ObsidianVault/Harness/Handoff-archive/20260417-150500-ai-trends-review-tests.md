@@ -1,6 +1,11 @@
 ---
 title: "Handoff: AI Trends review (2026-04-17)"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
+group: harness-archive
+color: slate
+cssclasses:
+  - vault-grp-harness-archive
+  - vault-col-slate
 ---
 
 # Handoff: AI Trends review (2026-04-17)

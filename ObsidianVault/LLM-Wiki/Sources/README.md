@@ -1,6 +1,12 @@
 ---
 title: "LLM Wiki Sources"
 tags: ["type/llm-wiki-source", "status/archived", "domain/llm-wiki"]
+group: llm-wiki-source
+color: slate
+cssclasses:
+  - vault-grp-llm-wiki-source
+  - vault-col-slate
+
 ---
 
 # Sources

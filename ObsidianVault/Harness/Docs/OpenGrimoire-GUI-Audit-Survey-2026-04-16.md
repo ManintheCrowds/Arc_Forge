@@ -1,6 +1,11 @@
 ---
 title: "GUI + agent-native audit — OpenGrimoire System 1 (survey / moderation)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # GUI + agent-native audit — OpenGrimoire System 1 (survey / moderation)

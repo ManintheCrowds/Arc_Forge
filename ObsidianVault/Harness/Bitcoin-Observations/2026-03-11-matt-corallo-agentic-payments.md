@@ -1,6 +1,11 @@
 ---
 title: "Matt Corallo — Agentic Payments Digest"
 tags: ["type/harness-bitcoin-obs", "status/mirror", "domain/bitcoin"]
+group: harness-bitcoin
+color: rose
+cssclasses:
+  - vault-grp-harness-bitcoin
+  - vault-col-rose
 ---
 
 # Matt Corallo — Agentic Payments Digest

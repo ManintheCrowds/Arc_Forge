@@ -1,6 +1,11 @@
 ---
 title: "GUI audit portfolio index"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # GUI audit portfolio index

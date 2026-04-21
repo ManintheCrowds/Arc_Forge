@@ -1,6 +1,12 @@
 ---
 title: "LLM Wiki index"
 tags: ["type/moc", "status/verified", "domain/llm-wiki"]
+group: llm-wiki-index
+color: slate
+cssclasses:
+  - vault-grp-llm-wiki-index
+  - vault-col-slate
+
 ---
 
 # LLM Wiki — index

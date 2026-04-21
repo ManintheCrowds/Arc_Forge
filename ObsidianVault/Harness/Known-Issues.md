@@ -1,6 +1,11 @@
 ---
 title: "Known issues"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
+group: harness-core
+color: slate
+cssclasses:
+  - vault-grp-harness-core
+  - vault-col-slate
 ---
 
 # Known issues
@@ -9,7 +14,7 @@ Append entries below using the schema in [README.md](README.md).
 
 ## Agent behavior (Cursor / AI)
 
-- **Symptom:** Agent switches to Korean unexpectedly when user sends a short prompt (e.g. "do it", "and do it") after previous English context. **Location:** Cursor AI responses. **Issue:** Response language drifts to Korean without explicit user request. **Status:** open. **Note:** `.cursorrules` requires English unless the user explicitly requests another language—there is no "always Korean" rule. Suspects: model behavior, long-thread context, or IDE/locale; also review workspace rules. User preference: English unless explicitly requested otherwise. Mitigation: language preference in AGENTS.md, preferences.json, and `.cursorrules` (Korean Output Audit). Cross-ref: [pending_tasks.md](pending_tasks.md) **H5**.
+- **Symptom:** Agent switches to Korean unexpectedly when user sends a short prompt (e.g. "do it", "and do it") after previous English context. **Location:** Cursor AI responses. **Issue:** Response language drifts to Korean without explicit user request. **Status:** open. **Note:** `.cursorrules` requires English unless the user explicitly requests another language—there is no "always Korean" rule. Suspects: model behavior, long-thread context, or IDE/locale; also review workspace rules. User preference: English unless explicitly requested otherwise. Mitigation: language preference in AGENTS.md, preferences.json, and `.cursorrules` (Korean Output Audit). Cross-ref: [pending_tasks.md](Harness/Pending-Tasks.md) **H5**.
 
 ## OSINT Tools (osint-tools/)
 
@@ -45,7 +50,7 @@ Append entries below using the schema in [README.md](README.md).
 
 ## MCP (Windows / multi-machine)
 
-- **Note (2026-04-16):** foam-pkm **TEST_PROMPTS #1** (Obsidian vault note about Bitcoin–Chaos mapping) was executed with a vault-side artifact under `LLM-Wiki/Topics/`; **R2** in [pending_tasks.md](pending_tasks.md) marked **done** with log [.cursor/state/adhoc/2026-04-16_foam_pkm_TEST_PROMPTS_1_R2.md](adhoc/2026-04-16_foam_pkm_TEST_PROMPTS_1_R2.md). **Caveat:** that session used Cursor filesystem `Write` to the vault path (MCP `apply_patch` not in tool trace). For strict R2 proof, re-run the same prompt in a chat where **obsidian-vault** MCP is loaded and confirm `apply_patch` in the tool transcript.
+- **Note (2026-04-16):** foam-pkm **TEST_PROMPTS #1** (Obsidian vault note about Bitcoin–Chaos mapping) was executed with a vault-side artifact under `LLM-Wiki/Topics/`; **R2** in [pending_tasks.md](Harness/Pending-Tasks.md) marked **done** with log [.cursor/state/adhoc/2026-04-16_foam_pkm_TEST_PROMPTS_1_R2.md](adhoc/2026-04-16_foam_pkm_TEST_PROMPTS_1_R2.md). **Caveat:** that session used Cursor filesystem `Write` to the vault path (MCP `apply_patch` not in tool trace). For strict R2 proof, re-run the same prompt in a chat where **obsidian-vault** MCP is loaded and confirm `apply_patch` in the tool transcript.
 - **Location:** `.cursor/mcp.json` (MiscRepos; mirror under `portfolio-harness/.cursor/mcp.json` when possible). **Issue (2026-03-24):** Paths pointed at another laptop (`D:/portfolio-harness`, `D:/Arc_Forge`, `C:/Users/schum/...`). **Fix:** Use this machine’s harness and Arc roots, e.g. `C:/Users/Dell/Documents/GitHub/portfolio-harness`, `C:/Users/Dell/Documents/GitHub/Arc_Forge`, `C:/Users/Dell/.cursor/projects`. **Reference:** [.cursor/state/mcp_audit_matrix.md](mcp_audit_matrix.md), [MCP_MACHINE_PATH_CHECKLIST.md](../docs/MCP_MACHINE_PATH_CHECKLIST.md).
 - **Location:** `portfolio-harness/local-proto/scripts/audit_wrapper.py`. **Issue (FIXED 2026-03-24):** Python 3.12 raised `TypeError` on `threading.Lock | None` annotations at import. **Fix:** `from __future__ import annotations` at top of file.
 - **Location:** `audit_wrapper.py` + `uvx` in mcp.json. **Issue (2026-03-24):** `pip install uv` on Windows may install `uv.exe` but not `uvx.exe`, so `uvx` subprocess fails. **Fix:** Wrapper rewrites `uvx` → `uv tool run` when `uvx.exe` is missing; ensure `PYTHONPATH` / Scripts on PATH for Cursor-spawned MCP.
@@ -187,7 +192,7 @@ All pytest runs use project-local basetemp (e.g. `--basetemp=.pytest-tmp`). Do n
 
 ## Harness Obsidian vault mirror drift
 
-- **Symptom:** Obsidian shows **OGAN-*** (or other labeled rows) as **pending** while MiscRepos [`.cursor/state/pending_tasks.md`](pending_tasks.md) already moved them to **done** / [completed_tasks.md](completed_tasks.md), or headers match but table bodies disagree.
+- **Symptom:** Obsidian shows **OGAN-*** (or other labeled rows) as **pending** while MiscRepos [`.cursor/state/pending_tasks.md`](Harness/Pending-Tasks.md) already moved them to **done** / [completed_tasks.md](completed_tasks.md), or headers match but table bodies disagree.
 - **Cause:** `Arc_Forge/.../ObsidianVault/Harness/Pending-Tasks.md` (and related `Harness/*.md`) are **copies**, not symlinks. They update only when [`sync_harness_to_vault.ps1`](../../local-proto/scripts/sync_harness_to_vault.ps1) runs (directly or via [`int-vault-resync.ps1`](../../local-proto/scripts/int-vault-resync.ps1)). Gaps happen when: (1) `python .cursor/scripts/split_done_tasks_to_completed.py --skip-vault-resync` skips the post-run resync; (2) `OBSIDIAN_VAULT_ROOT` / `VAULT_SYNC_SAFE_BASE` are unset or wrong so `int-vault-resync` no-ops or fails; (3) `HARNESS_ROOT` for sync is not the MiscRepos repo that owns `pending_tasks.md`; (4) `int-vault-resync` exits early with “fingerprint unchanged” after a **manual** vault edit (rare).
 - **Workaround (operator):** After any `pending_tasks.md` / `split_done` / handoff that should show in Obsidian, from the **MiscRepos** repo root run e.g. `$env:VAULT_SYNC_SAFE_BASE = '<parent of ObsidianVault>'; & .\local-proto\scripts\sync_harness_to_vault.ps1 -HarnessRoot (Get-Location) -VaultRoot '<...\ObsidianVault>' -SyncTrigger manual` (see script header for `OBSIDIAN_VAULT_ROOT`). Script path in this layout: [`local-proto/scripts/sync_harness_to_vault.ps1`](../../local-proto/scripts/sync_harness_to_vault.ps1). Standalone **local-proto** workspaces may keep the same file under `workspace/scripts/` instead.
 - **Systemic mitigations (repo):** (1) Prefer **not** using `--skip-vault-resync` when a vault mirror matters; fix env and let `split_done` invoke `int-vault-resync`. (2) `split_done_tasks_to_completed.py` prints a stderr reminder when vault resync is skipped or fails (see script). (3) [.cursor/state/README.md](README.md) § State directory — Obsidian bullet cross-links here.

@@ -1,6 +1,11 @@
 ---
 title: "OpenGrimoire — GUI + agent-native audit (System 2 data visualization)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-docs
+color: blue
+cssclasses:
+  - vault-grp-harness-docs
+  - vault-col-blue
 ---
 
 # OpenGrimoire — GUI + agent-native audit (System 2 data visualization)

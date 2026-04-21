@@ -1,6 +1,11 @@
 ---
 title: "BitDevs MPLS Socratic Seminar 36 — Notes"
 tags: ["type/harness-bitcoin-obs", "status/mirror", "domain/bitcoin"]
+group: harness-bitcoin
+color: rose
+cssclasses:
+  - vault-grp-harness-bitcoin
+  - vault-col-rose
 ---
 
 # BitDevs MPLS Socratic Seminar 36 — Notes

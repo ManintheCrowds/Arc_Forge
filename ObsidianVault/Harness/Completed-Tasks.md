@@ -1,11 +1,16 @@
 ---
 title: "Completed tasks (archive)"
 tags: ["type/harness-state", "status/mirror", "domain/harness"]
+group: harness-completed-tasks
+color: green
+cssclasses:
+  - vault-grp-harness-completed-tasks
+  - vault-col-green
 ---
 
 # Completed tasks (archive)
 
-**Purpose:** Task rows removed from [pending_tasks.md](pending_tasks.md) when status is **done**. The pending file stays focused on open work (`pending`, `in_progress`, `deferred`, etc.).
+**Purpose:** Task rows removed from [pending_tasks.md](Harness/Pending-Tasks.md) when status is **done**. The pending file stays focused on open work (`pending`, `in_progress`, `deferred`, etc.).
 
 **Last updated:** 2026-04-19
 

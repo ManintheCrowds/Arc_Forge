@@ -1,6 +1,11 @@
 ---
 title: "Scheduled tasks (MiscRepos + local-proto)"
 tags: ["type/harness-doc", "status/mirror", "domain/harness"]
+group: harness-scheduled-tasks
+color: violet
+cssclasses:
+  - vault-grp-harness-scheduled-tasks
+  - vault-col-violet
 ---
 
 # Scheduled tasks (MiscRepos + local-proto)
