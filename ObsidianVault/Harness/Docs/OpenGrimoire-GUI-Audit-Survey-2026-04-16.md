@@ -37,16 +37,18 @@ cssclasses:
 - **Parity / capability docs:** `src/app/api/capabilities/route.ts`, `docs/ARCHITECTURE_REST_CONTRACT.md`, `docs/plans/OA_FR_1_SYSTEM1_SURVEY_MODERATION.md`, `docs/agent/SYNC_SESSION_HANDOFF.md`
 - **Notes:** Playwright sets `ALIGNMENT_CONTEXT_API_SECRET` for clarification + moderation negative tests; moderation routes use **operator session only** (`requireOpenGrimoireAdminRoute`). `checkSurveyReadGate` returns early in non-production before `cookies()` / session verification.
 
-### BrowserReviewSpec (stub — extend before release gate)
+### BrowserReviewSpec (Wave 10 — aligned with OG-GUI-01 / OG-GUI-02 / OG-GUI-05)
+
+Compact spec for **desk + automation**; the extended run (routes, network excerpts, screenshots) lives in **[`evidence/og-gui-01/BROWSER_REVIEW_REPORT.md`](evidence/og-gui-01/BROWSER_REVIEW_REPORT.md)** (**OG-GUI-01**, 2026-04-17). **OG-GUI-02** adds moderation **UI** queue coverage (`data-testid=moderation-queue-item-{id}`). **OG-GUI-05** covers Sync Session **error copy** paths (401 / 429 / 503 / parse / network) — see Flow evidence and [`sync-session-submit-user-message.test.ts`](../../src/lib/survey/sync-session-submit-user-message.test.ts).
 
 | Field | Value |
 |-------|--------|
 | Base URL | `http://localhost:3001` |
 | Auth | Operator: `/login` → password from [`e2e/helpers/e2e-secrets.ts`](../../e2e/helpers/e2e-secrets.ts) (`e2eOpenGrimoireAdminPassword` / `buildPlaywrightWebServerEnv`, default `e2e-test-password`); survey POST unauthenticated |
-| Viewports | Desktop 1280×720 minimum; add tablet when UI changes land |
-| Flows | (1) `/operator-intake` full submit to success or error banner (2) `/survey` → redirect to `/operator-intake` (3) `/login` → `/admin` moderation panel with queue |
-| Evidence to attach | Playwright HTML report path or `npx playwright test …` log; optional screenshots on failure |
-| Stable selectors | Prefer `data-testid` from `SyncSessionForm` / admin tests (`e2e/survey.spec.ts`, `e2e/admin-moderation.spec.ts`) |
+| Viewports | Desktop 1280×720 minimum; tablet when product asks (optional) |
+| Flows | (1) `/operator-intake` full submit to success or error banner (2) `/survey` → redirect to `/operator-intake` (3) `/login` → `/admin` moderation panel with queue (non-empty → UI row per OG-GUI-02) |
+| Evidence to attach | Playwright HTML report or [`BROWSER_REVIEW_REPORT.md`](evidence/og-gui-01/BROWSER_REVIEW_REPORT.md); Flow evidence § below for dated commands |
+| Stable selectors | `data-testid` from `SyncSessionForm` / admin tests (`e2e/survey.spec.ts`, `e2e/admin-moderation.spec.ts`, `e2e/og-gui-01-browser-review-evidence.spec.ts`) |
 
 ---
 
@@ -106,8 +108,8 @@ Commands referenced from the authoring session (re-run before release sign-off):
 
 | # | Dimension | Status | Evidence |
 |---|-------------|--------|----------|
-| 1 | Task success | **PARTIAL** | Multi-step survey E2E + admin-moderation **API** E2E + **UI** row assert after `loginAsAdmin` ([`e2e/admin-moderation.spec.ts`](../../e2e/admin-moderation.spec.ts)); deeper moderation interaction coverage still optional |
-| 2 | Cognitive load | **PARTIAL** | Primary flows exist; operator-intake error copy for 401/429/503 / token gate not systematically reviewed |
+| 1 | Task success | **PASS** | **OG-GUI-02 (2026-04-18):** survey E2E + admin moderation **API** + **UI** row when queue non-empty ([`e2e/admin-moderation.spec.ts`](../../e2e/admin-moderation.spec.ts), `moderation-queue-item-${id}`). Deeper moderation interaction (bulk actions, edge states) remains optional product QA. |
+| 2 | Cognitive load | **PASS** | **OG-GUI-05 (2026-04-18):** operator-intake strings for 401 / **429** / **503** / JSON parse / network-style errors + Vitest [`sync-session-submit-user-message.test.ts`](../../src/lib/survey/sync-session-submit-user-message.test.ts). Residual: informal UX review outside AC. |
 | 3 | Accessibility | **PASS** | **OG-GUI-04 (2026-04-18):** `e2e/sync-session-admin-a11y.spec.ts` — axe zero violations on `/operator-intake` + `/admin` (see Flow evidence); supporting contrast + landmark fixes in repo |
 | 4 | Visual system | **PASS** | **OG-GUI-06 (2026-04-18):** Percy + Playwright — [`e2e/visual-baselines-og-gui-06.spec.ts`](../../e2e/visual-baselines-og-gui-06.spec.ts), [`.percy.yml`](../../.percy.yml), `npm run test:e2e:visual`; CI gated on `PERCY_TOKEN` (see Flow evidence) |
 | 5 | A2UI / catalog | **PARTIAL (N/A product today)** | No A2UI catalog until agent-rendered admin (**OA-OG-5**); **OG-GUI-A2 (2026-04-18):** `verify:admin-panel-a2ui` — [`scripts/verify-admin-panel-a2ui-monitor.mjs`](../../scripts/verify-admin-panel-a2ui-monitor.mjs) + [CONTRIBUTING.md](../../CONTRIBUTING.md) § AdminPanel; catalog rows when A2UI ships |
@@ -117,14 +119,16 @@ Commands referenced from the authoring session (re-run before release sign-off):
 
 ## Automation vs gaps
 
-| Layer | Present | Gap |
-|-------|---------|-----|
-| Static | ESLint, `tsc`, **`verify:admin-panel-a2ui`** (OG-GUI-A2 decorative component name denylist under `AdminPanel/`) | — |
-| Contract | capabilities + openapi + route-index + moderation-auth script (**OG-GUI-09:** glob discovery + ESLint literal ban + script Vitest) | **OG-GUI-08 (2026-04-18):** read-gate 401 `detail` + capabilities strings SSOT — [`survey-read-gate-public-messages.ts`](../../src/lib/survey/survey-read-gate-public-messages.ts); [`ARCHITECTURE_REST_CONTRACT.md`](../../docs/ARCHITECTURE_REST_CONTRACT.md) pointers only |
-| Unit | `survey-read-gate-logic.test.ts`, **`sync-session-submit-user-message.test.ts`** | No unit test for **impure** wrapper JSON shape (optional) |
-| E2E | Survey flow, admin moderation API + **UI queue row**, capabilities, clarification; **CI** second step runs `e2e/survey.spec.ts` with `SURVEY_POST_REQUIRE_TOKEN=true` (MiscRepos workflow) | **OG-GUI-10 (2026-04-18):** `npm run verify:survey-read-prod` — [`scripts/survey-read-gate-prod-smoke.mjs`](../../scripts/survey-read-gate-prod-smoke.mjs) + [`.github/workflows/survey-visualization-prod-smoke.yml`](../../.github/workflows/survey-visualization-prod-smoke.yml) (`next start`, env/header matrix) |
-| A11y | **`e2e/sync-session-admin-a11y.spec.ts`** (`@axe-core/playwright`), `npm run test:e2e:a11y` | Broader component coverage / manual spot checks still optional |
-| Visual | **`npm run test:e2e:visual`** (`@percy/cli` + `@percy/playwright`), [`.github/workflows/opengrimoire_e2e.yml`](../../../MiscRepos/.github/workflows/opengrimoire_e2e.yml) when `PERCY_TOKEN` set | Tablet viewports / marketing-only pages still optional |
+**Wave 10 refresh (2026-04-18)** closed several rows that previously read as “gaps.” The table below splits **shipped automation** from **optional residual**.
+
+| Layer | Shipped (evidence) | Residual / optional |
+|-------|--------------------|---------------------|
+| Static | ESLint, `tsc`, **`verify:admin-panel-a2ui`** (OG-GUI-A2 — decorative component name denylist under `AdminPanel/`) | — |
+| Contract | capabilities + openapi + route-index + moderation-auth (**OG-GUI-09** glob + ESLint + Vitest); **OG-GUI-08 (2026-04-18)** read-gate 401 `detail` + capabilities strings SSOT — [`survey-read-gate-public-messages.ts`](../../src/lib/survey/survey-read-gate-public-messages.ts); [`ARCHITECTURE_REST_CONTRACT.md`](../../docs/ARCHITECTURE_REST_CONTRACT.md) | String drift watch via `e2e/capabilities.spec.ts` + human review on contract edits |
+| Unit | `survey-read-gate-logic.test.ts`, **`sync-session-submit-user-message.test.ts`** (OG-GUI-05) | Optional: impure HTTP wrapper JSON shape tests if regressions appear |
+| E2E | Survey flow, admin moderation API + **UI queue row** (OG-GUI-02), capabilities, clarification; **CI** `SURVEY_POST_REQUIRE_TOKEN` step (OG-GUI-03); **OG-GUI-10 (2026-04-18)** `npm run verify:survey-read-prod` — [`scripts/survey-read-gate-prod-smoke.mjs`](../../scripts/survey-read-gate-prod-smoke.mjs) + [`.github/workflows/survey-visualization-prod-smoke.yml`](../../.github/workflows/survey-visualization-prod-smoke.yml) | Tablet viewports; marketing-only pages; deeper moderation UI scenarios |
+| A11y | **`e2e/sync-session-admin-a11y.spec.ts`** (OG-GUI-04), `npm run test:e2e:a11y` | Broader route matrix / manual spot checks |
+| Visual | **`npm run test:e2e:visual`** (OG-GUI-06), [`.github/workflows/opengrimoire_e2e.yml`](../../../MiscRepos/.github/workflows/opengrimoire_e2e.yml) when `PERCY_TOKEN` set | Tablet Percy coverage |
 
 ---
 
@@ -162,13 +166,13 @@ Structured read-only pass (authz, read gate, test routes, logging): [`SECURITY_S
 
 ### 5 A2UI / catalog
 
-- [ ] **Trigger for A2UI work:** first admin surface that is **agent-generated or declarative** (A2UI/A2A) — then add catalog semantics + props map per `.cursor/docs/A2UI_FRONTEND_DESIGN_GUIDANCE.md` (MiscRepos harness) or OG equivalent (tracks **OA-OG-5** deferred: A2UI on `/capabilities`).
+- [ ] **Trigger for A2UI work:** first admin surface that is **agent-generated or declarative** (A2UI/A2A) — then add catalog semantics + props map per `.cursor/docs/A2UI_FRONTEND_DESIGN_GUIDANCE.md` (MiscRepos harness) or OG equivalent (tracks **OA-OG-5** deferred: A2UI on `/capabilities`). **Harness backlog:** [**OG-GUI-AUDIT-01**](../../../MiscRepos/.cursor/state/pending_tasks.md#pending_opengrimoire_gui_audit_followups) (**deferred** with **OA-OG-5** until a declarative admin surface exists; mark `done` when this § checklist item ships).
 - [x] Until then: no new decorative-only component names in `src/components/AdminPanel/` (or successor paths). **OG-GUI-A2 (2026-04-18):** `npm run verify` includes [`scripts/verify-admin-panel-a2ui-monitor.mjs`](../../scripts/verify-admin-panel-a2ui-monitor.mjs); [CONTRIBUTING.md](../../CONTRIBUTING.md) § AdminPanel and A2UI naming.
 
 ### 6 Agent parity
 
 - [x] When adding routes, update `capabilities/route.ts`, `ROUTE_INDEX`/generator, OpenAPI slice, and extend `verify:moderation-auth` if new admin surfaces must remain alignment-free. **OG-GUI-09 (2026-04-17):** new moderation handlers under `src/app/api/admin/moderation-queue/**` or `moderation/**` are picked up automatically; non-moderation admin routes stay excluded.
-- [ ] **Maintain:** On new admin or survey routes, run `npm run verify` before merge; keep **OGAN-02** / capabilities prose aligned for visualization surfaces (System 2).
+- [ ] **OG-GUI-AUDIT-03 — Maintain:** On new admin or survey routes, run **`npm run verify`** before merge. Keep **`GET /api/capabilities`** (`src/app/api/capabilities/route.ts`) and **OGAN-02** / **OGAN-05** contract prose aligned — System 1 moderation strings **and** System 2 visualization workflows / `ui_surfaces` (see [OA-FR-2](../plans/OA_FR_2_SYSTEM2_DATA_VISUALIZATION.md), [AGENT_INTEGRATION.md](../AGENT_INTEGRATION.md)). **Harness:** [MiscRepos **OG-GUI-AUDIT-03**](../../../MiscRepos/.cursor/state/pending_tasks.md#pending_opengrimoire_gui_audit_followups).
 
 ---
 
@@ -198,12 +202,13 @@ Critic JSON (verbatim):
 | When | Delta | Change |
 |------|-------|--------|
 | 2026-04-17 | +completeness | Added **BrowserReviewSpec** stub, **Flow evidence** (commands + pass/skip counts), tightened AC pointer to `survey-read-gate.ts`, matrix dims 3–5 aligned to critic (PARTIAL + pass criteria / monitor), expanded dimension-5 todos, embedded critic JSON |
+| 2026-04-23 | +correctness | **OG-GUI-AUDIT-02:** BrowserReviewSpec aligned with **OG-GUI-01** artifact + **OG-GUI-02/05**; dimension matrix **1–2** → **PASS**; **Automation vs gaps** reframed shipped vs residual; **OG-GUI-AUDIT-03** process spelled in §6 Agent parity + MiscRepos link |
 
 ### Round 2 — self-check (structural)
 
 Second pass after edits: completeness raised by adding BrowserReviewSpec + flow evidence + dimension-5 monitor; **no second external critic JSON** (within max 2 rounds per dialectic; marginal gain expected). If promoting to **release gate**, re-run **adversarial-document-reviewer** on this path after substantive UI changes.
 
-**Verdict:** `pass: true` for Round 1 JSON stands for **documentation structure**; **human GUI sign-off** still requires executing BrowserReviewSpec + a11y/visual evidence.
+**Verdict:** `pass: true` for Round 1 JSON stands for **documentation structure**. **2026-04-23 (OG-GUI-AUDIT-02):** BrowserReviewSpec, dimension matrix **1–2**, and **Automation vs gaps** were reconciled with shipped **OG-GUI-02/05/08/10** and related evidence — human sign-off still re-runs flows after **material** survey/admin UI changes.
 
 ---
 

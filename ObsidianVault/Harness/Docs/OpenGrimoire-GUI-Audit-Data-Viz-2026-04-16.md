@@ -82,7 +82,7 @@ Aligned with **browser-review-protocol** (three human jobs above → flows).
 | # | Dimension | Status | Evidence |
 |---|-----------|--------|----------|
 | 1 | Task success | **PARTIAL** | Diagrams + quotes work when API and DB align; empty DB → mock data with **banner** (`opengrimoire-viz-mock-data-banner`). `NavigationDots` still includes routes without `app/` pages (dead links). |
-| 2 | Cognitive load | **PARTIAL** | Two “visualization” mental models (D3 main vs Three constellation vs `/test` fixtures). Header `data-usage-hint` helps agents. |
+| 2 | Cognitive load | **PARTIAL** | Dual stack is real, but **OG-DV-DOC-01 (2026-04-23):** [page × stack table + diagram](#og-dv-doc-01-page-stack) documents routes vs D3 / Three / fixtures; header `data-usage-hint` still required reading for fine-grained agent hints. |
 | 3 | Accessibility | **PARTIAL** | `vizLayoutIds`, tab panel wiring, `data-testid` on diagrams; full WCAG pass not claimed (no axe CI on this slice). |
 | 4 | Visual system | **PASS** | Header uses CSS variables (`--opengrimoire-viz-*`); theme via `AppContext`. |
 | 5 | A2UI / catalog | **PARTIAL** | `data-region` on header, quote slot, canvas; good for selectors. Legacy `/test` stack less instrumented. |
@@ -117,6 +117,42 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 
 **North star (6–12 months):** One typed survey-read client module; one canonical constellation implementation; legacy Three behind a clearly named adapter until removed or formally supported.
 
+<a id="og-dv-doc-01-page-stack"></a>
+
+### Page × rendering stack (OG-DV-DOC-01)
+
+Harness authors should not assume one component tree or one query shape across routes.
+
+| App route | Primary UI stack | Survey / viz data |
+|-----------|------------------|-------------------|
+| `/visualization` | [`DataVisualization`](../../src/components/DataVisualization) (D3 — Alluvial / Chord tabs) | `GET /api/survey/visualization` (typically `?all=1` cohort view) via [`useVisualizationData`](../../src/components/DataVisualization/shared/useVisualizationData.ts) |
+| `/visualization/dark` | Same `DataVisualization` family (theme variant) | Same API family |
+| `/visualization/alluvial` | [`AlluvialDiagram`](../../src/components/DataVisualization/AlluvialDiagram.tsx) + provider + mock banner | Same |
+| `/constellation` | [`visualization/ConstellationView`](../../src/components/visualization/ConstellationView.tsx) — **Three.js** + Zustand | Same route handler; query semantics **`all=0`** + `showTestData` per OA-FR-2 / **OGAN-16** |
+| `/test`, `/test-chord`, `/test-context` | [`components/visualization`](../../src/components/visualization) and route-local demos | Fixtures / mock paths; **middleware** blocks in production unless `OPENGRIMOIRE_ALLOW_TEST_ROUTES` |
+| `/test-sqlite` | Minimal page — exercises `fetch` to visualization API | Direct `GET /api/survey/visualization?all=1` from browser |
+
+```mermaid
+flowchart LR
+  subgraph d3["D3 cohort UI"]
+    V["/visualization"]
+    VA["/visualization/alluvial"]
+    VD["/visualization/dark"]
+  end
+  subgraph three["Three + Zustand"]
+    C["/constellation"]
+  end
+  subgraph fixtures["Dev / test fixtures"]
+    T["/test*"]
+  end
+  API["GET /api/survey/visualization"]
+  V --> API
+  VA --> API
+  VD --> API
+  C --> API
+  T -.->|"may bypass or mock"| API
+```
+
 ---
 
 ## Automation gaps
@@ -141,7 +177,7 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 
 ### 2 — Cognitive load
 
-- [ ] In admin or docs, one diagram: “Which page uses which stack” (D3 vs Three vs fixtures).
+- [x] In admin or docs, one diagram: “Which page uses which stack” (D3 vs Three vs fixtures). **Shipped 2026-04-23 (OG-DV-DOC-01):** [§ Page × rendering stack](#og-dv-doc-01-page-stack) above.
 - [ ] Rename or namespace exports so `ConstellationView` search resolves to the live file first.
 - [ ] **Maintain:** When adding a viz surface, update OA-FR-2 or this audit’s “dual stack” note so harness authors do not assume one HTTP shape.
 
@@ -179,8 +215,8 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 ## Post-implementation process checklist (release gate)
 
 - [x] Run MiscRepos **`/debate`** on this audit file (critic domain **`docs`**) per **gui-human-audit** before treating the GUI audit as release-closing; attach critic JSON summary or a short revision subsection (no secrets). _(Done 2026-04-17 — see § MiscRepos /debate.)_
-- [ ] After substantial OpenGrimoire changes to survey or visualization paths, re-run the **compound agent-native-audit** eight-explore workflow and refresh scores in [`AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md`](../AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md).
-- [ ] When importing **community Cursor rules or skills**, apply the **security-audit-rules** checklist to those new files only.
+- [x] After substantial OpenGrimoire changes to survey or visualization paths, re-run the **compound agent-native-audit** eight-explore workflow and refresh scores in [`AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md`](../AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md). _(**Done 2026-04-23** — full eight-explore compound re-pass; see that file § **Refresh 2026-04-23**. Prior 2026-04-22 pass was doc-only + OGSEC hygiene — § **Refresh 2026-04-22**.)_
+- [ ] **OG-AUDIT-02 — Rules import hygiene:** Before committing **community-sourced** Cursor **rules** or **skills** (anything under `.cursor/rules/`, `.cursor/skills/**/SKILL.md`, `.cursorrules`, or `AGENTS.md`), run the **security-audit-rules** workflow on **only** the added/changed files — not the whole repo. **How:** In Cursor, load the **security-audit-rules** skill (in a typical local-proto harness checkout it lives at **`.cursor/skills/security-audit-rules/SKILL.md`** in the workspace root; compound-engineering installs may expose the same skill under another path — use **Read** on the skill file your workspace actually has). Follow its checklist (red-flag patterns, extended threat model, exit criteria: scanned paths + findings). **Harness row:** [MiscRepos `pending_tasks` § GUI audit followups — **OG-AUDIT-02**](../../../MiscRepos/.cursor/state/pending_tasks.md#pending_opengrimoire_gui_audit_followups).
 
 ---
 
@@ -194,7 +230,7 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 
 ## Agent-native eight-agent scorecard (canonical)
 
-The full **eight-agent explore scorecard** (2026-04-16) — overall table, per-principle detail, top-10 recommendations, strengths — lives in **[`AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md`](../AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md)**. Prefer that file for **AN1** closure citations and to avoid duplicate edits.
+The full **eight-agent explore scorecard** (last compound merge **2026-04-23**; prior baseline 2026-04-16) — overall table, per-principle detail, top-10 recommendations, strengths — lives in **[`AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md`](../AGENT_NATIVE_AUDIT_OPENGRIMOIRE.md)**. Prefer that file for **AN1** closure citations and to avoid duplicate edits.
 
 ---
 

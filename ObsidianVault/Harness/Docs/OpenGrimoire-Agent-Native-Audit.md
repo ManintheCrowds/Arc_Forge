@@ -12,7 +12,7 @@ cssclasses:
 
 **Role:** Gap report and **harness-facing scorecard** vs [ARCHITECTURE_REST_CONTRACT.md](./ARCHITECTURE_REST_CONTRACT.md) and [AGENT_INTEGRATION.md](./AGENT_INTEGRATION.md). This file is **not** a substitute for those contracts.
 
-**Last updated:** 2026-04-19 (OGAN-11–OGAN-17 closure + harness tracker sync)
+**Last updated:** 2026-04-23 (full eight-explore compound re-pass — see [§ Refresh 2026-04-23](#refresh-2026-04-23))
 
 ---
 
@@ -31,9 +31,9 @@ cssclasses:
 
 ---
 
-## Eight-agent scorecard (2026-04-16)
+## Eight-agent scorecard (2026-04-23 compound re-pass)
 
-**Method:** Eight parallel **explore** subagents (compound **agent-native-audit** workflow), one per principle, against OpenGrimoire (System 2 slice + shared survey/API). **Synthesis below** is editorial; see per-principle bullets for caveats (e.g. dual definitions of “full parity”).
+**Method:** Eight parallel **explore** subagents (compound **agent-native-audit** workflow), one per principle, against OpenGrimoire `C:\Users\Dell\Documents\GitHub\OpenGrimoire` (System 2 slice + shared survey/API). **Synthesis below** merges subagent returns into this file; per-principle caveats unchanged (e.g. dual definitions of “full parity”, Principle 5 percentages are qualitative not computed in code).
 
 ### Overall score summary
 
@@ -41,22 +41,22 @@ cssclasses:
 |----------------|-------|-----------|--------|
 | 1 Action parity | **4 / 15** full UI-equivalent without browser; **7 / 15** raw survey/quote bytes via HTTP | 27% strict · 47% data | ❌ |
 | 2 Tools as primitives | **3 / 3** survey viz HTTP surfaces are thin reads; E2E = workflow (CI only) | 100% API | ✅ |
-| 3 Context injection | **3 / 8** context types present (repo self-score) | 38% | ❌ |
-| 4 Shared workspace | Single SQLite + same GET gates | 8.5 / 10 | ✅ |
-| 5 CRUD completeness | HTTP over entities touching viz | ~55% strict · ~80% viz-read-scoped | ⚠️ |
-| 6 UI integration | Survey POST / moderation → viz refetch via `opengrimoire-survey-data-changed` ([AGENT_INTEGRATION.md](./AGENT_INTEGRATION.md)); mount-only for external writers | **6 / 10** | ⚠️ |
-| 7 Capability discovery | `GET /api/capabilities` **workflows** + routes; seven mechanisms | **5 / 7** (~**71%**) | ⚠️ |
+| 3 Context injection | **4 / 8** context types present (re-score: `workflows` + `ui_surfaces` in `GET /api/capabilities` close part of prior gap) | 50% | ❌ |
+| 4 Shared workspace | Single SQLite + same GET gates; mitigations (mock banner, `surveyVisualizationFetch` SSOT) | **9 / 10** | ✅ |
+| 5 CRUD completeness | HTTP over entities touching viz (qualitative; see §5 table) | ~55% strict · ~80% viz-read-scoped | ⚠️ |
+| 6 UI integration | Survey POST / moderation → `dispatchSurveyDataChanged` → hook refetch; still no Playwright “second GET” proof; external writers out-of-band | **7 / 10** | ⚠️ |
+| 7 Capability discovery | `GET /api/capabilities` **workflows** + **`ui_surfaces`** + `documentation.non_contractual_ui`; seven-mechanism rubric unchanged | **5 / 7** (~**71%**) | ⚠️ |
 | 8 Prompt-native features | **0 / 8** viz behaviors defined as LLM prompts (all CODE) | 0% prompt | ⚠️ (expected for code-first viz) |
 
-**Blended agent-native posture (this slice): ~57%** if principle 8 counts as neutral 50%; **lower** if prompt-native is mandatory product doctrine.
+**Blended agent-native posture (this slice): ~58%** if principle 8 counts as neutral 50%; **lower** if prompt-native is mandatory product doctrine.
 
-> **Note (2026-04-17 refresh):** Principles **6** and **7** revised upward after verifying `useVisualizationData` / `useApprovedQuotes` listeners and expanded `workflows` in `GET /api/capabilities`. Full subagent re-run not repeated; spot-audit against `18111c9`. See [OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md](./plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md).
+> **Note (2026-04-17 refresh):** Principles **6** and **7** were spot-audited after `18111c9`; see [OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md](./plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md). **2026-04-23:** Full eight-explore re-pass updated **§3**, **§4**, **§6** numeric rows and reconciled Principle 6 narrative vs table.
 
 **Status legend:** ✅ ≈ 80%+ · ⚠️ roughly 50–79% or structural tradeoff · ❌ below 50% or blocking for that principle.
 
 ---
 
-### 1 — Action parity (subagent c15dc530)
+### 1 — Action parity (explore re-pass 2026-04-23)
 
 | User action | Agent without browser |
 |-------------|------------------------|
@@ -65,13 +65,13 @@ cssclasses:
 | Alluvial/Chord tab, auto-play, theme, admin color prefs, Three camera/modes | **Browser only** |
 | `/test-chord` mock chord | **Browser only** |
 
-**Score:** **4 / 15** actions with full non-UI parity for **entire visible outcome**; **7 / 15** with **data byte** parity.
+**Score:** **4 / 15** actions with full non-UI parity for **entire visible outcome**; **7 / 15** with **data byte** parity — **unchanged** vs 2026-04-16; re-pass confirmed `visualization/route.ts` query semantics, `surveyVisualizationFetch.ts` SSOT, `middleware.ts` `/test*` gating, no new HTTP graph or prefs APIs.
 
-**Recommendations (abridged):** Optional **viz bundle GET** (rows + optional `processVisualizationData` output); extend OpenAPI bodies; mark `/test*` non-contractual in capabilities; persist operator prefs via API if agents must set them.
+**Recommendations (abridged):** Optional **viz bundle GET** (rows + optional `processVisualizationData` output); extend OpenAPI bodies; persist operator prefs via API if agents must set them (**OGAN-09** still deferred).
 
 ---
 
-### 2 — Tools as primitives (subagent 1bd43be6)
+### 2 — Tools as primitives (explore re-pass 2026-04-23)
 
 Executable viz-related capabilities in-tree are **`GET` route handlers** + **`GET /api/capabilities`** — each is a **primitive** read. **No** first-party MCP server in this repo; [AGENT_TOOL_MANIFEST.md](./AGENT_TOOL_MANIFEST.md) maps to HTTP. Playwright specs are **workflow** (appropriate for CI, not agent tools).
 
@@ -81,23 +81,23 @@ Executable viz-related capabilities in-tree are **`GET` route handlers** + **`GE
 
 ---
 
-### 3 — Context injection (subagent 7dc48113)
+### 3 — Context injection (explore re-pass 2026-04-23)
 
-Dynamic LLM runtime injection: **no** (explicit non-goal in architecture docs). **Partial:** `GET /api/capabilities`, static docs, DOM `data-region` / `data-usage-hint`, `AGENT_TOOL_MANIFEST.md`. **Missing:** single JSON “context bundle” for dual-stack + query semantics; UI routes in capabilities; in-repo Cursor rules for viz.
+Dynamic LLM runtime injection: **no** (explicit non-goal). **Partial:** `GET /api/capabilities` (now **`workflows[]`**, **`ui_surfaces[]`**, `auth_env_hints`, `documentation` — closes part of the old “UI routes in capabilities” gap), static docs, DOM `data-region` / `data-usage-hint`, `AGENT_TOOL_MANIFEST.md`. **Still missing:** single JSON “context bundle” for dual-stack + query semantics; **no** in-repo `.cursor/` rules for viz; no merged brain-map + alignment + survey one-shot.
 
-**Score:** **3 / 8** ≈ **38%**.
-
----
-
-### 4 — Shared workspace (subagent a517b9d4)
-
-Single **`OPENGRIMOIRE_DB_PATH`** SQLite; user and gated agent hit same **`getVisualizationData`**. **Anti-patterns:** silent **mock fallback** in `useVisualizationData`; `?all=1` mixes test+live rows; legacy `loadSurveyData` path if revived.
-
-**Score:** **8.5 / 10** (~**85%**).
+**Score:** **4 / 8** ≈ **50%** (revised **+1** vs 2026-04-16 for machine-readable `ui_surfaces` / `workflows` on the capabilities spine).
 
 ---
 
-### 5 — CRUD completeness (subagent 17df5450)
+### 4 — Shared workspace (explore re-pass 2026-04-23)
+
+Single **`OPENGRIMOIRE_DB_PATH`** SQLite; user and gated agent hit same **`getVisualizationData`** + **`checkSurveyReadGate`**. **Anti-patterns (residual):** client **mock fallback** in `useVisualizationData` (banner mitigates “silent” on main surfaces); **`?all=1`** still mixes test+live by design; **`loadSurveyData`** in `dataAdapter.ts` unused but revival risk; **`NODE_ENV !== 'production'`** skips read gate (documented in [SURVEY_READ_GATING_RUNBOOK.md](./admin/SURVEY_READ_GATING_RUNBOOK.md)).
+
+**Score:** **9 / 10** (~**90%**) — revised **+0.5** vs 2026-04-16 for shipped mock-banner + `surveyVisualizationFetch` clarity; not 10/10 while `all=1` cohort semantics and env-based gate bypass remain.
+
+---
+
+### 5 — CRUD completeness (explore re-pass 2026-04-23)
 
 | Entity | Agent-relevant HTTP |
 |--------|---------------------|
@@ -109,23 +109,23 @@ Single **`OPENGRIMOIRE_DB_PATH`** SQLite; user and gated agent hit same **`getVi
 
 ---
 
-### 6 — UI integration (subagent 5d05adc0; **refresh 2026-04-17**)
+### 6 — UI integration (explore re-pass 2026-04-23)
 
-`useVisualizationData` and `useApprovedQuotes` refetch when `refreshToken` increments; both register `window` listener for **`OPENGRIMOIRE_SURVEY_DATA_CHANGED`** (dispatched after successful `POST /api/survey`, moderation `PATCH`, admin focus refresh paths per [AGENT_INTEGRATION.md](./AGENT_INTEGRATION.md)). **No** poll/SSE for unrelated writers — external SQLite mutators must dispatch the same event or rely on reload.
+`useVisualizationData` and `useApprovedQuotes` refetch when `refreshToken` increments; both register `window` listener for **`OPENGRIMOIRE_SURVEY_DATA_CHANGED`** via `dispatchSurveyDataChanged` from `useSyncSessionForm` (POST success), `AdminPanel` (moderation PATCH / focus / refresh), per [AGENT_INTEGRATION.md](./AGENT_INTEGRATION.md). **No** poll/SSE for unrelated writers — external SQLite mutators must dispatch the same event or reload.
 
-**Score:** **6 / 10** (~**60%**) for survey→viz immediacy in-tab / same-browser coordination.
-
----
-
-### 7 — Capability discovery (subagent adb183fa)
-
-Mechanisms: onboarding **partial**; help docs **strong**; UI hints **partial** (good on `DataVisualization`); ApiDiscoveryMirror **no self-describe** by design; suggested actions **partial**; empty states **partial**; slash commands **no**. **`GET /api/capabilities`** now includes **`workflows[]`** with `ui_path` for `/context-atlas`, `/wiki`, `/visualization` and refresh semantics — closes major discovery gap vs 2026-04-16 row.
-
-**Score:** **5 / 7** (~**71%**).
+**Score:** **7 / 10** (~**70%**) — revised **+1** vs table-as-of-2026-04-22 to match code strength and prior “revised upward” note; **remaining:** Playwright proof of second `GET` after event; no push for out-of-process writers.
 
 ---
 
-### 8 — Prompt-native features (subagent a3772a35)
+### 7 — Capability discovery (explore re-pass 2026-04-23)
+
+Mechanisms: onboarding **partial**; help docs **strong**; UI hints **partial** (good on `DataVisualization`); ApiDiscoveryMirror **no self-describe** by design; suggested actions **partial**; empty states **partial**; slash commands **no**. **`GET /api/capabilities`** includes **`workflows[]`**, **`ui_surfaces[]`**, **`documentation.non_contractual_ui`**, `auth_env_hints`, and self-listing route — **spine improved** vs 2026-04-16, but the seven-mechanism rubric still has two fixed **no** rows.
+
+**Score:** **5 / 7** (~**71%**) — headline **unchanged**; content of `capabilities/route.ts` richer (no regression).
+
+---
+
+### 8 — Prompt-native features (explore re-pass 2026-04-23)
 
 Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows classified as **PROMPT**-defined.
 
@@ -147,6 +147,7 @@ Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows cl
 | P8 | Mark **`/test*`** explicitly non-contractual in capabilities or agent docs. | **Shipped (2026-04-19):** `AGENT_INTEGRATION.md` § Dev / mock UI routes; `GET /api/capabilities` `documentation.non_contractual_ui`. |
 | P9 | **Persist** theme/autoplay/color prefs via authenticated API if operators need agent parity. | **Deferred** — product scope; no API in this slice ([pending_tasks OGAN-09](../../../MiscRepos/.cursor/state/pending_tasks.md)). |
 | P10 | If prompt-native ever required: **versioned chart spec JSON** + thin renderer over existing D3. | **Deferred** — roadmap-only unless product commits ([pending_tasks OGAN-10](../../../MiscRepos/.cursor/state/pending_tasks.md)). |
+| P11 | **Survey POST bootstrap** threat model + hardening backlog (doc-only, 2026-04-22). | **Shipped:** [SURVEY_POST_BOOTSTRAP_THREAT_MODEL.md](./security/SURVEY_POST_BOOTSTRAP_THREAT_MODEL.md) — **OGSEC-07**; complements rate limits + Turnstile story. |
 
 ---
 
@@ -162,7 +163,40 @@ Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows cl
 
 ## Refresh 2026-04-17 (integration audit)
 
-**Trigger:** [OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md](./plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md) — post–OA-FR-SCOPE delta (`18111c9` and parents). **Mechanical verification:** `npm run verify` PASS; `npm run test:e2e` **34 passed**, **2 skipped** with Playwright `webServer`. **Principle deltas:** **#6 UI integration** and **#7 Capability discovery** scores raised after code/doc review (`useVisualizationData` / `useApprovedQuotes` event listeners; `CAPABILITIES.workflows`). Other principles unchanged vs 2026-04-16 subagent synthesis unless a future full eight-agent re-run overrides this note.
+**Trigger:** [OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md](./plans/OPENGRIMOIRE_FULL_REVIEW_REFRESH_2026-04-17.md) — post–OA-FR-SCOPE delta (`18111c9` and parents). **Mechanical verification:** `npm run verify` PASS; `npm run test:e2e` **34 passed**, **2 skipped** with Playwright `webServer`. **Principle deltas:** **#6 UI integration** and **#7 Capability discovery** scores raised after code/doc review (`useVisualizationData` / `useApprovedQuotes` event listeners; `CAPABILITIES.workflows`). Other principles unchanged vs 2026-04-16 subagent synthesis **until** [§ Refresh 2026-04-23](#refresh-2026-04-23), which re-scored **#3**, **#4**, **#6** again from eight **explore** returns.
+
+---
+
+## Refresh 2026-04-22 (OG-AUDIT-01 — doc + security hygiene; **no** full eight-explore re-run)
+
+**Trigger:** [gui-2026-04-16-opengrimoire-data-viz.md](./audit/gui-2026-04-16-opengrimoire-data-viz.md) § Post-implementation checklist — “substantial survey or visualization path changes” and refresh this scorecard. **This pass:** security and survey **documentation** plus validation hardening landed in-repo (**OGSEC-01–07** family: trusted client IP for rate limits, `answers` cap, moderation `notes` cap, survey read runbook + `NODE_ENV` / E2E runbook, **bootstrap threat model** [SURVEY_POST_BOOTSTRAP_THREAT_MODEL.md](./security/SURVEY_POST_BOOTSTRAP_THREAT_MODEL.md)); cross-links in `AGENT_INTEGRATION`, `OPERATIONAL_TRADEOFFS`, `SYNC_SESSION_HANDOFF`, `PUBLIC_SURFACE_AUDIT`, route JSDoc.
+
+**What did *not* run:** The **compound agent-native-audit** workflow (eight parallel **explore** subagents) was **not** re-executed. **As of this 2026-04-22 publish:** numeric scorecard rows matched 2026-04-19. **Superseded (2026-04-23):** See [§ Refresh 2026-04-23](#refresh-2026-04-23) — full eight-explore re-pass updated Principles **3**, **4**, and **6** (and blended %) in the table and body §§3–6.
+
+**Mechanical verification (editorial):** `npm test` (Vitest) expected PASS on branch with these merges; operators should run `npm run verify` before release as usual.
+
+**Operator follow-up:** When the next **material** visualization or survey **contract** change ships, either (a) schedule a full eight-agent **agent-native-audit** re-run and rescale the table, or (b) append another dated **Refresh** subsection here with honest scope (doc-only vs subagent synthesis).
+
+---
+
+## Refresh 2026-04-23
+
+**Full eight-explore compound re-pass.** **Trigger:** Operator pass — **full** compound **agent-native-audit** rescoring (eight parallel **explore** subagents, one per [ARCHITECTURE_REST_CONTRACT.md](./ARCHITECTURE_REST_CONTRACT.md) agent-native principle), merged into this file as the canonical harness scorecard for the System 2 + shared survey slice.
+
+**Scope:** Read-only codebase reconnaissance + doc synthesis (no application code changes in this pass). **Not claimed:** fresh Playwright counts or `npm run verify` solely *because* of this doc edit — run before release as always.
+
+**Score deltas vs 2026-04-22 table (doc-only refresh):**
+
+| Principle | Before (as left 2026-04-22) | After (2026-04-23) |
+|-----------|------------------------------|---------------------|
+| 3 Context injection | **3 / 8** (~38%) | **4 / 8** (~50%) — `workflows` + `ui_surfaces` on `GET /api/capabilities` count toward machine-readable context |
+| 4 Shared workspace | **8.5 / 10** | **9 / 10** — mock banner + `surveyVisualizationFetch` SSOT reduce silent-divergence risk; residual `all=1` mix + env gate bypass keep it below 10 |
+| 6 UI integration | **6 / 10** | **7 / 10** — align narrative with shipped `dispatchSurveyDataChanged` + hook listeners; still missing second-GET Playwright proof + external-writer story |
+| 1, 2, 5, 7, 8 | unchanged | unchanged |
+
+**Blended posture:** ~**57%** → ~**58%** (same neutral handling of Principle 8 as the summary table note).
+
+**Supersedes for numbers:** The 2026-04-22 refresh remains the audit trail for **OGSEC-01–07** / **OG-AUDIT-01** documentation scope; use **this** refresh for **scorecard percentages** and Principle **3 / 4 / 6** subsection text.
 
 ---
 
@@ -192,6 +226,8 @@ Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows cl
 
 **Wave 10 note:** MiscRepos **OG-GUI-*** (System 1 GUI release) is **closed** 2026-04-18 — see [gui-2026-04-16-opengrimoire-survey.md](./audit/gui-2026-04-16-opengrimoire-survey.md) § Flow evidence. **AN1** remains **pending** until the table above is executed or formally waived row-by-row.
 
+**Harness status (2026-04-21):** MiscRepos [**AN1** / **OG-PR-4** rows](../../../MiscRepos/.cursor/state/pending_tasks.md#pending_agent_native) stay **`pending`** until the operator sets **AN1** to **`done`** and runs **`split_done_tasks_to_completed.py`**, or documents a formal **waive**, and until **OG-PR-4** (compound **`/ce-review`** on the PR branch, if required) is satisfied per policy. Narrative read-only review on merged **`master`** and this cross-link are recorded in [`CE_REVIEW_DEFERRAL.md`](./audit/evidence/og-system2-mcp-wave/CE_REVIEW_DEFERRAL.md) § **OG-PR-4 status (2026-04-21)**.
+
 **Security + audit extras:** Labeled **OGSEC-***, **OG-AUDIT-***, **OG-DV-***, **OG-GUI-AUDIT-*** rows from GUI/security audits live in MiscRepos [pending_tasks.md § PENDING_OPENGRIMOIRE_GUI_AUDIT_FOLLOWUPS](../../../MiscRepos/.cursor/state/pending_tasks.md#pending_opengrimoire_gui_audit_followups) (implement or `done` + `split_done_tasks_to_completed.py` independently of **AN1** unless tied to an **OGAN-*** closure). **Operator observability hub:** **OG-OH-*** (internal monitoring / reflections / AI ops charter) lives in [pending_tasks.md § PENDING_OPENGRIMOIRE_OBSERVABILITY_HUB](../../../MiscRepos/.cursor/state/pending_tasks.md#pending_opengrimoire_observability_hub).
 
 ---
@@ -218,4 +254,4 @@ Alluvial/Chord/constellation lab: **CODE** (React + D3/Three). **0 / 8** rows cl
 
 - [PUBLIC_SURFACE_AUDIT.md](./security/PUBLIC_SURFACE_AUDIT.md)
 - [MiscRepos GUI audit portfolio index](../../MiscRepos/docs/audit/GUI_AUDIT_PORTFOLIO_INDEX.md)
-- [SECURITY_SENTINEL_OPENGRIMOIRE_GUI_2026-04-18.md](./audit/SECURITY_SENTINEL_OPENGRIMOIRE_GUI_2026-04-18.md) — Wave 10 adjunct; maps residual risks to **OGAN-12** and suggested **OGAN-SEC-*** IDs
+- [SECURITY_SENTINEL_OPENGRIMOIRE_GUI_2026-04-18.md](./audit/SECURITY_SENTINEL_OPENGRIMOIRE_GUI_2026-04-18.md) — Wave 10 adjunct; maps residual risks to **OGAN-12** and suggested **OGAN-SEC-*** IDs (bootstrap finding #8 → [SURVEY_POST_BOOTSTRAP_THREAT_MODEL.md](./security/SURVEY_POST_BOOTSTRAP_THREAT_MODEL.md))
