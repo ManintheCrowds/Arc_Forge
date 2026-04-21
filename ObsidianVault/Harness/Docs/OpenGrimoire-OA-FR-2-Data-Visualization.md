@@ -108,7 +108,7 @@ Defined in [`middleware.ts`](../../middleware.ts) as `TEST_ROUTE_PREFIXES`: `/te
 
 ### 1.7 NavigationDots (survey viz ↔ constellation)
 
-[`NavigationDots.tsx`](../../src/components/DataVisualization/shared/NavigationDots.tsx) lists only **`/visualization`** and **`/constellation`** (matching `src/app` routes). It is not currently mounted from production pages; kept for reuse without dead `app/` targets (OGAN-13).
+[`NavigationDots.tsx`](../../src/components/DataVisualization/shared/NavigationDots.tsx) lists only **`/visualization`** and **`/constellation`** (matching `src/app` routes). It is mounted in production via [`VisualizationNavDots.tsx`](../../src/components/DataVisualization/shared/VisualizationNavDots.tsx): **`src/app/visualization/layout.tsx`** (all `/visualization/*` pages) and **`src/app/constellation/page.tsx`** (OGAN-13 + OG-PR-6).
 
 ---
 

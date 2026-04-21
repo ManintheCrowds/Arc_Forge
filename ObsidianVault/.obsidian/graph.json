@@ -25,7 +25,7 @@
       "query": "file:Completed-Tasks",
       "color": {
         "a": 1,
-        "rgb": 1096065
+        "rgb": 1179392
       }
     },
     {
@@ -137,6 +137,6 @@
   "repelStrength": 10,
   "linkStrength": 1,
   "linkDistance": 250,
-  "scale": 0.1387322393266604,
+  "scale": 0.13873223932666034,
   "close": false
 }
