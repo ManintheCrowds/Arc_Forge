@@ -81,11 +81,11 @@ Aligned with **browser-review-protocol** (three human jobs above → flows).
 
 | # | Dimension | Status | Evidence |
 |---|-----------|--------|----------|
-| 1 | Task success | **PARTIAL** | Diagrams + quotes work when API and DB align; empty DB → mock data with **banner** (`opengrimoire-viz-mock-data-banner`). `NavigationDots` still includes routes without `app/` pages (dead links). |
+| 1 | Task success | **PARTIAL** | Diagrams + quotes work when API and DB align; empty DB → mock data with **banner** (`opengrimoire-viz-mock-data-banner`). **`NavigationDots`** was trimmed to real routes (**2026-04-19**, OGAN-13); dimension-1 checklist row below may still be used for **regression** verification. |
 | 2 | Cognitive load | **PARTIAL** | Dual stack is real, but **OG-DV-DOC-01 (2026-04-23):** [page × stack table + diagram](#og-dv-doc-01-page-stack) documents routes vs D3 / Three / fixtures; header `data-usage-hint` still required reading for fine-grained agent hints. |
 | 3 | Accessibility | **PARTIAL** | `vizLayoutIds`, tab panel wiring, `data-testid` on diagrams; full WCAG pass not claimed (no axe CI on this slice). |
-| 4 | Visual system | **PASS** | Header uses CSS variables (`--opengrimoire-viz-*`); theme via `AppContext`. |
-| 5 | A2UI / catalog | **PARTIAL** | `data-region` on header, quote slot, canvas; good for selectors. Legacy `/test` stack less instrumented. |
+| 4 | Visual system | **PASS** | Header + cohort **shell** use `--opengrimoire-viz-*` tokens (**2026-04-22**, OG-DV-UI-01); D3 categorical palettes remain hex by design. Theme via `AppContext`. |
+| 5 | A2UI / catalog | **PARTIAL** | `data-region` / `data-testid` on `/visualization` shell; **`/constellation`** route loading + Three shell + Zustand demo toggle (**2026-04-22**, OG-DV-UI-02). Legacy `/test` stack less instrumented. |
 | 6 | Agent parity | **PARTIAL** | REST + `/api/capabilities` includes **`workflows.cohort_survey_visualization`**; tab/auto-play still browser-only. |
 
 ---
@@ -111,7 +111,7 @@ Principles from the **compound agent-native-audit** skill (numeric scorecard: [A
 
 ## Architecture strategist — synthesis
 
-**Dual stack:** Short-term seam (D3 survey viz vs Three + Zustand graph) is defensible; **debt** is duplicate naming (`ConstellationView` × 2), two HTTP query shapes for one API, and an **orphan** [`DataVisualization/Constellation/ConstellationView.tsx`](../../src/components/DataVisualization/Constellation/ConstellationView.tsx) (uses `useVisualizationData` but **no** App Router parent — live `/constellation` imports [`visualization/ConstellationView`](../../src/components/visualization/ConstellationView.tsx)).
+**Dual stack:** Short-term seam (D3 survey viz vs Three + Zustand graph) is defensible; **debt** is two HTTP query shapes for one API. ~~Duplicate `ConstellationView` / orphan `DataVisualization/Constellation/`~~ **resolved (2026-04-19–22):** orphan tree removed (**CHANGELOG**); lazy wrapper + single named export (**OG-DV-DOC-02**). Live `/constellation` imports [`visualization/ConstellationView`](../../src/components/visualization/ConstellationView.tsx).
 
 **Biggest agent/harness risk:** False-green when selectors or network assumptions from `/visualization` are applied to `/constellation` or `/test` (different data path and DOM).
 
@@ -178,7 +178,7 @@ flowchart LR
 ### 2 — Cognitive load
 
 - [x] In admin or docs, one diagram: “Which page uses which stack” (D3 vs Three vs fixtures). **Shipped 2026-04-23 (OG-DV-DOC-01):** [§ Page × rendering stack](#og-dv-doc-01-page-stack) above.
-- [ ] Rename or namespace exports so `ConstellationView` search resolves to the live file first.
+- [x] Rename or namespace exports so `ConstellationView` search resolves to the live file first. **Shipped 2026-04-22 (OG-DV-DOC-02):** `ConstellationViewLazy` on [`constellation/page.tsx`](../../src/app/constellation/page.tsx); named export only from [`ConstellationView.tsx`](../../src/components/visualization/ConstellationView.tsx).
 - [ ] **Maintain:** When adding a viz surface, update OA-FR-2 or this audit’s “dual stack” note so harness authors do not assume one HTTP shape.
 
 ### 3 — Accessibility
@@ -188,13 +188,13 @@ flowchart LR
 
 ### 4 — Visual system
 
-- [ ] Audit `DataVisualization` for stray hex outside tokens; align with `--opengrimoire-viz-*` where missing.
+- [x] Audit `DataVisualization` for stray hex outside tokens; align with `--opengrimoire-viz-*` where missing. **Shipped 2026-04-22 (OG-DV-UI-01):** shell chrome (`index`, `VisualizationHeader`, `QuestionSelector`) — not full D3 palette migration.
 - [ ] **Maintain:** If product adds Percy/Chromatic for viz pages, mirror the **OG-GUI-06** pattern (`e2e/visual-baselines-og-gui-06.spec.ts`) for stable selectors first.
 
 ### 5 — A2UI / catalog
 
-- [ ] Extend `data-region` / `data-testid` to `/constellation` loading shell and Zustand-driven controls used in demos.
-- [ ] Document `data-usage-hint` on header in AGENT_INTEGRATION or OA-FR-2 appendix.
+- [x] Extend `data-region` / `data-testid` to `/constellation` loading shell and Zustand-driven controls used in demos. **Shipped 2026-04-22 (OG-DV-UI-02).**
+- [x] Document `data-usage-hint` on header in AGENT_INTEGRATION or OA-FR-2 appendix. **Shipped 2026-04-22 (OG-DV-DOC-03).**
 - [ ] **Maintain:** New operator-facing components should follow the same `data-region` / non-decorative naming discipline as System 1 **OG-GUI-A2**.
 
 ### 6 — Agent parity
@@ -223,8 +223,8 @@ flowchart LR
 ## Follow-ups (cross-cutting)
 
 - [ ] **Single client module** for `GET /api/survey/visualization` query shapes (`all` + `showTestData`) — architecture strategist #1.
-- [ ] **Delete or quarantine** orphan `DataVisualization/Constellation/` or merge into live route — strategist #2.
-- [ ] **Gate or remove** hot-path `console.log` in `visualization/ConstellationView.tsx` and related store — PUBLIC_SURFACE_AUDIT F4 spirit.
+- [x] **Delete or quarantine** orphan `DataVisualization/Constellation/` — **done (2026-04-19)** per **CHANGELOG** / **OGAN-14**.
+- [x] **Gate or remove** hot-path `console.log` in `visualization/ConstellationView.tsx` and related store — **partial done (2026-04-19)** per **CHANGELOG** / **OGAN-12**; diagram-level F4 may remain (Alluvial/Chord).
 
 ---
 
