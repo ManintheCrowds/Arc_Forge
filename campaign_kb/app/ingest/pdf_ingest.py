@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import importlib
 import json
 import tempfile
 from pathlib import Path
@@ -43,7 +44,7 @@ def extract_pdf_sections_pdfplumber(pdf_path: Path) -> Iterable[dict[str, Any]]:
 def extract_pdf_sections_opendataloader(pdf_path: Path) -> Iterable[dict[str, Any]]:
     # PURPOSE: Layout-aware extraction via opendataloader-pdf JSON; one section per element.
     try:
-        import opendataloader_pdf
+        opendataloader_pdf = importlib.import_module("opendataloader_pdf")
     except ImportError as e:
         raise RuntimeError(
             "PDF_BACKEND=opendataloader requires: pip install opendataloader-pdf (JDK 11+ on PATH). "
@@ -82,13 +83,16 @@ def extract_pdf_sections_opendataloader(pdf_path: Path) -> Iterable[dict[str, An
             kids = data
         else:
             kids = data.get("kids") or []
+        parent_page = data.get("page number") if isinstance(data, dict) else None
 
         for el in kids:
-            raw = el.get("content") or ""
+            if not isinstance(el, dict):
+                continue
+            raw = el.get("content") or el.get("description") or ""
             normalized = normalize_text(raw)
             if not normalized:
                 continue
-            page = int(el.get("page number") or data.get("page number") or 1)
+            page = int(el.get("page number") or parent_page or 1)
             el_type = el.get("type") or "block"
             yield {
                 "page_number": page,
