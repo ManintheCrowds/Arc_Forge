@@ -843,6 +843,23 @@ def test_mutating_api_requires_bearer_when_key_required(client_keyed, monkeypatc
     assert r_ok.status_code == 200
 
 
+def test_api_key_required_for_localhost_by_default(client_keyed, monkeypatch):
+    """Reverse-proxied public traffic must not bypass auth just because the proxy is local."""
+    monkeypatch.setenv("WORKFLOW_UI_REQUIRE_API_KEY", "1")
+    monkeypatch.setenv("WORKFLOW_UI_API_KEY", "secret-key-xyz")
+    monkeypatch.delenv("WORKFLOW_UI_API_KEY_EXEMPT_LOCAL", raising=False)
+
+    r = client_keyed.post(
+        "/api/workbench/create-module",
+        json={"campaign": "c", "module": "m"},
+        content_type="application/json",
+        environ_overrides={"REMOTE_ADDR": "127.0.0.1"},
+    )
+
+    assert r.status_code == 401
+    assert r.get_json().get("error") == "unauthorized"
+
+
 def test_get_api_unauthorized_not_enforced(client_keyed, monkeypatch):
     """GET /api/* is not blocked by WORKFLOW_UI_API_KEY."""
     monkeypatch.setenv("WORKFLOW_UI_REQUIRE_API_KEY", "1")
