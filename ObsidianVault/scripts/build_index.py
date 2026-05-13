@@ -1,6 +1,6 @@
 # PURPOSE: Build searchable index of all ingested PDF sources.
 # DEPENDENCIES: ingest_config.json, source notes with YAML frontmatter.
-# MODIFICATION NOTES: Generates Sources/Source_Index.md for analysis and brainstorming.
+# MODIFICATION NOTES: Generates the configured source index for analysis and brainstorming.
 
 from __future__ import annotations
 
@@ -129,6 +129,7 @@ def scan_sources(
     vault_root: Path,
     extracted_text_dir: str,
     exclude_dirs: List[str],
+    exclude_file_names: Optional[List[str]] = None,
 ) -> List[Dict[str, object]]:
     """
     Scan Sources directory for markdown files and extract metadata.
@@ -138,11 +139,13 @@ def scan_sources(
         vault_root: Root directory of the vault.
         extracted_text_dir: Relative path to extracted text directory.
         exclude_dirs: List of directory names to exclude.
+        exclude_file_names: Markdown filenames to exclude from the source set.
         
     Returns:
         List of source metadata dictionaries.
     """
     sources = []
+    excluded_files = set(exclude_file_names or [])
     
     # Validate and build exclude paths
     exclude_paths = set()
@@ -167,7 +170,7 @@ def scan_sources(
             # Skip excluded directories and the index itself
             if any(md_file.is_relative_to(exc) for exc in exclude_paths):
                 continue
-            if md_file.name == "Source_Index.md":
+            if md_file.name in excluded_files:
                 continue
             
             try:
@@ -256,7 +259,7 @@ def generate_index_markdown(
         "",
         "## Quick Links",
         "",
-        "- [[Sources/]] - Browse all source notes",
+        "- [[Campaigns/Sources/]] - Browse all source notes",
         "- Filter by tag: `#type/source`",
         "- Search by doc_type in frontmatter",
         "",
@@ -365,7 +368,7 @@ def get_file_mtime(file_path: Path) -> str:
 
 # PURPOSE: Build the source index with incremental updates.
 # DEPENDENCIES: Config, source notes directory.
-# MODIFICATION NOTES: Writes Sources/Source_Index.md. Supports incremental builds.
+# MODIFICATION NOTES: Writes configured source index. Supports incremental builds.
 def build_index(config: Dict[str, object], overwrite: bool = True, incremental: bool = True) -> None:
     """
     Build the source index with incremental updates.
@@ -389,8 +392,28 @@ def build_index(config: Dict[str, object], overwrite: bool = True, incremental: 
     # Index builder state file
     state_path = Path(__file__).parent / "index_build_state.json"
     
-    # Get exclude dirs from config or use defaults
-    exclude_dirs = config.get("index_builder", {}).get("exclude_dirs", ["_extracted_text", "PDFs"])
+    # Get index builder options from config or use defaults
+    index_config = config.get("index_builder", {})
+    if not isinstance(index_config, dict):
+        index_config = {}
+
+    output_path_value = index_config.get("output_path")
+    if output_path_value is None:
+        index_path = sources_dir / "Source_Index.md"
+    elif not isinstance(output_path_value, str):
+        logger.warning("Invalid index_builder.output_path in config, using Source_Index.md")
+        index_path = sources_dir / "Source_Index.md"
+    else:
+        index_path = Path(output_path_value)
+        if not index_path.is_absolute():
+            index_path = vault_root / index_path
+    try:
+        index_path = validate_vault_path(vault_root, index_path.resolve())
+    except ValueError as e:
+        logger.error(f"Invalid index output path: {e}")
+        sys.exit(1)
+
+    exclude_dirs = index_config.get("exclude_dirs", ["_extracted_text", "PDFs"])
     if not isinstance(exclude_dirs, list):
         exclude_dirs = ["_extracted_text", "PDFs"]
         logger.warning("Invalid exclude_dirs in config, using defaults")
@@ -404,7 +427,13 @@ def build_index(config: Dict[str, object], overwrite: bool = True, incremental: 
     
     logger.info(f"Scanning sources in: {sources_dir}")
     try:
-        sources = scan_sources(sources_dir, vault_root, extracted_text_dir, exclude_dirs)
+        sources = scan_sources(
+            sources_dir,
+            vault_root,
+            extracted_text_dir,
+            exclude_dirs,
+            exclude_file_names=["Source_Index.md", index_path.name],
+        )
     except Exception as e:
         logger.error(f"Failed to scan sources: {e}")
         sys.exit(1)
@@ -470,8 +499,6 @@ def build_index(config: Dict[str, object], overwrite: bool = True, incremental: 
     last_updated = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     index_content = generate_index_markdown(categories, len(sources), last_updated)
-    
-    index_path = sources_dir / "Source_Index.md"
     
     if index_path.exists() and not overwrite:
         logger.info(f"Index already exists at {index_path}. Use --overwrite to regenerate.")

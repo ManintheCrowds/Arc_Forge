@@ -178,10 +178,10 @@ def main():
     # Get output directory from config or use default
     if config:
         vault_root = Path(config.get("vault_root", "D:\\Arc_Forge\\ObsidianVault"))
-        output_dir = vault_root / config.get("extracted_text_dir", "Sources/_extracted_text")
+        output_dir = vault_root / config.get("extracted_text_dir", "Campaigns/Sources/_extracted_text")
     else:
         vault_root = Path("D:\\Arc_Forge\\ObsidianVault")
-        output_dir = vault_root / "Sources/_extracted_text"
+        output_dir = vault_root / "Campaigns/Sources/_extracted_text"
     
     # Validate and resolve paths
     try:
