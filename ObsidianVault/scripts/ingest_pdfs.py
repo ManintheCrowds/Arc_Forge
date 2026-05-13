@@ -587,7 +587,7 @@ def build_source_note(
             
             # Get cache directory from config
             ai_config = config.get("ai_summarization", {})
-            cache_dir_str = ai_config.get("cache_dir", "Sources/_summaries")
+            cache_dir_str = ai_config.get("cache_dir", "Campaigns/Sources/_summaries")
             
             # Resolve cache directory - need to get vault_root from config
             try:

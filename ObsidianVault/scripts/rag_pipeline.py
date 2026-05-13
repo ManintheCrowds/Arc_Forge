@@ -36,6 +36,9 @@ def _debug_log(location: str, message: str, data: dict, hypothesis_id: str = "A"
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_PDF_EXTRACTION_DIR = "Campaigns/Sources/_extracted_text"
+DEFAULT_SUMMARY_CACHE_DIR = "Campaigns/Sources/_summaries"
+
 try:
     from entity_extractor import extract_entities_from_text
     ENTITY_EXTRACTION_AVAILABLE = True
@@ -594,7 +597,7 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
             "api_key": None,
             "max_tokens": 500,
             "temperature": 0.7,
-            "cache_dir": "Sources/_summaries",
+            "cache_dir": DEFAULT_SUMMARY_CACHE_DIR,
             "ollama_endpoint": None,
         },
         "generation": {
@@ -619,7 +622,7 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
             "void",
             "promethium",
         ],
-        "pdf_extraction_dir": "Sources/_extracted_text",
+        "pdf_extraction_dir": DEFAULT_PDF_EXTRACTION_DIR,
         "include_pdfs": True,
         "pdf_file_pattern": "*.txt",
         "pdf_ingestion": {
@@ -685,7 +688,7 @@ def load_pipeline_config(config_path: Path) -> Dict[str, Any]:
     rag_config["entity_extraction"] = base_config.get("entity_extraction", {})
     
     # Resolve PDF extraction directory path relative to vault_root
-    pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
+    pdf_dir = Path(rag_config.get("pdf_extraction_dir", DEFAULT_PDF_EXTRACTION_DIR))
     if not pdf_dir.is_absolute():
         pdf_dir = vault_root / pdf_dir
     rag_config["pdf_extraction_dir"] = str(pdf_dir)
@@ -1407,7 +1410,7 @@ def retrieve_context(
         doc_paths = resolve_campaign_docs(campaign_kb_root, rag_config.get("campaign_docs", []))
         tm = read_campaign_docs(doc_paths)
         if rag_config.get("include_pdfs", True):
-            pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
+            pdf_dir = Path(rag_config.get("pdf_extraction_dir", DEFAULT_PDF_EXTRACTION_DIR))
             pdf_config = rag_config.get("pdf_ingestion", {})
             tm.update(read_pdf_texts(
                 pdf_dir,
@@ -1698,7 +1701,7 @@ def stage_ingest(rag_config: Dict[str, Any]) -> Dict[str, str]:
     doc_paths = resolve_campaign_docs(campaign_root, rag_config["campaign_docs"])
     text_map = read_campaign_docs(doc_paths)
     if rag_config.get("include_pdfs", True):
-        pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
+        pdf_dir = Path(rag_config.get("pdf_extraction_dir", DEFAULT_PDF_EXTRACTION_DIR))
         pdf_config = rag_config.get("pdf_ingestion", {})
         pdf_text_map = read_pdf_texts(
             pdf_dir,
@@ -1999,7 +2002,7 @@ def analyze_full_corpus(config_path: Path) -> Dict[str, Any]:
 
     # Add PDF content if enabled
     if rag_config.get("include_pdfs", True):
-        pdf_dir = Path(rag_config.get("pdf_extraction_dir", "Sources/_extracted_text"))
+        pdf_dir = Path(rag_config.get("pdf_extraction_dir", DEFAULT_PDF_EXTRACTION_DIR))
         pdf_config = rag_config.get("pdf_ingestion", {})
         pdf_text_map = read_pdf_texts(
             pdf_dir,

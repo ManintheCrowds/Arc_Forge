@@ -5,11 +5,11 @@
   "_rag_campaign_kb_disconnect": "RAG campaign_docs are read from disk (campaign_kb_root + campaign_docs). campaign_kb DB is populated by separate ingest (app.config). Two sources of truth unless aligned manually.",
   "vault_root": "D:\\Arc_Forge\\ObsidianVault",
   "pdf_root": "D:\\Arc_Forge\\ObsidianVault\\pdf",
-  "source_notes_dir": "Sources",
-  "rules_dir": "Rules",
-  "npcs_dir": "NPCs",
-  "factions_dir": "Factions",
-  "locations_dir": "Locations",
+  "source_notes_dir": "Campaigns/Sources",
+  "rules_dir": "Campaigns/Rules",
+  "npcs_dir": "Campaigns/NPCs",
+  "factions_dir": "Campaigns/Factions",
+  "locations_dir": "Campaigns/Locations",
   "items_dir": "Items",
   "concepts_dir": "Concepts",
   "campaigns_dir": "Campaigns",
@@ -17,7 +17,7 @@
     "source_note": "Templates/source_note.md",
     "entity_note": "Templates/entity_note.md"
   },
-  "extracted_text_dir": "Sources/_extracted_text",
+  "extracted_text_dir": "Campaigns/Sources/_extracted_text",
   "pdf_text_cache_dirs": [
     ".obsidian/plugins/pdf-plus",
     ".obsidian/plugins/obsidian-pdf-plus",
@@ -34,7 +34,7 @@
     "enabled": false
   },
   "index_builder": {
-    "output_path": "Sources/Source_Index.md",
+    "output_path": "Campaigns/Sources/TTRPG_Source_Index.md",
     "exclude_dirs": ["_extracted_text", "PDFs"],
     "excerpt_max_chars": 300
   },
@@ -58,7 +58,7 @@
       "contrast_enhancement": true
     },
     "quality_threshold": 60,
-    "output_dir": "Sources/_ocr"
+    "output_dir": "Campaigns/Sources/_ocr"
   },
   "watcher": {
     "enabled": true,
@@ -75,7 +75,7 @@
     "max_tokens": 500,
     "temperature": 0.7,
     "cache_enabled": true,
-    "cache_dir": "Sources/_summaries",
+    "cache_dir": "Campaigns/Sources/_summaries",
     "ollama_endpoint": null
   },
   "table_extraction": {
@@ -83,7 +83,7 @@
     "method": "pdfplumber",
     "fallback_method": "camelot",
     "output_format": "markdown",
-    "output_dir": "Sources/_tables"
+    "output_dir": "Campaigns/Sources/_tables"
   },
   "annotation_extraction": {
     "enabled": false,
@@ -135,7 +135,7 @@
       "api_key": null,
       "max_tokens": 500,
       "temperature": 0.7,
-      "cache_dir": "Sources/_summaries",
+      "cache_dir": "Campaigns/Sources/_summaries",
       "ollama_endpoint": null
     },
     "generation": {
@@ -159,7 +159,7 @@
       "void",
       "promethium"
     ],
-    "pdf_extraction_dir": "Sources/_extracted_text",
+    "pdf_extraction_dir": "Campaigns/Sources/_extracted_text",
     "include_pdfs": true,
     "pdf_file_pattern": "*.txt",
     "pdf_ingestion": {
