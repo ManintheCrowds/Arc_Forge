@@ -86,6 +86,6 @@ def test_build_index_writes_configured_campaign_index(tmp_path, monkeypatch):
 
     content = target_index.read_text(encoding="utf-8")
     assert "# Source Index" in content
-    assert "[[Book]]" in content
+    assert "[[Campaigns/Sources/Book.md|Book]]" in content
     assert "Legacy index" not in content
     assert not (vault_root / "Source_Index.md").exists()
