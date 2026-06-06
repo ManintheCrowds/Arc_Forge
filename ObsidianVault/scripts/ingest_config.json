@@ -83,7 +83,7 @@
     "method": "pdfplumber",
     "fallback_method": "camelot",
     "output_format": "markdown",
-    "output_dir": "Sources/_tables"
+    "output_dir": "Campaigns/Sources/_tables"
   },
   "annotation_extraction": {
     "enabled": false,

@@ -105,6 +105,7 @@ def test_repository_ingest_config_matches_campaign_layout():
     assert config["index_builder"]["output_path"] == "Campaigns/Sources/TTRPG_Source_Index.md"
     assert config["ocr"]["output_dir"] == "Campaigns/Sources/_ocr"
     assert config["ai_summarization"]["cache_dir"] == "Campaigns/Sources/_summaries"
+    assert config["table_extraction"]["output_dir"] == "Campaigns/Sources/_tables"
     assert config["rag_pipeline"]["pdf_extraction_dir"] == "Campaigns/Sources/_extracted_text"
     assert config["rag_pipeline"]["summarization"]["cache_dir"] == "Campaigns/Sources/_summaries"
 
