@@ -85,6 +85,34 @@ def sample_config(tmp_path):
     return config
 
 
+def test_repository_ingest_config_matches_campaign_layout():
+    """Default config should write generated notes into the current vault layout."""
+    vault_root = Path(__file__).resolve().parents[2]
+    config_path = vault_root / "scripts" / "ingest_config.json"
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+
+    expected_paths = {
+        "source_notes_dir": "Campaigns/Sources",
+        "rules_dir": "Campaigns/Rules",
+        "npcs_dir": "Campaigns/NPCs",
+        "factions_dir": "Campaigns/Factions",
+        "locations_dir": "Campaigns/Locations",
+        "extracted_text_dir": "Campaigns/Sources/_extracted_text",
+    }
+    for key, expected in expected_paths.items():
+        assert config[key] == expected
+
+    assert config["index_builder"]["output_path"] == "Campaigns/Sources/TTRPG_Source_Index.md"
+    assert config["ocr"]["output_dir"] == "Campaigns/Sources/_ocr"
+    assert config["ai_summarization"]["cache_dir"] == "Campaigns/Sources/_summaries"
+    assert config["rag_pipeline"]["pdf_extraction_dir"] == "Campaigns/Sources/_extracted_text"
+    assert config["rag_pipeline"]["summarization"]["cache_dir"] == "Campaigns/Sources/_summaries"
+
+    for relative_path in expected_paths.values():
+        current_path = vault_root / relative_path
+        assert current_path.parent.exists()
+
+
 @pytest.fixture
 def sample_pdf(tmp_path):
     """Create a sample PDF file for testing."""
