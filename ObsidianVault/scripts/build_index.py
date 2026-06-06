@@ -1,6 +1,6 @@
 # PURPOSE: Build searchable index of all ingested PDF sources.
 # DEPENDENCIES: ingest_config.json, source notes with YAML frontmatter.
-# MODIFICATION NOTES: Generates Sources/Source_Index.md for analysis and brainstorming.
+# MODIFICATION NOTES: Generates configured source index for analysis and brainstorming.
 
 from __future__ import annotations
 
@@ -129,6 +129,7 @@ def scan_sources(
     vault_root: Path,
     extracted_text_dir: str,
     exclude_dirs: List[str],
+    index_path: Optional[Path] = None,
 ) -> List[Dict[str, object]]:
     """
     Scan Sources directory for markdown files and extract metadata.
@@ -138,6 +139,7 @@ def scan_sources(
         vault_root: Root directory of the vault.
         extracted_text_dir: Relative path to extracted text directory.
         exclude_dirs: List of directory names to exclude.
+        index_path: Configured output index path to exclude from source scanning.
         
     Returns:
         List of source metadata dictionaries.
@@ -167,7 +169,7 @@ def scan_sources(
             # Skip excluded directories and the index itself
             if any(md_file.is_relative_to(exc) for exc in exclude_paths):
                 continue
-            if md_file.name == "Source_Index.md":
+            if md_file.name == "Source_Index.md" or (index_path is not None and md_file == index_path):
                 continue
             
             try:
@@ -363,9 +365,32 @@ def get_file_mtime(file_path: Path) -> str:
         return ""
 
 
+# PURPOSE: Resolve configured source index output path.
+# DEPENDENCIES: vault root, source notes directory, ingest_config.json.
+# MODIFICATION NOTES: Falls back to legacy Source_Index.md when output_path is unset.
+def resolve_index_output_path(
+    vault_root: Path,
+    sources_dir: Path,
+    config: Dict[str, object],
+) -> Path:
+    index_builder = config.get("index_builder", {})
+    output_path = None
+    if isinstance(index_builder, dict):
+        output_path = index_builder.get("output_path")
+
+    if isinstance(output_path, str) and output_path.strip():
+        candidate = Path(output_path)
+        if not candidate.is_absolute():
+            candidate = vault_root / candidate
+    else:
+        candidate = sources_dir / "Source_Index.md"
+
+    return validate_vault_path(vault_root, candidate.resolve())
+
+
 # PURPOSE: Build the source index with incremental updates.
 # DEPENDENCIES: Config, source notes directory.
-# MODIFICATION NOTES: Writes Sources/Source_Index.md. Supports incremental builds.
+# MODIFICATION NOTES: Writes configured source index. Supports incremental builds.
 def build_index(config: Dict[str, object], overwrite: bool = True, incremental: bool = True) -> None:
     """
     Build the source index with incremental updates.
@@ -382,6 +407,7 @@ def build_index(config: Dict[str, object], overwrite: bool = True, incremental: 
     try:
         sources_dir = get_config_path(vault_root, config, "source_notes_dir")
         extracted_text_dir = str(config["extracted_text_dir"])
+        index_path = resolve_index_output_path(vault_root, sources_dir, config)
     except (KeyError, ValueError) as e:
         logger.error(f"Configuration error: {e}")
         sys.exit(1)
@@ -404,7 +430,7 @@ def build_index(config: Dict[str, object], overwrite: bool = True, incremental: 
     
     logger.info(f"Scanning sources in: {sources_dir}")
     try:
-        sources = scan_sources(sources_dir, vault_root, extracted_text_dir, exclude_dirs)
+        sources = scan_sources(sources_dir, vault_root, extracted_text_dir, exclude_dirs, index_path)
     except Exception as e:
         logger.error(f"Failed to scan sources: {e}")
         sys.exit(1)
@@ -471,15 +497,12 @@ def build_index(config: Dict[str, object], overwrite: bool = True, incremental: 
     
     index_content = generate_index_markdown(categories, len(sources), last_updated)
     
-    index_path = sources_dir / "Source_Index.md"
-    
     if index_path.exists() and not overwrite:
         logger.info(f"Index already exists at {index_path}. Use --overwrite to regenerate.")
         return
     
     try:
-        # Validate index path is within vault
-        index_path = validate_vault_path(vault_root, index_path.resolve())
+        index_path.parent.mkdir(parents=True, exist_ok=True)
         index_path.write_text(index_content, encoding="utf-8")
         logger.info(f"Index written to: {index_path}")
         
