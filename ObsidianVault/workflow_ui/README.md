@@ -90,6 +90,8 @@ pip install -r workflow_ui/requirements.txt
 python -m playwright install chromium
 ```
 
+GitHub Actions CI installs Chromium via `playwright install --with-deps` in [workflow_ui_tests.yml](../../.github/workflows/workflow_ui_tests.yml).
+
 See [docs/PLAYWRIGHT_INTEGRATION.md](docs/PLAYWRIGHT_INTEGRATION.md) for integration patterns and how to extend E2E coverage.
 
 **Env requirements:** Storyboard under `Campaigns/_rag_outputs/` (or path passed to Stage 1); `ingest_config.json` in `scripts/` for Stage 2/4 and for Session memory (Archivist/Foreshadow). "Real" run stages (S1, S2, S4, S5) and Session memory need RAG/LLM; tests mock workflow functions so RAG/LLM are not invoked.

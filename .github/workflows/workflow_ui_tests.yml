@@ -9,10 +9,12 @@ on:
     branches: [main, master]
     paths:
       - "ObsidianVault/workflow_ui/**"
+      - ".github/workflows/workflow_ui_tests.yml"
   pull_request:
     branches: [main, master]
     paths:
       - "ObsidianVault/workflow_ui/**"
+      - ".github/workflows/workflow_ui_tests.yml"
 
 jobs:
   test:
@@ -27,6 +29,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r ObsidianVault/workflow_ui/requirements.txt
+
+      - name: Install Playwright browsers
+        run: python -m playwright install --with-deps chromium
 
       - name: Run pytest
         run: cd ObsidianVault && python -m pytest workflow_ui/tests/ -v --tb=short --ignore=workflow_ui/tests/test_e2e_playwright.py
