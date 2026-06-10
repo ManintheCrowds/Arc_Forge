@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Dict
 from urllib.parse import unquote
 
@@ -295,6 +295,9 @@ def sanitize_cache_dir(rel_dir: str) -> str:
     """
     # Security check: reject null bytes
     _reject_null_bytes(rel_dir)
+
+    if PureWindowsPath(rel_dir).drive:
+        raise ValueError(f"Directory name must be relative: {rel_dir}")
     
     # Decode URL-encoded strings and check for path traversal patterns
     if _detect_path_traversal_patterns(rel_dir):

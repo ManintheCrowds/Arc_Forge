@@ -63,6 +63,9 @@ Default Gradio URL: `http://localhost:7861`. Override with `GRADIO_APP_URL` (Fla
 | `GRADIO_APP_URL` | Redirect target for /tools/gradio | http://localhost:7861 | app.py |
 | `WORKFLOW_UI_URL` | Flask app base for gradio_app to call /api/kb/search | http://127.0.0.1:5050 | gradio_app.py |
 | `GRADIO_PORT` | Gradio app port | 7861 | gradio_app.py |
+| `WORKFLOW_UI_REQUIRE_API_KEY` | Require bearer token for mutating `/api/*` routes | (disabled) | app.py |
+| `WORKFLOW_UI_API_KEY` | Bearer token value when API-key mode is enabled | (unset) | app.py |
+| `WORKFLOW_UI_API_KEY_EXEMPT_LOCAL` | Exempt loopback clients in API-key mode; use only for explicit local-only development | 0 | app.py |
 | `WATCHTOWER_METRICS_URL` | Base URL for POST /api/errors (error reporting) | (unset = no-op) | error_handling.py via workflow_ui |
 | `WATCHTOWER_ERRORS_URL` | Base URL for POST /api/errors | fallback to WATCHTOWER_METRICS_URL | error_handling.py |
 

@@ -2,7 +2,7 @@
 
 **Base URL:** `http://WORKFLOW_UI_HOST:WORKFLOW_UI_PORT` (defaults `127.0.0.1:5050`).
 
-**Auth (current):** No session or API key unless `WORKFLOW_UI_REQUIRE_API_KEY=1` and `WORKFLOW_UI_API_KEY` are set (see [CAPABILITY_MAP.md](../../docs/CAPABILITY_MAP.md)). Rate limit: `30/min` on `POST /api/workbench/chat`.
+**Auth (current):** No session or API key unless `WORKFLOW_UI_REQUIRE_API_KEY=1` and `WORKFLOW_UI_API_KEY` are set (see [CAPABILITY_MAP.md](../../docs/CAPABILITY_MAP.md)). When enabled, mutating `/api/*` routes require `Authorization: Bearer <key>`; localhost exemption is opt-in with `WORKFLOW_UI_API_KEY_EXEMPT_LOCAL=1` for local-only development. Rate limit: `30/min` on `POST /api/workbench/chat`.
 
 **Machine-readable:** `GET /openapi.json` (partial schema) and `GET /docs` (Swagger UI) on this app.
 

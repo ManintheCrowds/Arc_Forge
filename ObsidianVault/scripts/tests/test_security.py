@@ -66,7 +66,7 @@ class TestMaliciousConfig:
             get_config_path(vault_root, config, "source_notes_dir")
 
     def test_config_with_symlink_attempt(self, tmp_path):
-        """Test that symlink attempts are handled (if symlinks exist)."""
+        """Test that symlinks resolving outside the vault are rejected."""
         vault_root = tmp_path / "vault"
         vault_root.mkdir()
         target = tmp_path / "target"
@@ -76,11 +76,9 @@ class TestMaliciousConfig:
         try:
             symlink = vault_root / "symlink"
             symlink.symlink_to(target)
-            
-            # Should validate the resolved path, not the symlink
-            validated = validate_vault_path(vault_root, symlink)
-            # The resolved path should still be validated
-            assert validated.exists()
+
+            with pytest.raises(ValueError, match="outside vault root"):
+                validate_vault_path(vault_root, symlink)
         except (OSError, NotImplementedError):
             # Symlinks not supported on this platform
             pytest.skip("Symlinks not supported on this platform")
