@@ -13,6 +13,7 @@ never invokes it. See local-proto/docs/OBSERVABILITY_LAYER.md.
 ALLOWED_TOOLS = frozenset({
     "ai_summarizer.summarize_text",
     "entity_extractor.extract_entities_from_text",
+    "rag_pipeline.generate_text",
 })
 
 

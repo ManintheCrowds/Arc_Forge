@@ -131,6 +131,7 @@ class TestToolRegistry:
         from tool_registry import is_tool_allowed
         assert is_tool_allowed("ai_summarizer.summarize_text") is True
         assert is_tool_allowed("entity_extractor.extract_entities_from_text") is True
+        assert is_tool_allowed("rag_pipeline.generate_text") is True
 
     def test_is_tool_allowed_false(self):
         """is_tool_allowed returns False for disallowed tools."""
@@ -143,6 +144,7 @@ class TestToolRegistry:
         from tool_registry import ensure_tool_allowed
         ensure_tool_allowed("ai_summarizer.summarize_text")
         ensure_tool_allowed("entity_extractor.extract_entities_from_text")
+        ensure_tool_allowed("rag_pipeline.generate_text")
 
     def test_ensure_tool_allowed_raises(self):
         """ensure_tool_allowed raises for disallowed tools."""
