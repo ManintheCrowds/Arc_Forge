@@ -80,15 +80,19 @@ def extract_pdf_sections_opendataloader(pdf_path: Path) -> Iterable[dict[str, An
         data = json.loads(jpath.read_text(encoding="utf-8"))
         if isinstance(data, list):
             kids = data
+            parent_page = None
         else:
             kids = data.get("kids") or []
+            parent_page = data.get("page number")
 
         for el in kids:
+            if not isinstance(el, dict):
+                continue
             raw = el.get("content") or ""
             normalized = normalize_text(raw)
             if not normalized:
                 continue
-            page = int(el.get("page number") or data.get("page number") or 1)
+            page = int(el.get("page number") or parent_page or 1)
             el_type = el.get("type") or "block"
             yield {
                 "page_number": page,
