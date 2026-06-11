@@ -30,12 +30,12 @@ After long-running `POST /api/run/stage*`, refresh artifact views via `GET /api/
 ## Authentication
 
 - **Default:** No login; bind Flask to `127.0.0.1` for local use.
-- **Optional:** Set `WORKFLOW_UI_REQUIRE_API_KEY=1` and `WORKFLOW_UI_API_KEY`; mutating `POST`/`PUT` under `/api/` require header `Authorization: Bearer <key>` (unless `GET`/`/`).
+- **Optional:** Set `WORKFLOW_UI_REQUIRE_API_KEY=1` and `WORKFLOW_UI_API_KEY`; mutating `POST`/`PUT` under `/api/` require header `Authorization: Bearer <key>` (unless `GET`/`/`). Set `WORKFLOW_UI_API_KEY_EXEMPT_LOCAL=1` only for trusted local-only development.
 
 ## Related docs
 
 - [PRIMITIVES_VS_WORKFLOWS.md](PRIMITIVES_VS_WORKFLOWS.md) — route classification
 - [POLLING_AND_REALTIME.md](POLLING_AND_REALTIME.md) — stage runs vs live updates
-- Auth: optional `WORKFLOW_UI_REQUIRE_API_KEY` + `WORKFLOW_UI_API_KEY`; localhost exempt via `WORKFLOW_UI_API_KEY_EXEMPT_LOCAL` (default on). See [workflow_ui/docs/API_ROUTES.md](../workflow_ui/docs/API_ROUTES.md).
+- Auth: optional `WORKFLOW_UI_REQUIRE_API_KEY` + `WORKFLOW_UI_API_KEY`; localhost exemption is opt-in via `WORKFLOW_UI_API_KEY_EXEMPT_LOCAL=1`. See [workflow_ui/docs/API_ROUTES.md](../workflow_ui/docs/API_ROUTES.md).
 - [Campaigns/docs/gui_spec.md](../Campaigns/docs/gui_spec.md) — GUI contract
 - [campaign_kb/docs/API_AND_CRUD.md](../../campaign_kb/docs/API_AND_CRUD.md) — KB API and CRUD scope

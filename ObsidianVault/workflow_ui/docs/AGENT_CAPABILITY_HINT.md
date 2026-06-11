@@ -23,4 +23,4 @@ curl -s "http://127.0.0.1:5050/api/arcs"
 curl -s "http://127.0.0.1:8000/openapi.json"   # campaign_kb
 ```
 
-When `WORKFLOW_UI_REQUIRE_API_KEY=1`, add `Authorization: Bearer <WORKFLOW_UI_API_KEY>` for mutating `POST`/`PUT` (unless exempting localhost via `WORKFLOW_UI_API_KEY_EXEMPT_LOCAL`).
+When `WORKFLOW_UI_REQUIRE_API_KEY=1`, add `Authorization: Bearer <WORKFLOW_UI_API_KEY>` for mutating `POST`/`PUT`. Set `WORKFLOW_UI_API_KEY_EXEMPT_LOCAL=1` only for trusted local-only development.

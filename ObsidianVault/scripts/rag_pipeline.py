@@ -1093,6 +1093,8 @@ def generate_text(prompt: str, rag_config: Dict[str, Any]) -> Optional[str]:
         logger.error("LLM helpers not available; cannot generate content")
         return None
 
+    ensure_tool_allowed("rag_pipeline.generate_text")
+
     if provider == "openai":
         result, _ = _call_openai_api(prompt, model, api_key, max_tokens, temperature)
         return result

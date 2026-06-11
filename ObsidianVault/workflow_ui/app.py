@@ -57,7 +57,7 @@ def _workflow_ui_require_api_key() -> bool:
 
 
 def _workflow_ui_api_key_exempt_localhost() -> bool:
-    return os.environ.get("WORKFLOW_UI_API_KEY_EXEMPT_LOCAL", "1").strip().lower() in ("1", "true", "yes")
+    return os.environ.get("WORKFLOW_UI_API_KEY_EXEMPT_LOCAL", "0").strip().lower() in ("1", "true", "yes")
 
 
 def _workflow_ui_api_key_configured() -> str:
