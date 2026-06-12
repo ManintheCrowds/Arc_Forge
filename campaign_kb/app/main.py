@@ -43,6 +43,63 @@ app = FastAPI(
 )
 
 
+def _resolve_path(path: Path) -> Path:
+    return path.expanduser().resolve(strict=False)
+
+
+def _resolve_candidate_for_root(path_value: str | Path, root_path: Path) -> Path:
+    requested = Path(path_value).expanduser()
+    if requested.is_absolute():
+        return _resolve_path(requested)
+
+    cwd_relative = _resolve_path(requested)
+    if cwd_relative == root_path or cwd_relative.is_relative_to(root_path):
+        return cwd_relative
+    return _resolve_path(root_path / requested)
+
+
+def _resolve_under_root(path_value: str | Path, root: Path, field_name: str) -> Path:
+    root_path = _resolve_path(root)
+    candidate = _resolve_candidate_for_root(path_value, root_path)
+    if not candidate.is_relative_to(root_path):
+        raise HTTPException(
+            status_code=400,
+            detail=f"{field_name} must resolve under configured root {root_path}.",
+        )
+    return candidate
+
+
+def _seed_entry_allows_directory(entry: Path) -> bool:
+    resolved = _resolve_path(entry)
+    return resolved.is_dir() or not resolved.suffix
+
+
+def _resolve_seed_path(path_value: str | Path) -> Path:
+    directory_candidate: Path | None = None
+    for configured_entry in settings.seed_doc_paths:
+        configured = _resolve_path(configured_entry)
+        if _seed_entry_allows_directory(configured):
+            candidate = _resolve_candidate_for_root(path_value, configured)
+            if candidate.is_relative_to(configured):
+                if candidate.exists():
+                    return candidate
+                if directory_candidate is None:
+                    directory_candidate = candidate
+            continue
+
+        candidate = _resolve_candidate_for_root(path_value, configured.parent)
+        if candidate == configured:
+            return candidate
+
+    if directory_candidate is not None:
+        return directory_candidate
+
+    raise HTTPException(
+        status_code=400,
+        detail="seed_paths must resolve under configured seed document paths.",
+    )
+
+
 @app.get("/metrics", response_class=PlainTextResponse, include_in_schema=False)
 def metrics():
     """Prometheus metrics (DAGGR workflow runs and same convention as WatchTower)."""
@@ -115,7 +172,11 @@ def ingest_pdfs_endpoint(
     # PURPOSE: Ingest PDF files from disk into the knowledge base.
     # DEPENDENCIES: FastAPI, SQLAlchemy, app.ingest.service.ingest_pdfs
     # MODIFICATION NOTES: MVP ingest endpoint for local PDFs.
-    pdf_root = Path(payload.pdf_root) if payload.pdf_root else settings.pdf_root
+    pdf_root = (
+        _resolve_under_root(payload.pdf_root, settings.pdf_root, "pdf_root")
+        if payload.pdf_root
+        else settings.pdf_root
+    )
     documents, sections = ingest_pdfs(db, pdf_root)
     return IngestResponse(documents_ingested=documents, sections_ingested=sections)
 
@@ -133,7 +194,7 @@ def ingest_seeds_endpoint(
     # PURPOSE: Ingest seed documents into the knowledge base.
     # DEPENDENCIES: FastAPI, SQLAlchemy, app.ingest.service.ingest_seed_docs
     # MODIFICATION NOTES: MVP ingest endpoint for seed docs.
-    seed_paths = [Path(path) for path in payload.seed_paths] if payload.seed_paths else settings.seed_doc_paths
+    seed_paths = [_resolve_seed_path(path) for path in payload.seed_paths] if payload.seed_paths else settings.seed_doc_paths
     documents, sections = ingest_seed_docs(db, seed_paths)
     return IngestResponse(documents_ingested=documents, sections_ingested=sections)
 
@@ -176,7 +237,11 @@ def ingest_docs_endpoint(
     # PURPOSE: Ingest reference documents into the knowledge base.
     # DEPENDENCIES: FastAPI, SQLAlchemy, app.ingest.service.ingest_reference_docs
     # MODIFICATION NOTES: MVP ingest endpoint for local docs.
-    docs_root = Path(payload.docs_root) if payload.docs_root else settings.dod_docs_root
+    docs_root = (
+        _resolve_under_root(payload.docs_root, settings.dod_docs_root, "docs_root")
+        if payload.docs_root
+        else settings.dod_docs_root
+    )
     documents, sections = ingest_reference_docs(db, docs_root)
     return IngestResponse(documents_ingested=documents, sections_ingested=sections)
 
@@ -194,7 +259,11 @@ def ingest_campaign_docs_endpoint(
     # PURPOSE: Ingest campaign docs into the knowledge base for RAG KB search.
     # DEPENDENCIES: FastAPI, SQLAlchemy, app.ingest.service.ingest_reference_docs
     # MODIFICATION NOTES: Aligns campaign_kb DB with RAG pipeline campaign_docs.
-    docs_root = Path(payload.docs_root) if payload.docs_root else settings.campaign_docs_root
+    docs_root = (
+        _resolve_under_root(payload.docs_root, settings.campaign_docs_root, "docs_root")
+        if payload.docs_root
+        else settings.campaign_docs_root
+    )
     documents, sections = ingest_reference_docs(db, docs_root, source_name="campaign_docs")
     return IngestResponse(documents_ingested=documents, sections_ingested=sections)
 
@@ -273,7 +342,11 @@ def merge_endpoint(
     # PURPOSE: Create a merged campaign seed doc with citations.
     # DEPENDENCIES: FastAPI, SQLAlchemy, app.merge.service.create_merged_seed_doc
     # MODIFICATION NOTES: MVP merge endpoint.
-    output_path = Path(payload.output_path) if payload.output_path else settings.output_dir / "campaign_seed_merged.md"
+    output_path = (
+        _resolve_under_root(payload.output_path, settings.output_dir, "output_path")
+        if payload.output_path
+        else settings.output_dir / "campaign_seed_merged.md"
+    )
     merged_path, citations = create_merged_seed_doc(
         db,
         seed_paths=settings.seed_doc_paths,
