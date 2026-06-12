@@ -48,6 +48,31 @@ def test_ingest_pdfs_rejects_root_outside_configured_pdf_root(client: TestClient
     assert "pdf_root" in response.json()["detail"]
 
 
+def test_ingest_pdfs_accepts_configured_relative_root(
+    client: TestClient,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """POST /ingest/pdfs should not double-prefix a configured relative root."""
+    monkeypatch.chdir(tmp_path)
+    relative_root = Path("data/pdfs")
+    expected_root = (tmp_path / relative_root).resolve()
+    expected_root.mkdir(parents=True)
+    original_pdf_root = config.settings.pdf_root
+    config.settings.pdf_root = relative_root
+    try:
+        with patch("app.main.ingest_pdfs") as mock_ingest:
+            mock_ingest.return_value = (0, 0)
+            response = client.post(
+                "/ingest/pdfs",
+                json={"pdf_root": str(relative_root)},
+            )
+    finally:
+        config.settings.pdf_root = original_pdf_root
+    assert response.status_code == 200
+    assert mock_ingest.call_args.args[1] == expected_root
+
+
 def test_ingest_seeds_stub(client: TestClient, tmp_path: Path) -> None:
     """POST /ingest/seeds returns 200 and IngestResponse shape."""
     seed = tmp_path / "seed.md"
@@ -86,6 +111,26 @@ def test_ingest_seeds_rejects_paths_outside_configured_seed_roots(client: TestCl
         config.settings.seed_doc_paths = original_seed_paths
     assert response.status_code == 400
     assert "seed_paths" in response.json()["detail"]
+
+
+def test_ingest_seeds_relative_file_prefers_configured_file_entry(client: TestClient, tmp_path: Path) -> None:
+    """POST /ingest/seeds should not shadow configured file entries with earlier directories."""
+    allowed_root = tmp_path / "allowed"
+    allowed_root.mkdir()
+    seed = tmp_path / "configured-seed.md"
+    seed.write_text("# Seed\n\nBody.", encoding="utf-8")
+    original_seed_paths = config.settings.seed_doc_paths
+    config.settings.seed_doc_paths = [allowed_root, seed]
+    try:
+        response = client.post(
+            "/ingest/seeds",
+            json={"seed_paths": [seed.name]},
+        )
+    finally:
+        config.settings.seed_doc_paths = original_seed_paths
+    assert response.status_code == 200
+    assert response.json()["documents_ingested"] == 1
+    assert response.json()["sections_ingested"] == 1
 
 
 def test_ingest_dod_stub(client: TestClient) -> None:
