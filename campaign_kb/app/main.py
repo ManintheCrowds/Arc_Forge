@@ -47,11 +47,20 @@ def _resolve_path(path: Path) -> Path:
     return path.expanduser().resolve(strict=False)
 
 
+def _resolve_candidate_for_root(path_value: str | Path, root_path: Path) -> Path:
+    requested = Path(path_value).expanduser()
+    if requested.is_absolute():
+        return _resolve_path(requested)
+
+    cwd_relative = _resolve_path(requested)
+    if cwd_relative == root_path or cwd_relative.is_relative_to(root_path):
+        return cwd_relative
+    return _resolve_path(root_path / requested)
+
+
 def _resolve_under_root(path_value: str | Path, root: Path, field_name: str) -> Path:
     root_path = _resolve_path(root)
-    requested = Path(path_value).expanduser()
-    candidate = requested if requested.is_absolute() else root_path / requested
-    candidate = _resolve_path(candidate)
+    candidate = _resolve_candidate_for_root(path_value, root_path)
     if not candidate.is_relative_to(root_path):
         raise HTTPException(
             status_code=400,
@@ -66,20 +75,24 @@ def _seed_entry_allows_directory(entry: Path) -> bool:
 
 
 def _resolve_seed_path(path_value: str | Path) -> Path:
-    requested = Path(path_value).expanduser()
+    directory_candidate: Path | None = None
     for configured_entry in settings.seed_doc_paths:
         configured = _resolve_path(configured_entry)
         if _seed_entry_allows_directory(configured):
-            candidate = requested if requested.is_absolute() else configured / requested
-            candidate = _resolve_path(candidate)
+            candidate = _resolve_candidate_for_root(path_value, configured)
             if candidate.is_relative_to(configured):
-                return candidate
+                if candidate.exists():
+                    return candidate
+                if directory_candidate is None:
+                    directory_candidate = candidate
             continue
 
-        candidate = requested if requested.is_absolute() else configured.parent / requested
-        candidate = _resolve_path(candidate)
+        candidate = _resolve_candidate_for_root(path_value, configured.parent)
         if candidate == configured:
             return candidate
+
+    if directory_candidate is not None:
+        return directory_candidate
 
     raise HTTPException(
         status_code=400,
