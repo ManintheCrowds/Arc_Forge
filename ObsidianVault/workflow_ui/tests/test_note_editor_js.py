@@ -280,6 +280,7 @@ def test_stale_save_response_cannot_enable_loading_note_save(tmp_path):
 
         pendingLoads.get(secondUrl)(okText("B content"));
         await secondLoad;
+        await flush();
         clickSave();
         await flush();
 
