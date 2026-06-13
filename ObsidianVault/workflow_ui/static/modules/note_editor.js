@@ -67,6 +67,10 @@ function isCurrentLoad(loadSeq, campaign, subpath) {
   return loadSeq === _loadSeq && campaign === _activeCampaign && subpath === _activeSubpath;
 }
 
+function isCurrentTarget(campaign, subpath) {
+  return campaign === _activeCampaign && subpath === _activeSubpath;
+}
+
 function confirmDiscardUnsaved() {
   if (!_dirty) return true;
   if (typeof window.confirm !== "function") return false;
@@ -131,8 +135,9 @@ export function initNoteEditor() {
     saveBtn.addEventListener("click", () => {
       if (!_loaded || !_activeCampaign || !_activeSubpath || !editor) return;
       const campaign = _activeCampaign;
+      const subpath = _activeSubpath;
       const content = editor.value || "";
-      fetch("/api/arc/" + encodeURIComponent(campaign) + "/file/" + encodeURIComponent(_activeSubpath), {
+      fetch("/api/arc/" + encodeURIComponent(campaign) + "/file/" + encodeURIComponent(subpath), {
         method: "PUT",
         headers: { "Content-Type": "text/plain; charset=utf-8" },
         body: content,
@@ -141,6 +146,7 @@ export function initNoteEditor() {
         return r.json().then((e) => Promise.reject(e)).catch(() => Promise.reject(new Error(r.status + " " + r.statusText)));
       })
         .then(() => {
+          if (!isCurrentTarget(campaign, subpath)) return;
           markClean(content);
           showFeedback("Saved.");
         })
@@ -171,11 +177,12 @@ export function initNoteEditor() {
     saveCardBtn.addEventListener("click", () => {
       if (!_loaded || !_activeCampaign || !_activeSubpath || !editor) return;
       const campaign = _activeCampaign;
+      const subpath = _activeSubpath;
       let content = editor.value || "";
       if (!content.includes("---")) {
         content = "---\ntype: note\ntitle: " + (_activePath.split("/").pop() || "Note").replace(".md", "") + "\n---\n\n" + content;
       }
-      fetch("/api/arc/" + encodeURIComponent(campaign) + "/file/" + encodeURIComponent(_activeSubpath), {
+      fetch("/api/arc/" + encodeURIComponent(campaign) + "/file/" + encodeURIComponent(subpath), {
         method: "PUT",
         headers: { "Content-Type": "text/plain; charset=utf-8" },
         body: content,
@@ -184,6 +191,7 @@ export function initNoteEditor() {
         return r.json().then((e) => Promise.reject(e)).catch(() => Promise.reject(new Error(r.status + " " + r.statusText)));
       })
         .then(() => {
+          if (!isCurrentTarget(campaign, subpath)) return;
           editor.value = content;
           markClean(content);
           if (_previewVisible && preview) {

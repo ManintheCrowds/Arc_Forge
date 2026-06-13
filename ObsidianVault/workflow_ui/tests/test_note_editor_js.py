@@ -78,7 +78,9 @@ globalThis.window = {
 
 const calls = [];
 const pendingLoads = new Map();
+const pendingSaves = new Map();
 let manualLoads = false;
+let manualSaves = false;
 
 function assert(condition, message) {
   if (!condition) {
@@ -106,6 +108,11 @@ function notFound() {
 globalThis.fetch = (url, options = {}) => {
   calls.push({ url, options });
   if (options.method === "PUT") {
+    if (manualSaves) {
+      return new Promise((resolve) => {
+        pendingSaves.set(url, resolve);
+      });
+    }
     return Promise.resolve({
       ok: true,
       json: async () => ({ status: "saved" }),
@@ -239,5 +246,46 @@ def test_stale_load_response_does_not_replace_current_note(tmp_path):
         assert(puts.length === 1, "current note should be saved once");
         assert(puts[0].url === "/api/arc/first_arc/file/b.md", "save should target current note path");
         assert(puts[0].options.body === "B content", "save should use current note content");
+        """,
+    )
+
+
+def test_stale_save_response_cannot_enable_loading_note_save(tmp_path):
+    _run_note_editor_case(
+        tmp_path,
+        """
+        manualSaves = true;
+        await selectNote("first_arc/a.md");
+        editor.value = "A edited";
+        editor.dispatch("input");
+        clickSave();
+
+        const saveUrl = "/api/arc/first_arc/file/a.md";
+        assert(pendingSaves.has(saveUrl), "first note save should be pending");
+
+        manualLoads = true;
+        const secondLoad = selectNote("first_arc/b.md");
+        const secondUrl = "/api/arc/first_arc/file/b.md";
+        assert(pendingLoads.has(secondUrl), "second note load should be pending");
+
+        pendingSaves.get(saveUrl)({
+          ok: true,
+          json: async () => ({ status: "saved" }),
+        });
+        await flush();
+
+        clickSave();
+        await flush();
+        assert(putCalls().length === 1, "stale save completion must not enable the loading note");
+
+        pendingLoads.get(secondUrl)(okText("B content"));
+        await secondLoad;
+        clickSave();
+        await flush();
+
+        const puts = putCalls();
+        assert(puts.length === 2, "loaded second note should save after its GET resolves");
+        assert(puts[1].url === secondUrl, "second save should target loaded second note");
+        assert(puts[1].options.body === "B content", "second save should use loaded second note content");
         """,
     )
