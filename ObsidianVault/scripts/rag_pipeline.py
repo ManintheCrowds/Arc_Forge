@@ -1332,10 +1332,8 @@ def generate_storyboard(
         "Make it useful for a GM to visualize and run the scene.\n"
         "Include specific Wrath & Glory mechanics with DN values throughout (e.g., 'Pilot (Agi) DN 3', not just 'use DN tests').\n"
     )
-    storyboard_prompt = storyboard_prompt.format(
-        constraints_block=constraints_block,
-        campaign_context_block=campaign_context_block,
-    )
+    storyboard_prompt = storyboard_prompt.replace("{constraints_block}", constraints_block)
+    storyboard_prompt = storyboard_prompt.replace("{campaign_context_block}", campaign_context_block)
     return generate_text(storyboard_prompt, rag_config) or ""
 
 
