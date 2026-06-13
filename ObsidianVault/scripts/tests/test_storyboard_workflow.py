@@ -15,6 +15,7 @@ _SCRIPTS = Path(__file__).resolve().parent.parent
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
+import rag_pipeline
 from storyboard_workflow import export_final_specs, refine_encounter, run_stage_1, run_stage_2
 
 
@@ -90,6 +91,28 @@ def test_run_stage_2_writes_drafts_with_mocked_draft(tmp_task_decomposition, tmp
     assert enc_dir.exists()
     drafts = list(enc_dir.glob("*_draft_v1.md"))
     assert len(drafts) >= 1
+
+
+def test_generate_storyboard_allows_literal_braces(monkeypatch):
+    captured = {}
+
+    def fake_generate_text(prompt, rag_config):
+        captured["prompt"] = prompt
+        return "# Storyboard"
+
+    monkeypatch.setattr(rag_pipeline, "generate_text", fake_generate_text)
+
+    result = rag_pipeline.generate_storyboard(
+        "Use the {DN} token literally in the GM-facing rules text.",
+        {"entities": {"NPCs": ["Brawn Solo"], "Factions": [], "Locations": [], "Items": []}},
+        {"storyboard": {"constraints": ["Keep {braces} intact"], "campaign_context": ["Context {value}"]}},
+        specifications={"combat_specs": "Damage expression {1d6+3} should not become a format key."},
+    )
+
+    assert result == "# Storyboard"
+    assert "{DN}" in captured["prompt"]
+    assert "Keep {braces} intact" in captured["prompt"]
+    assert "{1d6+3}" in captured["prompt"]
 
 
 def test_refine_encounter_writes_next_draft_with_mocked_llm(tmp_path):
